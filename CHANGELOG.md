@@ -4,6 +4,146 @@
 
 Novedades y arreglos de cada versión candidata (RC). Cada RC tiene una **versión más segura** (sufijo **S**) sin las funciones que escriben en la tarjeta SD por su cuenta (gestión del pack, A8). Las referencias (A4, C6…) son las secciones del [manual](https://ghillermo.github.io/CIRCUITS-HACKS-RC/index.html). El detalle técnico está en [`docs/NOTAS.md`](docs/NOTAS.md).
 
+## Beta 1.23 — 2026-10-16
+
+**Beta 1.23** (marca `B1.23`; = SC43.3) = Beta 1.22 + un cambio en el step-drummer. Las RC siguen en RC0.9 / RC0.9S.
+
+### Cambios (solo Beta 1.23)
+- **Step-drummer de MIDI 1 / 2:** el punto sin modulación de cada knob depende de su destino: el centro (64) para los bipolares (tono de los dos osciladores, tono del OSC 2, envolvente → filtro) y 0 para los unipolares (WAVE, FM, MIX, SHAPE, decay, que solo suman). Un par vacío empieza ahí, y el LED del knob enseña la cantidad: tenue = sin modulación, más brillante cuanto más se aleja (hacia arriba o hacia abajo). Antes todos empezaban en 64 y el LED enseñaba el valor (a media luz sin modulación). Lo mismo en la página 2 con destino y en el toggle pitch-vel (la transposición cuenta desde ese punto).
+
+## Beta 1.22 — 2026-10-16
+
+**Beta 1.22** (marca `B1.22`; = SC43.2) = Beta 1.21 + un arreglo. Las RC siguen en RC0.9 / RC0.9S.
+
+### Arreglos (solo Beta 1.22)
+- **Grabar con el arpegiador:** la segunda nota de un acorde (y las siguientes) llegaba al grabador pero nunca su note-off, así que el grabador la daba por mantenida y la ignoraba cuando se volvía a tocar, hasta pulsar Record otra vez: en un patrón de 32 pasos los acordes de la segunda página se grababan solo con su primera nota y el arpegiador no los arpegiaba. Ahora al soltar esas notas el grabador también recibe su note-off.
+
+## Beta 1.21 — 2026-10-16
+
+**Beta 1.21** (marca `B1.21`; = SC43.1) = Beta 1.20 + un arreglo. Las RC siguen en RC0.9 / RC0.9S.
+
+### Arreglos (solo Beta 1.21)
+- **Rollers y arpegio de drums con el transporte parado:** sus golpes no recibían el note-off, así que los cuadros del drum en la vista Note (pads 27-30 para los drums 1 y 2) se quedaban en blanco y la nota MIDI del drum colgada. Ahora cada golpe se suelta 100 ms después.
+
+## Beta 1.20 — 2026-10-16
+
+**Beta 1.20** (marca `B1.20`; = SC43) = Beta 1.19 + las funciones de Pattern Settings en los drums y tres arreglos de grabación. Las RC siguen en RC0.9 / RC0.9S.
+
+### Novedades (solo Beta 1.20)
+- **Frecuencia, dinámicas y random-mutate en los drums**, en su vista de probabilidad (Pattern Settings dos veces = modo 1; pad 25 de su Pattern Settings = modo 2), como en las pistas de notas. El random-mutate cambia el sample del golpe: 25 % de ±1 (el de al lado en su fila), 25 % de ±8 (otra fila), 12 % de cada uno. Las dinámicas solo retrasan el golpe dentro de su paso.
+
+### Arreglos (solo Beta 1.20)
+- **Los golpes grabados por los rollers y por el arpegio de los drums ya no se pierden** en la siguiente edición del patrón (el stock volvía a escribir su propia copia de los pasos).
+- **El Nudge de los drums** ya no se deshace con la siguiente edición, y mueve también los valores nuevos de cada paso.
+
+## Beta 1.19 — 2026-10-16
+
+**Beta 1.19** (marca `B1.19`; = SC42.9) = Beta 1.18 + la grabación del arpegiador de los drums. Las RC siguen en RC0.9 / RC0.9S.
+
+### Novedades (solo Beta 1.19)
+- **El arpegio de los drums se graba con Record** (en marcha, no en la cuenta atrás): cada golpe escribe en el patrón su micropaso, su sample como sample flip del paso (uno por paso: queda el último) y, en un paso vacío, su velocity.
+
+## Beta 1.18 — 2026-10-16
+
+**Beta 1.18** (marca `B1.18`; = SC42.8) = Beta 1.17 + el arpegiador de los drums. Las RC siguen en RC0.9 / RC0.9S.
+
+### Novedades (solo Beta 1.18)
+- **Arpegiador de los drums:** en el Pattern Settings de un drum, **Shift + pad 25** lo enciende para el patrón que suena, **Shift + pads 27-32** = orden, **Shift + pads 17-24** = resolución (como en las pistas de notas). En la vista Preset del drum, al mantener varios samples a la vez el drum salta de sample en sample en ese orden (a la rejilla del drum en marcha, al tempo parado); al soltarlos vuelve a su sample elegido. No se graba.
+
+## Beta 1.17 — 2026-10-16
+
+**Beta 1.17** (marca `B1.17`; = SC42.7) = Beta 1.16 + lo pedido tras probarla. Las RC siguen en RC0.9 / RC0.9S.
+
+### Cambios (solo Beta 1.17)
+- **Step-drummer:** en Synth 1 / 2 un par vacío empieza en 0 (empezaba en la posición del macro: con el macro arriba, todos los knobs al máximo). La transposición del toggle pitch-vel es de un grado cada 8 pasos del knob (MIDI −8 … +8 desde el centro, sintes 0 … +16) y, con el toggle, los destinos de tono de la página pitch ya no mueven además el sinte propio (la nota salía de la escala).
+- **Vista Micro Step, pads 31 / 32:** con los dos apagados, el pad 31 abre el selector y elegir una longitud enciende la longitud fija; el pad 32 enciende el gate por pulsación. Con uno encendido, pulsarlo otra vez lo apaga y pulsar el otro cambia de uno a otro. Ya no hay pulsación larga.
+- **Rollers de los drums con el transporte parado:** suenan al tempo del proyecto mientras se mantienen.
+- **Pad 29 de MIDI 1 / 2** (orden de la cadena) en el color de la página VCA-VCF.
+
+## Beta 1.16 — 2026-10-16
+
+**Beta 1.16** (marca `B1.16`; = SC42.6) sustituye a Beta 1.3: lleva todo lo nuevo desde entonces (Beta 1.4-1.15 no se publicaron). Las RC siguen en RC0.9 / RC0.9S. En el manual, lo de la beta va marcado **solo Beta 1.16**.
+
+### Novedades (solo Beta 1.16)
+- **Arpegiador por patrón** (C, Pattern Settings): **Shift + pad 25** lo enciende, **Shift + pads 27-32** = orden (fractal, deconstruido, arriba, abajo, ping-pong, aleatorio), **Shift + pads 17-24** = su resolución, distinta del tempo de la pista. Arpegia los acordes de la secuencia y las notas mantenidas en vivo.
+- **Escala propia** (**Shift + Scales**): hasta 7 notas y un periodo en un piano de dos octavas desde la tónica; se guarda con el proyecto.
+- **Metrónomo con cuenta atrás** (**Shift + Clear**): sin metrónomo (rojo), metrónomo (verde), solo cuenta atrás (magenta), las dos (cian); con la cuenta atrás, Record + Play = un compás antes de grabar.
+- **Vista Micro Step** (Gate dos veces): **pad 32** = la duración de una nota introducida a mano es lo que se mantiene el pad; **pad 31** = longitud fija con selector.
+- **Rollers de micropasos** en las filas 1-3 de la vista Note ampliada de los drums; con Record se graban.
+- **Step-drummer:** destino propio de la página velocity (pads 17-24) y **toggle pitch-vel** (pad 32): la página pitch transpone las notas en grados de la escala y la página velocity cambia la velocity, además de sus destinos.
+- **K3 de los drums partido:** izquierda = decay de stock, derecha (pasado 127) = ataque; **Shift + K3**: izquierda = inicio del sample, derecha = corte.
+- **Sidechain de los drums con los knobs:** en las páginas de drums de la vista Sidechain, K1-K4 = ataque, hold, decay y profundidad del drum del último preset tocado.
+- **Canales de Program Change** del proyecto en Setup (pads 29 / 30): escucha y salida, 16 por defecto; lo recibido se reenvía por el de salida.
+- **Clear + pad 25** en Pattern Settings borra las dinámicas y el random-mutate del patrón; **Clear + knob** del sinte propio: derecha = valor por defecto (lavanda), izquierda = borrar su automatización (rojo).
+- **Preset otra vez** en la vista Preset de un drum = vista cromática encendida / apagada.
+
+### Arreglos (solo Beta 1.16)
+- **El stutter del delay** al mover los knobs o cambiar de modo del motor de MIDI 1 / 2: el mod guardaba los ajustes del aparato en la tarjeta en cada cambio y releía la tarjeta cada pocos segundos en las vistas Preset; ahora el guardado espera al transporte parado y la relectura también.
+- **Samples de drums como en el Circuit de stock** en proyectos nuevos o sin tocar (el modo de filtro guardado 0 es el EQ de stock).
+- **Setup abierto desde la vista de Synth 1 / 2**: ese sinte ya se puede elegir.
+- **El patch flip** sale solo por el canal de su pista MIDI.
+- **Random-mutate con la escala propia** cuenta los grados desde la tónica.
+
+## RC0.9 / RC0.9S y Beta 1.3 — 2026-10-14
+
+RC0.9 = RC0.8 + una protección. RC0.9S = RC0.8S con el nombre nuevo (no escribe nada por su cuenta: no la necesita). **Beta 1.3** (marca `B1.3`; = SC41.3) = Beta 1.2 + la misma protección.
+
+### Novedades (RC0.9 y Beta 1.3)
+- **El pack de la memoria interna es de solo lectura para el mod.** Nada del mod escribe ni borra en él (guardar el sample capturado, copiar o intercambiar samples y patches hacia él, guardar patches del sinte o del sinte propio, copiar proyectos, borrar el pack): se niega y el LED de Save se enciende en rojo un momento. Se puede leer de él y copiar desde él a un pack de la tarjeta. Los guardados del propio aparato no cambian.
+
+## Beta 1.2 — 2026-10-14
+
+**Beta 1.2** (marca `B1.2`; = SC41.2) = Beta 1.1 + un arreglo encontrado al revisar. Las RC siguen en RC0.8 / RC0.8S.
+
+### Arreglos (solo Beta 1.2)
+- **Una regla de cadena pedida para una pista o un patrón fuera de rango ya no lee fuera de la memoria.** Con un estado inesperado del secuenciador, las cadenas y los órdenes fractal / deconstruido podían leer una dirección inexistente y bloquear el aparato; ahora ese patrón suena como en el original.
+
+## RC0.8 / RC0.8S y Beta 1.1 — 2026-10-14
+
+RC0.8 = RC0.7 + un arreglo. RC0.8S = RC0.7S + el mismo (**S**). **Beta 1.1** (marca `B1.1` en el aparato; = SC41.1) sustituye a Beta 1.0.
+
+### Arreglos (RC0.8, RC0.8S y Beta 1.1)
+- **Los knobs de pitch del step-drummer conservan su valor** (**S**). Desde RC0 cada giro escribía en el par de pasos solo su incremento: el knob no avanzaba, su LED se quedaba casi apagado y el tono saltaba al mínimo.
+
+### Arreglos (solo Beta 1.1)
+- **La vista Master FX ya no pisa el estado de otras funciones.** Con la vista en pantalla y muchas cosas sonando, Synth 2 dejaba de sonar, las cadenas de patrones y el orden fractal se reiniciaban y la frecuencia por paso contaba mal.
+
+### Novedades (solo Beta 1.1)
+- **Secuenciador de efectos: valor random** (LED blanco, al final del recorrido del knob): en cada paso con nota suena uno de la lista al azar (los huecos con efecto asignado y el gesto mecánico del pad 31).
+
+## RC0.7 / RC0.7S y Beta 1.0 — 2026-10-14
+
+RC0.7 = RC0.6 + dos arreglos. RC0.7S = RC0.6S + los mismos (**S**). **Beta 1.0** (marca `B1.0` en el aparato; = SC40.9) sustituye a BETA5: lleva los arreglos y todo lo nuevo desde entonces. En el manual, lo de la beta va marcado **solo Beta 1.0**.
+
+### Arreglos (RC0.7, RC0.7S y Beta 1.0)
+- **El step-drummer, el secuenciador de efectos y el stretch del granular siguen el patrón de su propia pista** (**S**). Leían el patrón, el paso y los ticks de otra pista; no se notaba mientras todas tenían la misma longitud. La captura armada con el transporte en marcha vuelve a esperar al siguiente compás.
+- **Knob selector del secuenciador de efectos, tres veces más lento** (**S**): un hueco cada ~48 pasos de giro.
+- Manual: el secuenciador de efectos dispara los huecos de la fila inferior de Master FX; **un hueco sin efecto asignado no hace nada**.
+
+### Novedades de la Beta 1.0 (desde BETA5)
+- **Cadenas de patrones** con un **modo cadena** de todo el proyecto (Shift + Octave ▲ / ▼ en Patterns) que cada escena recuerda; escenas encadenadas en otro color, pistas que parpadean, **repeticiones de escena** (Shift + pads 9-16 del Mixer).
+- **Nudge** y **órdenes de reproducción fractal y deconstruido** (pads 26-28 de Pattern Settings), en todas las pistas.
+- **Frecuencia** del paso (cada n vueltas) y **dinámicas** aleatorias (velocity, posición, duración) en la vista de probabilidad.
+- **Master FX:** gesto mecánico en el pad 31 y Glitch en el pad 6; Digitise K3 = envío momentáneo al delay, K4 = envolvente; **los 20 knobs, los huecos y el compresor se guardan con cada proyecto**.
+- **Knobs en la vista Sidechain:** K1-K4 = ataque, hold, decay y profundidad; K7 / K8 = ataque y release del compresor master.
+- **Patches del sinte propio de MIDI 1 / 2 de un pack a otro** (Duplicate + A, otro pack, Duplicate + B).
+- **Record en la vista Setup** = grabar también en el sinte lo que le manda una pista MIDI por el canal compartido.
+- El LFO del Auto-Filter y del Phaser arranca al activar el efecto (ya en RC0.6).
+
+### Probado en el aparato (2026-10-14)
+Frecuencia y dinámicas, cadenas de patrones y escenas, Nudge y órdenes (pistas de notas), gesto mecánico, Glitch en el pad 6, Digitise K3 / K4, knobs de tipo en color, knobs del sidechain, guardar el patch del sinte, patches del sinte propio (también entre packs) y copiar proyectos. Sin probar: lo añadido en la Beta 1.0 sobre eso (modo cadena global, drums, Master FX por sesión, compresor en Sidechain, Record en Setup) y los dos arreglos.
+
+## RC0.6 / RC0.6S — 2026-10-14
+
+RC0.6 = RC0.5 + dos arreglos. RC0.6S = RC0.5S + los mismos (**S**). La beta sigue siendo **BETA5**, que no cambia (lleva el segundo arreglo; el primero, aún no).
+
+### Arreglos
+- **El LFO del Auto-Filter y del Phaser arranca al activar el efecto** (C5, **S**). El barrido solo empezaba desde la pulsación cuando el Gater se activaba en el mismo instante; si no, seguía desde un arranque anterior y cada pulsación empezaba en un punto distinto.
+- **Blanco tenue fijo en Clear** (**S**). El pad 8 de Master FX sin efectos fijados, y Clear en la vista de packs, usaban un código de color que el aparato hace pulsar.
+
+### Manual
+- La tabla de knobs de Master FX corregida según el código: Auto-Filter = velocidad, profundidad, resonancia, frecuencia central; Digitise = muestreo y bits (K3 y K4 no hacen nada); Vinyl = crackle, siseo, tono, desgaste.
+
 ## BETA5 — 2026-10-12
 
 Versión beta (= SC39.6): BETA4 + más funciones nuevas aún sin probar en el aparato. Sin versión «S». Acompaña a RC0.5 / RC0.5S, que no cambian. En el manual van marcadas **solo BETA5** (también las de las betas anteriores).
@@ -138,6 +278,146 @@ Primera versión candidata (= SC36.2; RC0S = SC362S, sin escrituras propias en l
 # Changelog — CIRCUIT-HACKS
 
 New features and fixes of every release candidate (RC). Every RC has a **safer build** (suffix **S**) without the features that write to the SD card on their own (pack management, A8). The references (A4, C6…) are the sections of the [manual](https://ghillermo.github.io/CIRCUITS-HACKS-RC/en.html). The technical detail is in [`docs/NOTAS.md`](docs/NOTAS.md) (Spanish).
+
+## Beta 1.23 — 2026-10-16
+
+**Beta 1.23** (marker `B1.23`; = SC43.3) = Beta 1.22 + a change to the step-drummer. The RCs stay RC0.9 / RC0.9S.
+
+### Changes (Beta 1.23 only)
+- **MIDI 1 / 2 step-drummer:** each knob's point of no modulation follows its destination: the centre (64) for the bipolar ones (pitch of both oscillators, OSC 2 pitch, envelope → filter) and 0 for the unipolar ones (WAVE, FM, MIX, SHAPE, decay, which only add). An empty pair starts there, and the knob LED shows the amount: dim = no modulation, brighter the further it goes (up or down). Before, every pair started at 64 and the LED showed the value (half lit with no modulation). The same on page 2 with a destination and for the pitch-vel toggle (the transposition counts from that point).
+
+## Beta 1.22 — 2026-10-16
+
+**Beta 1.22** (marker `B1.22`; = SC43.2) = Beta 1.21 + one fix. The RCs stay RC0.9 / RC0.9S.
+
+### Fixes (Beta 1.22 only)
+- **Recording with the arpeggiator:** a chord's second note (and the later ones) reached the recorder but its note-off never did, so the recorder took it as still held and ignored it when it was played again, until Record was pressed again: in a 32-step pattern the chords of the second page were recorded with their first note only, and the arpeggiator did not arpeggiate them. Now letting go of those notes also gives the recorder their note-off.
+
+## Beta 1.21 — 2026-10-16
+
+**Beta 1.21** (marker `B1.21`; = SC43.1) = Beta 1.20 + one fix. The RCs stay RC0.9 / RC0.9S.
+
+### Fixes (Beta 1.21 only)
+- **Drum rollers and drum arpeggio with the transport stopped:** their hits never got a note-off, so the drum's boxes in the Note view (pads 27-30 for drums 1 and 2) stayed white and the drum's MIDI note hung. Now each hit is released 100 ms later.
+
+## Beta 1.20 — 2026-10-16
+
+**Beta 1.20** (marker `B1.20`; = SC43) = Beta 1.19 + the Pattern Settings features on the drums and three recording fixes. The RCs stay RC0.9 / RC0.9S.
+
+### New (Beta 1.20 only)
+- **Frequency, dynamics and random-mutate on the drums**, in their probability view (Pattern Settings twice = mode 1; pad 25 of their Pattern Settings = mode 2), as on the note tracks. The random-mutate changes the hit's sample: 25 % of ±1 (the next one in its row), 25 % of ±8 (another row), 12 % of each. The dynamics only delay the hit inside its step.
+
+### Fixes (Beta 1.20 only)
+- **Hits recorded by the rollers and by the drums' arpeggio are no longer lost** at the next edit of the pattern (the stock wrote its own copy of the steps back).
+- **Drum Nudge** is no longer undone by the next edit, and it moves the new per-step values too.
+
+## Beta 1.19 — 2026-10-16
+
+**Beta 1.19** (marker `B1.19`; = SC42.9) = Beta 1.18 + recording the drums' arpeggiator. The RCs stay RC0.9 / RC0.9S.
+
+### New (Beta 1.19 only)
+- **The drums' arpeggio is recorded with Record** (playing, not in the count-in): every hit writes its micro step into the pattern, its sample as the step's sample flip (one a step: the last one stays) and, on an empty step, its velocity.
+
+## Beta 1.18 — 2026-10-16
+
+**Beta 1.18** (marker `B1.18`; = SC42.8) = Beta 1.17 + the drums' arpeggiator. The RCs stay RC0.9 / RC0.9S.
+
+### New (Beta 1.18 only)
+- **The drums' arpeggiator:** in a drum's Pattern Settings, **Shift + pad 25** turns it on for the pattern it plays, **Shift + pads 27-32** = order, **Shift + pads 17-24** = resolution (as on the note tracks). In the drum's Preset view, holding several samples at once makes the drum jump from sample to sample in that order (on the drum's grid while playing, at the tempo when stopped); when they are let go it goes back to its chosen sample. Not recorded.
+
+## Beta 1.17 — 2026-10-16
+
+**Beta 1.17** (marker `B1.17`; = SC42.7) = Beta 1.16 + what was asked after testing it. The RCs stay RC0.9 / RC0.9S.
+
+### Changed (Beta 1.17 only)
+- **Step-drummer:** on Synth 1 / 2 an empty pair starts at 0 (it started at the macro's position: with the macro at the top, every knob at maximum). The pitch-vel toggle's transposition is one degree every 8 knob steps (MIDI −8 … +8 from the centre, synths 0 … +16) and, with the toggle, the pitch page's pitch destinations no longer move the own synth too (the note left the scale).
+- **Micro Step view, pads 31 / 32:** with both off, pad 31 opens the selector and picking a length turns the fixed length on; pad 32 turns the gate by holding on. With one on, pressing it again turns it off and pressing the other one switches. No long press any more.
+- **Drum rollers with the transport stopped:** they play at the project's tempo while held.
+- **Pad 29 of MIDI 1 / 2** (the chain order) in the VCA-VCF page's colour.
+
+## Beta 1.16 — 2026-10-16
+
+**Beta 1.16** (marker `B1.16`; = SC42.6) replaces Beta 1.3: it carries everything new since then (Beta 1.4-1.15 were not published). The RCs stay RC0.9 / RC0.9S. In the manual, the beta's features are marked **Beta 1.16 only**.
+
+### New (Beta 1.16 only)
+- **Per-pattern arpeggiator** (C, Pattern Settings): **Shift + pad 25** turns it on, **Shift + pads 27-32** = order (fractal, deconstructed, up, down, ping-pong, random), **Shift + pads 17-24** = its own resolution, independent of the track's tempo. It arpeggiates the sequence's chords and notes held live.
+- **Custom scale** (**Shift + Scales**): up to 7 notes and a period on a two-octave piano from the root; saved with the project.
+- **Metronome with count-in** (**Shift + Clear**): no metronome (red), metronome (green), count-in only (magenta), both (cyan); with the count-in, Record + Play = one bar before recording.
+- **Micro Step view** (Gate twice): **pad 32** = a note entered by hand lasts as long as its pad is held; **pad 31** = fixed length with a selector.
+- **Micro-step rollers** on rows 1-3 of the drums' expanded Note view; recorded with Record.
+- **Step-drummer:** the velocity page gets its own destination (pads 17-24) and a **pitch-vel toggle** (pad 32): the pitch page transposes the notes in degrees of the scale and the velocity page sets the velocity, on top of their destinations.
+- **Split drum K3:** left = stock decay, right (past 127) = attack; **Shift + K3**: left = sample start, right = cut.
+- **Drum sidechain on the knobs:** on the Sidechain view's drum pages, K1-K4 = attack, hold, decay and depth of the drum whose preset was touched last.
+- **Program Change channels** of the project in Setup (pads 29 / 30): listen and send, 16 by default; what comes in is forwarded on the send channel.
+- **Clear + pad 25** in Pattern Settings clears the pattern's dynamics and random-mutate; **Clear + knob** of the own synth: right = default value (lavender), left = clear its automation (red).
+- **Preset again** in a drum's Preset view = chromatic view on / off.
+
+### Fixes (Beta 1.16 only)
+- **The delay stutter** when moving the MIDI 1 / 2 engine's knobs or modes: the mod saved the device settings to the card on every change and re-read the card every few seconds in the Preset views; now the save waits for the transport to stop, and so does the re-read.
+- **Drum samples sound like a stock Circuit** in new or untouched projects (the saved filter mode 0 is the stock EQ).
+- **Setup opened from the Synth 1 / 2 view**: that synth can be selected again.
+- **The patch flip** goes out only on its MIDI track's channel.
+- **Random-mutate with the custom scale** counts the degrees from the root.
+
+## RC0.9 / RC0.9S and Beta 1.3 — 2026-10-14
+
+RC0.9 = RC0.8 + one safeguard. RC0.9S = RC0.8S under the new name (it writes nothing of its own: it does not need it). **Beta 1.3** (marker `B1.3`; = SC41.3) = Beta 1.2 + the same safeguard.
+
+### New (RC0.9 and Beta 1.3)
+- **The internal memory pack is read only for the mod.** Nothing of the mod writes or deletes in it (saving the captured sample, copying or exchanging samples and patches into it, saving synth or own-synth patches, copying projects, deleting the pack): it is refused and the Save LED lights red for a moment. You can read it and copy from it to a pack of the card. The device’s own saves are unchanged.
+
+## Beta 1.2 — 2026-10-14
+
+**Beta 1.2** (marker `B1.2`; = SC41.2) = Beta 1.1 + one fix found in a review. The RCs stay RC0.8 / RC0.8S.
+
+### Fixes (Beta 1.2 only)
+- **A chain rule asked for a track or a pattern out of range no longer reads outside the memory.** With an unexpected sequencer state, the chains and the fractal / deconstructed orders could read an address that does not exist and freeze the device; now that pattern plays as on the original.
+
+## RC0.8 / RC0.8S and Beta 1.1 — 2026-10-14
+
+RC0.8 = RC0.7 + one fix. RC0.8S = RC0.7S + the same one (**S**). **Beta 1.1** (marker `B1.1` on the device; = SC41.1) replaces Beta 1.0.
+
+### Fixes (RC0.8, RC0.8S and Beta 1.1)
+- **The pitch knobs of the step-drummer keep their value** (**S**). Since RC0 every turn wrote only its own delta into the pair of steps: the knob did not move, its LED stayed almost dark and the pitch jumped to the bottom.
+
+### Fixes (Beta 1.1 only)
+- **The Master FX view no longer overwrites the state of other features.** With the view on the screen and much playing, Synth 2 went silent, the pattern chains and the fractal order restarted and the step frequency miscounted.
+
+### New (Beta 1.1 only)
+- **FX sequencer: random value** (white LED, at the end of the knob’s travel): on every step with a note one of the list plays at random (the slots with an effect assigned and the mechanical gesture of pad 31).
+
+## RC0.7 / RC0.7S and Beta 1.0 — 2026-10-14
+
+RC0.7 = RC0.6 + two fixes. RC0.7S = RC0.6S + the same ones (**S**). **Beta 1.0** (marker `B1.0` on the device; = SC40.9) replaces BETA5: it carries the fixes and everything new since then. In the manual, what only the beta has is marked **Beta 1.0 only**.
+
+### Fixes (RC0.7, RC0.7S and Beta 1.0)
+- **The step-drummer, the FX sequencer and the granular stretch follow the pattern of their own track** (**S**). They read the pattern, the step and the ticks of another track; it went unnoticed while every track had the same length. The armed capture with the transport running waits for the next bar again.
+- **Selector knob of the FX sequencer three times slower** (**S**): one slot every ~48 steps of the turn.
+- Manual: the FX sequencer fires the slots of the Master FX bottom row; **a slot with no effect assigned does nothing**.
+
+### New in Beta 1.0 (since BETA5)
+- **Pattern chains** with a project-wide **chain mode** (Shift + Octave ▲ / ▼ in Patterns) that every scene remembers; chained scenes in another colour, blinking tracks, **scene repeats** (Shift + pads 9-16 of the Mixer).
+- **Nudge** and the **fractal and deconstructed play orders** (pads 26-28 of Pattern Settings), on every track.
+- Step **frequency** (every n plays) and random **dynamics** (velocity, position, length) in the probability view.
+- **Master FX:** mechanical gesture on pad 31 and Glitch on pad 6; Digitise K3 = momentary send to the delay, K4 = envelope; **the 20 knobs, the slots and the compressor are saved with every project**.
+- **Knobs in the Sidechain view:** K1-K4 = attack, hold, decay and depth; K7 / K8 = attack and release of the master compressor.
+- **Own-synth patches of MIDI 1 / 2 from one pack to another** (Duplicate + A, another pack, Duplicate + B).
+- **Record in the Setup view** = also record into the synth what a MIDI track sends it over the shared channel.
+- The LFO of the Auto-Filter and of the Phaser starts when the effect comes on (already in RC0.6).
+
+### Tested on the device (2026-10-14)
+Frequency and dynamics, pattern chains and scenes, Nudge and the orders (note tracks), mechanical gesture, Glitch on pad 6, Digitise K3 / K4, type knobs as colours, side-chain knobs, saving the synth patch, own-synth patches (between packs too) and copying projects. Untested: what Beta 1.0 adds on top (project-wide chain mode, drums, Master FX per session, compressor in the Sidechain view, Record in Setup) and the two fixes.
+
+## RC0.6 / RC0.6S — 2026-10-14
+
+RC0.6 = RC0.5 + two fixes. RC0.6S = RC0.5S + the same (**S**). The beta is still **BETA5**, unchanged (it has the second fix; the first one, not yet).
+
+### Fixed
+- **The LFO of the Auto-Filter and of the Phaser starts when the effect comes on** (C5, **S**). The sweep only started from the press when the Gater came on at the same instant; otherwise it went on from an older start and every press began at a different point.
+- **A steady dim white on Clear** (**S**). Pad 8 of Master FX with no effect latched, and Clear in the packs view, used a colour code that the device pulses.
+
+### Manual
+- The Master FX knob table corrected from the code: Auto-Filter = rate, depth, resonance, centre frequency; Digitise = sample rate and bits (K3 and K4 do nothing); Vinyl = crackle, hiss, tone, wear.
 
 ## BETA5 — 2026-10-12
 

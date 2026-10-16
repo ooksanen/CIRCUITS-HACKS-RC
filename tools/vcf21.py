@@ -124,6 +124,8 @@ ST_TICKS = 6                                      # SC38.1: sequencer ticks per 
 FXSEQ3 = False                                    # SC36.2 (see use_fxseq3)
 FSQ_U = 16                                        # SC36.2: knob units per FX sequencer value (the lane holds 0..6 * FSQ_U; value = (p + FSQ_U / 2) / FSQ_U)
 FSQ_MAX = 6 * FSQ_U
+SDKFIX = False                                    # SC41 (see use_sdknobfix)
+FSQ_DIV = 1                                       # SC40.9 (see use_fxseq4): knob events per unit of the FX sequencer's position
 # the granular page: (code, min, max, flags) per knob K1..K8, Shift + K1..K8; flags bit 0 = one step per turn; bits 1-3 = the LED: 0 bipolar, 1 the value,
 # 2 the value + 64 (stored -64..63, shown 0..127), 3 (the value - min) x 2, 4 on / off
 GR_TAB = ((17, -24, 24, 0), (19, 0, 126, 1 << 1), (21, -64, 63, 0), (18, -64, 63, 2 << 1), (20, 0, 100, 1 << 1), (23, -64, 63, 2 << 1), (24, -64, 63, 0), (22, -64, 63, 0),
@@ -282,6 +284,29 @@ def use_heartbeat():
     vcf21_dsp.use_gatefix (a gate that is high with the envelope idle starts the envelope)."""
     global HEARTBEAT
     HEARTBEAT = True
+
+
+CLRAUTO = False                                   # SC42.4 (use_clrauto): Clear + knob right = default (lavender), left = the knob's automation cleared (red)
+CLR_LAV = 0x07                                    # the stock's colour of a knob put back to its default (persist19.use_blue7)
+EDITOR0, EDITOR_SZ, LANE_CLEAR = 0x20039E50, 0x3A0, 0x0803D3B8   # the note tracks' pattern editors (Synth 1, 2, MIDI 1, 2); (editor, lane): the lane to 0xFF
+
+
+def use_routecol():
+    """SC42.7 (the user, 2026-10-16: «cambiar color del pad 29 a amarillo (color del filtro)»): pad 29 of the MIDI Preset view (the chain order) in
+    the colours of the VCA / VCF page pad."""
+    global COL_ROUTE
+    COL_ROUTE = COL_PAGE[0]
+
+
+def use_clrauto():
+    """SC42.4 (the user, 2026-10-16: «clearing a knob successfully must show lavender to stay consistent with the stock interface. Red for automation clear»;
+    «automation clear is not currently working on synths» = the own synth of MIDI 1 / 2): with Clear held, a knob of the engine turned right goes back to
+    its default (both layers, as before) and shows the stock's colour 0x07; turned left, the automation of its lanes (the plain and the Shift layer's
+    codes found in LANE_TAB) is cleared in the pattern the track plays (the stock's own 0x0803D3B8 on the track's pattern editor, as Clear + a knob of
+    Synth 1 / 2 does after 40 clicks: the lane's 192 bytes to 0xFF, or only the held step's) and shows red."""
+    global CLRAUTO
+    assert CLEARK and CLEARBOTH and DUALUI
+    CLRAUTO = True
 
 
 def use_clearboth():
@@ -455,6 +480,50 @@ def use_fxseq3():
     global FXSEQ3
     assert FXSEQ2
     FXSEQ3 = True
+
+
+def use_engfix():
+    """SC40.9 (the user, 2026-10-14, on the unit: «la pista [del secuenciador de efectos] se corta con la longitud de Synth 1, en vez de durar lo
+    que dura la pista de MIDI 1»): ENGINE was the engine's interface (0x20038ECC = the engine + 0xC), so «the playing store of track t»
+    (+ 0x30 + 4 t) was the one of track t + 3 and «the ticks» (+ 0x90) the chain store.  The step-drummer, the FX sequencer and the stretch read
+    the pattern, the step and the ticks of another track: unseen while every track had the same length.  Now the engine itself, 0x20038EC0
+    (found for SC40.4, tools/stepmod.py)."""
+    global ENGINE
+    ENGINE = 0x20038EC0
+
+
+FSQRAND = False                                   # SC41.1 (see use_fxseqrand)
+
+
+def use_fxseqrand():
+    """SC41.1 (the user, 2026-10-14: «en el secuenciador de efectos master, añade una opción random: activa un efecto de la lista al azar»): a seventh
+    value of the selector knob (the position 0..7 x FSQ_U, its LED white) = random: c_fsqbits sets bit 6 and a seed in bits 8-15 = the hash of the
+    tick at which the step started (the engine's global tick minus the tick inside the step), so the choice holds for the whole step and changes
+    from one pass to the next; build_sc17's c_fsqfx picks one of the slots that play something (build_sc17.use_fxseqrand).  Needs use_engfix."""
+    global FSQRAND, FSQ_MAX
+    assert FXSEQ3 and ENGINE == 0x20038EC0
+    FSQRAND = True
+    FSQ_MAX = 7 * FSQ_U
+
+
+def use_sdknobfix():
+    """SC41 (the user, 2026-10-14, on the unit, in the step-drummer view: «los knobs no se mueven (no muestran brillo ni cambio en el sonido)»): since
+    SC36.2 (use_fxseq3) the pitch knob of a pair lost its value: the test «is this track the FX sequencer?» left its answer in r0, where the pair's
+    value had just been loaded, so out of the FX sequencer every knob event wrote 0 + the event's delta (0..5) instead of the value + the delta.
+    The value is kept across the test, as SC36.1 (use_fxseq2) did.  The velocity page and the FX sequencer were not affected."""
+    global SDKFIX
+    assert FXSEQ3
+    SDKFIX = True
+
+
+def use_fxseq4(div=3):
+    """SC40.9 (the user, 2026-10-14: «hacer el knob selector más lento»): the selector knob of the FX sequencer moves its position one unit every
+    `div` knob events (16 x div events per value); what is left over waits in a signed nibble, bits 4-7 of the editor byte + 72 (the carry bits of
+    the half-speed sends of the FX view: both are only what is left of a turn, so sharing them costs at most a couple of events).  The values
+    stored in the patterns do not change."""
+    global FSQ_DIV
+    assert FXSEQ3 and 2 <= div <= 8
+    FSQ_DIV = div
 
 
 def use_pages5():
@@ -1072,6 +1141,31 @@ def edv2_routines(a, L, t_ft, tail, bc):
     a.emit(pop_list, [4], pc=True)
 
 
+
+def clrauto_routine(a, base, bc):
+    """SC42.4: c_vclrauto, emitted at the end (out of the way of the short branches of the clear routines)."""
+    if CLRAUTO:
+        # ---- c_vclrauto(r0 = macro handler, r1 = knob 0..7, r2 = track 0 / 1): the lanes of the knob's two codes cleared; the knob marked red
+        a.label("c_vclrauto")
+        a.emit(push_list, [4, 5, 6, 7], lr=True)
+        a.emit(mov_reg, 4, 0); a.emit(mov_reg, 6, 1); a.emit(mov_reg, 5, 1); a.emit(mov_reg, 7, 2)
+        a.emit(mov_reg, 0, 7); a.emit(bl, "c_vpage"); a.emit(lsls_imm, 0, 0, 4); a.emit(adds_reg, 5, 5, 0)                   # r5 = page x 16 + knob
+        a.emit(movs_imm, 0, 0x2A); a.emit(adds_reg, 1, 4, 6); a.emit(raw, strb_w(0, 1, 0x40))                              # the mark: red
+        for layer in (0, 8):
+            a.emit(movw, 3, base & 0xFFFF); a.emit(movt, 3, base >> 16); a.emit(adds_reg, 3, 3, 5)
+            a.emit(ldrb_imm, 0, 3, layer); a.emit(cmp_imm, 0, 0); bc(f"va_n{layer}", "eq")                                  # r0 = the code
+            a.emit(movs_imm, 1, 0)
+            for k_, code in enumerate(LANE_TAB):
+                a.emit(cmp_imm, 0, code); a.emit(b_cond, f"va_f{layer}_{k_}", "ne"); a.emit(movs_imm, 1, k_ + 1); a.label(f"va_f{layer}_{k_}")
+            a.emit(cmp_imm, 1, 0); bc(f"va_n{layer}", "eq")
+            a.emit(subs_imm8, 1, 1)                                                                                       # r1 = the lane
+            a.emit(movw, 0, EDITOR_SZ); a.emit(mov_reg, 2, 7); a.emit(adds_imm8, 2, 2); a.emit(muls, 0, 2)
+            a.emit(movw, 2, EDITOR0 & 0xFFFF); a.emit(movt, 2, EDITOR0 >> 16); a.emit(adds_reg, 0, 0, 2)
+            a.emit(bl, LANE_CLEAR)
+            a.label(f"va_n{layer}")
+        a.emit(pop_list, [4, 5, 6, 7], pc=True)
+
+
 def clear_routines(a, L, base, t_def, tail, mulstride, bc):
     """SC23.3: Clear + a knob.  The stock macro handler tests the Clear button at [[obj + 0x20] + 0] bit 0 and keeps a counter per knob at obj + 0x40 + k (0x28 = cleared: its LED is red); here the mode puts the
     value of the knob back to its default and marks the counter; the LED routine shows the marked knobs red while Clear is held and drops the marks when it is released."""
@@ -1164,8 +1258,13 @@ def clear_routines(a, L, base, t_def, tail, mulstride, bc):
     a.emit(mov_reg, 5, 1); a.emit(bl, "c_vobj"); a.emit(mov_reg, 4, 0); a.emit(cmp_imm, 0, 0); a.emit(b_cond, "cl_x", "eq")
     a.emit(bl, "c_vclr"); a.emit(cmp_imm, 0, 0); a.emit(b_cond, "cl_rel", "eq")
     for k in range(8):
-        a.emit(raw, ldrb_w(1, 4, 0x40 + k)); a.emit(cmp_imm, 1, 0x28); a.emit(b_cond, f"cl_n{k}", "ne")
-        a.emit(movs_imm, 0, CLR_RED); a.emit(strh_imm, 0, 5, 2 * k)
+        if CLRAUTO:
+            a.emit(raw, ldrb_w(1, 4, 0x40 + k)); a.emit(movs_imm, 0, CLR_LAV); a.emit(cmp_imm, 1, 0x28); a.emit(b_cond, f"cl_w{k}", "eq")
+            a.emit(movs_imm, 0, CLR_RED); a.emit(cmp_imm, 1, 0x2A); a.emit(b_cond, f"cl_n{k}", "ne")
+            a.label(f"cl_w{k}"); a.emit(strh_imm, 0, 5, 2 * k)
+        else:
+            a.emit(raw, ldrb_w(1, 4, 0x40 + k)); a.emit(cmp_imm, 1, 0x28); a.emit(b_cond, f"cl_n{k}", "ne")
+            a.emit(movs_imm, 0, CLR_RED); a.emit(strh_imm, 0, 5, 2 * k)
         a.label(f"cl_n{k}")
     a.emit(b, "cl_x")
     a.label("cl_rel")
@@ -1402,7 +1501,7 @@ def grsrc_routines(a, L, t_gr):
     # ---- c_vclrcode(r0 = track, r1 = code): that value back to its default (the tail of c_vclr1)
     a.label("c_vclrcode")
     E(push_list, [4, 5], lr=True)
-    E(mov_reg, 4, 0); E(mov_reg, 5, 1); E(b, "c1_code")
+    E(mov_reg, 4, 0); E(mov_reg, 5, 1); E(b_w if CLRAUTO else b, "c1_code")                                  # (SC42.4: further away)
     # ---- c_grclear(r0 = track, r1 = knob 0..7): Clear + a knob on the granular page: the two values of the knob (plain, Shift) of GR_TAB back to
     #      their defaults; the source (Shift + K8) = the capture
     a.label("c_grclear")
@@ -1491,6 +1590,12 @@ def gran_routines(a, tail, bc, t_gr, t_st=None):
             a.emit(cmp_imm, 0, 0); bc("fb_n", "eq"); a.emit(cmp_imm, 0, 127); bc("fb_n", "hi")                              # 0 / no value: none
             a.emit(subs_imm8, 0, 1); a.emit(movs_imm, 1, 7); a.emit(muls, 0, 1); a.emit(lsrs_imm, 0, 0, 7)                   # zone 0..6
         a.emit(movs_imm, 1, 1); a.emit(lsls_reg, 1, 0); a.emit(orrs_reg, 7, 1)
+        if FSQRAND:                                                               # value 7 = random: a seed for the whole step (bits 8-15)
+            a.emit(cmp_imm, 0, 6); bc("fb_n", "ne")
+            a.emit(mov_reg, 0, 4); a.emit(movs_imm, 1, 2); a.emit(bl, "c_sdeng"); a.emit(ldr_imm, 5, 0, 0)          # r5 = the tick inside the step
+            a.emit(movw, 0, (ENGINE + 0x90) & 0xFFFF); a.emit(movt, 0, (ENGINE + 0x90) >> 16); a.emit(ldr_imm, 0, 0, 0)
+            a.emit(movs_imm, 1, 0); a.emit(bl, PARAM_GET); a.emit(ldr_imm, 0, 0, 0); a.emit(subs_reg, 0, 0, 5)       # the tick the step started at
+            a.emit(movw, 1, 0x79B1); a.emit(movt, 1, 0x9E37); a.emit(muls, 0, 1); a.emit(lsrs_imm, 0, 0, 24); a.emit(lsls_imm, 0, 0, 8); a.emit(orrs_reg, 7, 0)
         a.label("fb_n")
         a.emit(adds_imm8, 4, 1); a.emit(cmp_imm, 4, 2); bc("fb_t", "lo")
         a.label("fb_x"); a.emit(mov_reg, 0, 7); a.emit(pop_list, [4, 5, 6, 7], pc=True)
@@ -1970,9 +2075,23 @@ def sd_routines(a, L, tail, bc, t_sd):
         E(ldrb_imm, 0, 7, 0); E(cmp_imm, 0, 127); E(b_cond, "kn_a", "ls"); E(movs_imm, 0, 64)
     a.label("kn_a")
     if FXSEQ3:                                                                    # the FX sequencer: the position 0..FSQ_MAX of the pair (an empty pair = 0) + delta
-        E(mov_reg, 0, 4); E(bl, "c_fsq"); E(cmp_imm, 0, 0); E(b_cond, "kn_nf", "eq")
+        if SDKFIX: E(push_list, [0]); E(mov_reg, 0, 4); E(bl, "c_fsq"); E(mov_reg, 1, 0); E(pop_list, [0]); E(cmp_imm, 1, 0); E(b_cond, "kn_nf", "eq")
+        else: E(mov_reg, 0, 4); E(bl, "c_fsq"); E(cmp_imm, 0, 0); E(b_cond, "kn_nf", "eq")
         E(ldrb_imm, 0, 7, 0); E(cmp_imm, 0, FSQ_MAX); E(b_cond, "kn_f0", "ls"); E(movs_imm, 0, 0)
-        a.label("kn_f0"); E(adds_reg, 0, 0, 6); clamp(0, 0, FSQ_MAX, 1, "kn_fc"); E(b, "kn_st")
+        a.label("kn_f0")
+        if FSQ_DIV > 1:                                                           # (r6 = the events of this call) -> r6 = the units, the rest kept
+            E(push_list, [0])
+            tail(2); E(ldrb_w, 3, 2, O_ED + 1); E(lsrs_imm, 1, 3, 4); E(lsls_imm, 1, 1, 28); E(raw, h(0x1000 | 28 << 6 | 1 << 3 | 1))     # asrs r1, r1, #28: the signed rest
+            E(adds_reg, 1, 1, 6)
+            E(movs_imm, 0, 0); E(cmp_imm, 1, 0); E(b_cond, "kn_fq", "ge"); E(raw, h(0x4240 | 1 << 3 | 1)); E(movs_imm, 0, 1)             # negs r1, r1
+            a.label("kn_fq")
+            E(movs_imm, 2, FSQ_DIV); E(raw, udiv_w(6, 1, 2)); E(raw, mls_w(1, 6, 2, 1))                                                    # r6 = |acc| / div, r1 = the rest
+            E(cmp_imm, 0, 0); E(b_cond, "kn_fr", "eq"); E(raw, h(0x4240 | 6 << 3 | 6)); E(raw, h(0x4240 | 1 << 3 | 1))
+            a.label("kn_fr")
+            tail(2); E(ldrb_w, 3, 2, O_ED + 1); E(movs_imm, 0, 0x0F); E(ands_reg, 3, 0); E(lsls_imm, 1, 1, 28); E(lsrs_imm, 1, 1, 24); E(orrs_reg, 3, 1)
+            E(strb_w, 3, 2, O_ED + 1)
+            E(pop_list, [0])
+        E(adds_reg, 0, 0, 6); clamp(0, 0, FSQ_MAX, 1, "kn_fc"); E(b, "kn_st")
         a.label("kn_nf")
     elif FXSEQ2:                                                                  # the FX sequencer: one value per turn, 0..6
         E(push_list, [0]); E(mov_reg, 0, 4); E(bl, "c_fsq"); E(mov_reg, 1, 0); E(pop_list, [0]); E(cmp_imm, 1, 0); E(b_cond, "kn_nf", "eq")
@@ -2258,7 +2377,11 @@ def sd_routines(a, L, tail, bc, t_sd):
             E(mov_reg, 0, 4); E(bl, "c_fsq"); E(cmp_imm, 0, 0); E(b_cond, "kl_nf", "eq")
             E(movs_imm, 0, 0); E(cmp_imm, 7, FSQ_MAX); E(b_cond, "kl_s", "hi"); E(adds_imm8, 7, FSQ_U // 2); E(lsrs_imm, 7, 7, FSQ_U.bit_length() - 1)
             E(cmp_imm, 7, 0); E(b_cond, "kl_s", "eq")
-            E(subs_imm8, 7, 1); E(mov_reg, 0, 7); E(bl, L["c_slotcol"]); E(movs_imm, 7, 127); E(b, "kl_w")
+            E(subs_imm8, 7, 1)
+            if FSQRAND: E(movs_imm, 0, 0x01); E(cmp_imm, 7, 6); E(b_cond, "kl_rw", "eq")                       # random: white
+            E(mov_reg, 0, 7); E(bl, L["c_slotcol"])
+            if FSQRAND: a.label("kl_rw")
+            E(movs_imm, 7, 127); E(b, "kl_w")
             a.label("kl_nf")
         E(cmp_imm, 7, 127); E(b_cond, "kl_p", "ls"); E(mov_reg, 0, 4); E(bl, "c_sdbase"); E(mov_reg, 7, 0)
         a.label("kl_p")
@@ -2706,6 +2829,11 @@ def arm_code(base, L):
             a.emit(movs_imm, 0, 0x28); a.emit(adds_reg, 1, 4, 5); a.emit(raw, strb_w(0, 1, 0x40))                     # the mark of the cleared knob
             a.emit(mov_reg, 0, 7); a.emit(mov_reg, 1, 5); a.emit(bl, "c_grclear"); a.emit(pop_list, [4, 5, 6, 7], pc=True)
             a.label("vk_cv")
+        if CLRAUTO:                                                               # turned left: the automation
+            a.emit(cmp_imm, 6, 0); a.emit(b_cond, "vk_cr", "ge")
+            a.emit(mov_reg, 0, 4); a.emit(mov_reg, 1, 5); a.emit(mov_reg, 2, 7); a.emit(bl, "c_vclrauto")
+            a.emit(pop_list, [4, 5, 6, 7], pc=True)
+            a.label("vk_cr")
         a.emit(mov_reg, 0, 4); a.emit(mov_reg, 1, 5); a.emit(mov_reg, 2, 7); a.emit(bl, "c_vclear")
         a.emit(pop_list, [4, 5, 6, 7], pc=True)
         a.label("vk_nc")
@@ -3459,6 +3587,7 @@ def arm_code(base, L):
     if CCED: cced_routines(a, L, t_ed, tail, bc)
     if EDV2: edv2_routines(a, L, t_ft, tail, bc)
     if CLEARK: clear_routines(a, L, base, t_def, tail, mulstride, bc)
+    if CLRAUTO: clrauto_routine(a, base, bc)
     if DUALUI: dualui_routines(a, L, tail, mulstride, bc)
     if GRAN: gran_routines(a, tail, bc, t_gr, t_st)
     if GRSRC: grsrc_routines(a, L, t_gr)

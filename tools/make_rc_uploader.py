@@ -1,6 +1,6 @@
 """tools/rc_uploader.html: a web page that takes the OFFICIAL Circuit Tracks firmware from the user, patches it in the browser and sends it (no Novation code inside).
 
-    python tools/make_rc_uploader.py [VERSION ...]          (default: RC0.5 RC0.5S BETA5 RC0.4 RC0.4S BETA4; needs firmware/<dir>/*.bin and stock/*.bin of a full checkout)
+    python tools/make_rc_uploader.py [VERSION ...]          (default: RC0.9 RC0.9S B1.23 RC0.8 RC0.8S B1.22; needs firmware/<dir>/*.bin and stock/*.bin of a full checkout)
 Each version becomes a patch against the official image: COPY (offset, length) from the user's official image, or ADD (our bytes).  The matching is greedy
 on 8-byte keys, so an ADD run never holds 8 or more consecutive bytes that also occur in the official image: the page carries only our own work.  The page:
   1. reads the official .syx (Components: https://components.novationmusic.com/api/v2/firmwares/168/file) or its .bin, checks its SHA-256;
@@ -77,7 +77,47 @@ def main(versions):
     print("tools/rc_uploader.html", len(page), "bytes")
 
 
-DESC = {"RC0.5": ("RC0.5 — la versión completa: RC0.4 + el sample capturado pasa por los efectos de Master FX (la captura ya no los graba)",
+DESC = {"RC0.9": ("RC0.9 — la versión completa: RC0.8 + el pack de la memoria interna, de solo lectura para el mod",
+                  "RC0.9 — full version: RC0.8 + the internal memory pack, read only for the mod"),
+        "RC0.9S": ("RC0.9S — versión más segura (= RC0.8S): nada del mod escribe ficheros en la SD ni en la memoria interna",
+                   "RC0.9S — safer build (= RC0.8S): nothing of the mod writes files to the SD card or to the internal memory"),
+        "B1.23": ("Beta 1.23 — beta (= SC43.3): Beta 1.22 + step-drummer de MIDI: cada knob desde el punto sin modulación de su destino, con el LED según la cantidad",
+                  "Beta 1.23 — beta (= SC43.3): Beta 1.22 + MIDI step-drummer: each knob from its destination's point of no modulation, the LED showing the amount"),
+        "B1.22": ("Beta 1.22 — beta (= SC43.2): Beta 1.21 + arreglo: con el arpegiador, los acordes se graban enteros en todo el patrón",
+                  "Beta 1.22 — beta (= SC43.2): Beta 1.21 + fix: with the arpeggiator, chords are recorded whole across the pattern"),
+        "B1.21": ("Beta 1.21 — beta (= SC43.1): Beta 1.20 + arreglo: los golpes de los rollers y del arpegio de drums con el transporte parado ya no dejan sus cuadros en blanco ni la nota MIDI colgada",
+                  "Beta 1.21 — beta (= SC43.1): Beta 1.20 + fix: the drum rollers' and drum arpeggio's hits with the transport stopped no longer leave their boxes white or the MIDI note hanging"),
+        "B1.20": ("Beta 1.20 — beta (= SC43): Beta 1.19 + frecuencia, dinámicas y random-mutate del sample en los drums, y los golpes grabados por rollers / arpegio ya no se pierden",
+                  "Beta 1.20 — beta (= SC43): Beta 1.19 + frequency, dynamics and sample random-mutate on the drums, and hits recorded by rollers / arpeggio are no longer lost"),
+        "B1.19": ("Beta 1.19 — beta (= SC42.9): Beta 1.18 + el arpegio de los drums se graba con Record",
+                  "Beta 1.19 — beta (= SC42.9): Beta 1.18 + the drums' arpeggio recorded with Record"),
+        "B1.18": ("Beta 1.18 — beta (= SC42.8): Beta 1.17 + el arpegiador de los drums (salta entre los samples mantenidos en la vista Preset)",
+                  "Beta 1.18 — beta (= SC42.8): Beta 1.17 + the drums' arpeggiator (it jumps between the samples held in the Preset view)"),
+        "B1.17": ("Beta 1.17 — beta (= SC42.7): Beta 1.16 + step-drummer desde 0 y transposición más gruesa, toggles de la vista Micro Step, rollers con el transporte parado",
+                  "Beta 1.17 — beta (= SC42.7): Beta 1.16 + step-drummer from 0 and a coarser transposition, the Micro Step view's toggles, rollers with the transport stopped"),
+        "B1.16": ("Beta 1.16 — beta (= SC42.6): Beta 1.3 + arpegiador, escala propia, metrónomo con cuenta atrás, gate por pulsación y longitud fija, rollers de drums, página 2 y toggle pitch-vel del step-drummer, sidechain de drums con knobs, canales de Program Change, sin el stutter del delay",
+                  "Beta 1.16 — beta (= SC42.6): Beta 1.3 + arpeggiator, custom scale, metronome with count-in, gate by holding and fixed length, drum rollers, the step-drummer's page 2 and pitch-vel toggle, drum sidechain on the knobs, Program Change channels, no delay stutter"),
+        "B1.3": ("Beta 1.3 — beta (= SC41.3): Beta 1.2 + el pack de la memoria interna, de solo lectura para el mod",
+                 "Beta 1.3 — beta (= SC41.3): Beta 1.2 + the internal memory pack, read only for the mod"),
+        "RC0.8": ("RC0.8 — la versión completa: RC0.7 + un arreglo (los knobs de pitch del step-drummer conservan su valor)",
+                  "RC0.8 — full version: RC0.7 + one fix (the pitch knobs of the step-drummer keep their value)"),
+        "RC0.8S": ("RC0.8S — versión más segura (= RC0.7S + el arreglo de RC0.8): nada del mod escribe ficheros en la SD",
+                   "RC0.8S — safer build (= RC0.7S + the RC0.8 fix): nothing of the mod writes files to the SD card"),
+        "B1.2": ("Beta 1.2 — beta (= SC41.2): Beta 1.1 + una regla de cadena fuera de rango ya no lee fuera de la memoria",
+                 "Beta 1.2 — beta (= SC41.2): Beta 1.1 + a chain rule out of range no longer reads outside the memory"),
+        "B1.1": ("Beta 1.1 — beta (= SC41.1): Beta 1.0 + los arreglos de RC0.8, la vista Master FX ya no pisa el estado de otras funciones, valor random del secuenciador de efectos",
+                 "Beta 1.1 — beta (= SC41.1): Beta 1.0 + the RC0.8 fix, the Master FX view no longer overwrites the state of other features, random value of the FX sequencer"),
+        "RC0.7": ("RC0.7 — la versión completa: RC0.6 + dos arreglos (el step-drummer y el secuenciador de efectos siguen el patrón de su propia pista; knob selector del secuenciador de efectos más lento)",
+                  "RC0.7 — full version: RC0.6 + two fixes (the step-drummer and the FX sequencer follow the pattern of their own track; slower selector knob of the FX sequencer)"),
+        "RC0.7S": ("RC0.7S — versión más segura (= RC0.6S + los arreglos de RC0.7): nada del mod escribe ficheros en la SD",
+                   "RC0.7S — safer build (= RC0.6S + the RC0.7 fixes): nothing of the mod writes files to the SD card"),
+        "B1.0": ("Beta 1.0 — beta (= SC40.9): RC0.7 + cadenas de patrones y escenas, Nudge y órdenes fractal / deconstruido, frecuencia y dinámicas por paso, gesto mecánico, Master FX por sesión, knobs de sidechain y compresor, patches propios entre packs y lo de las betas anteriores",
+                 "Beta 1.0 — beta (= SC40.9): RC0.7 + pattern chains and scenes, Nudge and the fractal / deconstructed orders, step frequency and dynamics, mechanical gesture, Master FX per session, side-chain and compressor knobs, own-synth patches between packs and what the earlier betas had"),
+        "RC0.6": ("RC0.6 — la versión completa: RC0.5 + dos arreglos (el LFO del Auto-Filter y del Phaser arranca al activar el efecto; el blanco tenue de Clear ya no pulsa)",
+                  "RC0.6 — full version: RC0.5 + two fixes (the LFO of the Auto-Filter and of the Phaser starts when the effect comes on; the dim white of Clear no longer pulses)"),
+        "RC0.6S": ("RC0.6S — versión más segura (= RC0.5S + los arreglos de RC0.6): nada del mod escribe ficheros en la SD",
+                   "RC0.6S — safer build (= RC0.5S + the RC0.6 fixes): nothing of the mod writes files to the SD card"),
+        "RC0.5": ("RC0.5 — la versión completa: RC0.4 + el sample capturado pasa por los efectos de Master FX (la captura ya no los graba)",
                   "RC0.5 — full version: RC0.4 + the captured sample goes through the Master FX effects (the capture no longer records them)"),
         "RC0.5S": ("RC0.5S — versión más segura (= RC0.4S + el arreglo de RC0.5): nada del mod escribe ficheros en la SD",
                    "RC0.5S — safer build (= RC0.4S + the RC0.5 fix): nothing of the mod writes files to the SD card"),
@@ -212,6 +252,8 @@ let LANG = (() => { const q = new URLSearchParams(location.search).get("lang"); 
 const t = (es, en) => LANG === "en" ? en : es;
 const log = (m, cls) => { const d = document.createElement("div"); if (cls) d.className = cls;
   d.textContent = new Date().toLocaleTimeString() + "  " + m; $("log").appendChild(d); $("log").scrollTop = 1e9; };
+// Text that goes into innerHTML is escaped: a file name like "<img onerror=…>.syx" must not run script on a page with SysEx access.
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const hex = a => Array.from(a, b => b.toString(16).padStart(2, "0")).join(" ");
 let midi = null, packets = null, stockImg = null, stockSyx = null, xfer = null, idPending = null;
 
@@ -280,7 +322,7 @@ $("file").onchange = async () => {
   stockImg = stockSyx = null; packets = null; updateSend();
   const f = $("file").files[0]; if (!f) return;
   const buf = await f.arrayBuffer(); const h = await sha256(buf);
-  let html = `${f.name} · ${buf.byteLength} bytes<br>SHA-256 ${h}<br>`;
+  let html = `${esc(f.name)} · ${buf.byteLength} bytes<br>SHA-256 ${h}<br>`;
   try {
     if (h === STOCK_SYX) { const d = decodeSyx(buf); stockImg = d.img; stockSyx = d.msgs; }
     else if (h === STOCK_IMG) { stockImg = new Uint8Array(buf); stockSyx = encodeSyx(stockImg); }
@@ -288,7 +330,7 @@ $("file").onchange = async () => {
     if (!stockImg) { $("fileInfo").innerHTML = html + `<span class="bad">${t("No es el firmware oficial Circuit Tracks 1.2.1 (build 4486). Descárgalo con el enlace de arriba.", "This is not the official Circuit Tracks 1.2.1 (build 4486) firmware. Download it with the link above.")}</span>`; return; }
     $("fileInfo").innerHTML = html + `<span class="ok">✔ ${t("firmware oficial Circuit Tracks 1.2.1 (build 4486), imagen", "official Circuit Tracks 1.2.1 (build 4486) firmware, image")} ${stockImg.length} bytes</span>`;
     log(t("Firmware oficial verificado", "Official firmware verified")); await prepare();
-  } catch (e) { $("fileInfo").innerHTML = html + `<span class="bad">${t("Archivo inválido", "Invalid file")}: ${e.message}</span>`; }
+  } catch (e) { $("fileInfo").innerHTML = html + `<span class="bad">${t("Archivo inválido", "Invalid file")}: ${esc(e.message)}</span>`; }
 };
 $("ver").onchange = () => { updateAck(true); prepare(); updateSend(); };
 async function prepare() {
@@ -302,7 +344,7 @@ async function prepare() {
     packets = msgs;
     $("verInfo").innerHTML = `<span class="ok">✔ ${v}: ${t("imagen", "image")} ${img.length} bytes, SHA-256 ${hs} ${t("idéntico al publicado", "identical to the published one")} · ${msgs.length} ${t("mensajes", "messages")}</span>`;
     log(`${v} ${t("preparado y verificado", "prepared and verified")} (${hs.slice(0, 16)}…)`, "ok");
-  } catch (e) { $("verInfo").innerHTML = `<span class="bad">${e.message}</span>`; }
+  } catch (e) { $("verInfo").innerHTML = `<span class="bad">${esc(e.message)}</span>`; }
   updateSend();
 }
 $("verInfo").textContent = t("Primero elige el firmware oficial.", "Pick the official firmware first.");
@@ -442,4 +484,4 @@ setLang(LANG); updateSend();
 """
 
 if __name__ == "__main__":
-    main(sys.argv[1:] or ["RC0.5", "RC0.5S", "BETA5", "RC0.4", "RC0.4S", "BETA4"])
+    main(sys.argv[1:] or ["RC0.9", "RC0.9S", "B1.23", "RC0.8", "RC0.8S", "B1.22"])
