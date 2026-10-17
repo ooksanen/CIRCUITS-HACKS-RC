@@ -4,6 +4,107 @@
 
 Novedades y arreglos de cada versión candidata (RC). Cada RC tiene una **versión más segura** (sufijo **S**) sin las funciones que escriben en la tarjeta SD por su cuenta (gestión del pack, A8). Las referencias (A4, C6…) son las secciones del [manual](https://ghillermo.github.io/CIRCUITS-HACKS-RC/index.html). El detalle técnico está en [`docs/NOTAS.md`](docs/NOTAS.md).
 
+## RC2 / RC2S — 2026-10-17
+
+**RC2** (marca `RC2`) = **Beta 1.30** (SC44) como segunda versión candidata: RC0.9 + todo lo de las betas 1.0-1.30 (sus entradas, abajo). **RC2S** (marca `RC2S`) = la versión más segura: RC2, pero nada del mod escribe ni borra en la tarjeta o en la memoria interna: esas peticiones se rechazan en cualquier pack (el LED de Save en rojo) y los guardados del original pasan. En RC2S no hacen nada guardar la captura con el proyecto, intercambiar o copiar samples y patches entre packs, los patches del sinte propio, guardar el patch del sinte, copiar proyectos y borrar packs. Lo marcado «solo Beta 1.x» en los manuales anteriores es ahora «desde RC2».
+
+### Cambios
+- Modo muestra: las filas 1-2 del selector (los pasos) tienen fondo cian.
+
+## Beta 1.30 — 2026-10-17
+
+**Beta 1.30** (marca `B1.30`; = SC44) = Beta 1.29 + lo siguiente. Las RC siguen en RC0.9 / RC0.9S.
+
+### Novedades (solo Beta 1.30)
+- **Modo muestra del sinte propio de MIDI 1 / 2 (C15):** un estado nuevo del pad 27 (cian, entre el granular y el secuenciador de efectos): la pista toca **un sample del pack de un golpe** a la altura de cada nota (**C3 = como se grabó**), por el filtro, el efecto y el LFO del motor; el VCA se queda abierto y el sample suena hasta el final (una voz por pista: cada nota lo vuelve a empezar).
+- **Selector de samples en la vista Note ampliada** (Note dos veces, en ese modo): filas 3-4 = 16 samples, **Octave ▼ / ▲** = 4 páginas (los 64 del pack); tocar uno = el sample de la pista (y suena). Filas 1-2 = los pasos: **mantener un paso y tocar un sample** = **sample flip** de ese paso; **Clear + paso** lo quita; **1-16 / 17-32** = la otra mitad. Con **Record + Play**, tocar un sample graba la nota y su flip.
+
+### Cambios (solo Beta 1.30)
+- El pad 27 llega al secuenciador de efectos una pulsación más tarde (el modo muestra va antes).
+- Los flips van en el carril de la automatización de nivel de la pista MIDI: un flip sustituye el nivel grabado en su paso.
+
+## Beta 1.29 — 2026-10-17
+
+**Beta 1.29** (marca `B1.29`; = SC43.9) = Beta 1.28 + lo siguiente. Las RC siguen en RC0.9 / RC0.9S.
+
+### Novedades (solo Beta 1.29)
+- **Formas del LFO del sinte propio de MIDI 1 / 2:** en la página 5 de knobs, **Shift + K8** elige la forma del LFO: diente de sierra inverso (naranja, la de siempre), diente de sierra (magenta), triángulo (verde), cuadrada (roja), seno (cian) y sample & hold (blanco: un valor al azar en cada vuelta). Un paso cada 4 clics, sin dar la vuelta. Con Shift, el LED de K8 enseña la forma en su color. Se guarda con el proyecto y en los patches propios (los guardados antes cargan la de siempre). Con el motor VA-drum el LFO sigue siendo su ruido.
+
+### Interno (solo Beta 1.29)
+- **El programa del DSP, más corto:** el código propio del núcleo 0 usa la forma de una palabra de las lecturas y escrituras de memoria con desplazamiento (la que usan las voces del original): 441 palabras menos y el mismo sonido (comprobado en emulación, memoria idéntica bloque a bloque). Deja sitio para lo siguiente: 372 palabras libres tras las formas del LFO (antes 8).
+
+## Beta 1.28 — 2026-10-17
+
+**Beta 1.28** (marca `B1.28`; = SC43.8) = Beta 1.27 + lo siguiente. Las RC siguen en RC0.9 / RC0.9S.
+
+### Novedades (solo Beta 1.28)
+- **Sidechain de los drums con Synth 1 / 2 y MIDI 1 / 2:** en las páginas de drums de la vista Sidechain (**Shift + FX**, luego **Octave ▼**), los **pads 1-4 de la fila 1** eligen **Synth 1, Synth 2, MIDI 1 o MIDI 2** como disparo del drum del último preset tocado: cada nota del **patrón** de esa pista abre su envolvente, como un golpe de drum (las notas tocadas en directo no). La elegida se ve en el color del drum; un pad 5-8 vuelve a un drum. Como el resto del sidechain entre drums, no se guarda con el proyecto.
+
+### Arreglos (solo Beta 1.28)
+- **El sinte propio de MIDI 1 / 2 al apagar:** los valores de la página OSC 2, los knobs con Shift del granular (Shift + K1-K5 y K7) y del oscilador (Shift + K2 / K3), los pads 28 (dos osciladores) y 29 (orden de la cadena) y la página de knobs volvían a sus valores iniciales en cada encendido. Ahora se guardan en el aparato con el resto del motor. La primera vez que enciendas con Beta 1.28 salen todavía los iniciales: lo guardado antes no los tenía.
+
+## Beta 1.27 — 2026-10-17
+
+**Beta 1.27** (marca `B1.27`; = SC43.7) = Beta 1.26 + lo siguiente. Las RC siguen en RC0.9 / RC0.9S.
+
+### Cambios (solo Beta 1.27)
+- **Pitch de los drums:** **K1 vuelve a ser el pitch de stock**, continuo y lineal como en el original (se guarda, se automatiza, sale por CC). Los **pads de la vista cromática transponen encima** en semitonos (los dos se multiplican) y, grabando, cada pad queda en su paso dentro del **mismo carril de pitch** del drum: un paso guarda un movimiento del knob o una nota cromática. Shift + K6 vuelve a ser el de stock.
+- **Clear + K1:** a la izquierda (sostenido, como en el original) borra la automatización de pitch, pasos cromáticos incluidos; a la derecha, el pitch al centro. Las dos ponen además el cromático al centro.
+- **Clear + el botón de un drum:** borra la automatización de sus knobs en el patrón que suena y pone sus ocho knobs a los valores por defecto.
+- **Resolución del arpegiador** (Shift + pads 17-24 de Pattern Settings, en las pistas de notas y en los drums): ahora en el orden de los pads de sync rate de stock, **más lenta a la izquierda y más rápida a la derecha**: pad 17 = 1/4 … pad 21 = 1/16 … pad 24 = 1/32T (antes iba al revés). Lo guardado en los proyectos conserva su resolución.
+
+### Novedades (solo Beta 1.27)
+- **Shift + Play = cuantizar** el patrón que suena en la pista elegida (la de la vista en pantalla): las notas y los golpes grabados fuera de la rejilla van al paso más cercano (en los micropasos 1-2, al inicio de su paso; en los 3-5, al inicio del siguiente; los del último paso, al primero). En los drums, un paso con varios golpes (un redoble) se queda como está. Con Shift pulsado el LED de Play se ve amarillo, y verde después de cuantizar. Sustituye al Shift + Play del original (otra forma de arrancar la reproducción).
+- **Gate retrigger del sinte propio de MIDI 1 / 2:** en su vista Preset, **Shift + pad 29** lo enciende / apaga (con Shift: verde = encendido, por defecto; amarillo = apagado). Apagado = **legato**: con otras notas pulsadas, una nota nueva cambia la altura sin volver a disparar la envolvente. Se guarda con el proyecto.
+
+### Arreglos (solo Beta 1.27)
+- **Arpegiador en MIDI 1 / 2:** al empezar el arpegio de las notas mantenidas, la primera nota no se apagaba: en MIDI 1 / 2 seguía sonando debajo de todo el arpegio (por la salida MIDI y en el sinte propio, cuya puerta no se cerraba); en Synth 1 / 2, hasta que el arpegio volvía a ella. Ahora se apaga al empezar el arpegio.
+- **Step-drummer de Synth 1 / 2:** Play y Record ya no sacan de su vista; al volver al sinte (su botón) vuelve a salir el step-drummer si estaba abierto (se cierra con su pad 30).
+- **Rollers:** sonando, los rollers de un drum silenciado en el Mixer no sonaban (el original no ejecuta el paso de una pista silenciada); ahora suenan.
+- **Panorama de los drums:** en Beta 1.26 los pasos cromáticos iban al carril de automatización de panorama y el original también los aplicaba como panorama. Ahora el carril de panorama vuelve a ser solo del panorama (se graba y se reproduce como en el original). Los pasos cromáticos grabados con Beta 1.26 sonarán como movimientos de panorama: bórralos con Clear + K5 de ese drum en el Mixer (página de panorama, a la izquierda) o vuelve a grabarlos.
+
+## Beta 1.26 — 2026-10-17
+
+**Beta 1.26** (marca `B1.26`; = SC43.6) = Beta 1.25 + lo siguiente. Las RC siguen en RC0.9 / RC0.9S.
+
+### Novedades (solo Beta 1.26)
+- **Modo cue en el Mixer:** en la página de panorama (Octave ▼), **Shift + un knob a la derecha** lo enciende y **a la izquierda** lo apaga (Octave ▼ rosa encendido, blanco apagado; se guarda en el aparato). En el modo, la **salida izquierda** lleva la mezcla en mono como siempre y la **derecha** solo las pistas que mandas al cue: cada knob de panorama es el envío de esa pista al cue, desde el centro hacia la derecha (a la izquierda no hace nada; Clear + knob = sin cue). Una pista silenciada también se puede escuchar en el cue: sigue el patrón en el paso en que está y suena solo por la derecha; su pad sigue tenue y los pads de pista (también Shift + pad, al compás siguiente) la sacan o la meten en la mezcla. Los paneos de las pistas no se tocan y vuelven al salir; la reverb, el delay y Master FX son los de la mezcla (el cue los oye).
+- **Vista cromática de los drums:** grabando, cada pad vuelve a quedar en su paso (el valor cromático de K1); Clear + K1 a la izquierda borra los pasos cromáticos del patrón que suena.
+
+### Cambios (solo Beta 1.26)
+- Los drums ya no graban ni reproducen automatización de **panorama**: ese carril del patrón guarda ahora sus pasos cromáticos (ninguna de las 173 sesiones de la copia lo usaba).
+- **Sinte propio de MIDI 1 / 2, página 3 (OSC 2):** sus ocho valores en los ocho knobs, sin Shift, según la serigrafía: K1 Oscillator = TUNE 2, K2 Osc mod = SHAPE 2, K3 Amp envelope = MIX OSC 1 ↔ OSC 2, K4 Filter envelope = FM, K5 Filter frequency = FINE 2, K6 Resonance = BITSYNC, K7 Modulation = WAVE 2, K8 FX = RING.
+
+### Arreglos (solo Beta 1.26)
+- **Un oscilador:** con una nota pulsada, otra nota disparaba la puerta pero no cambiaba la altura (iba al segundo oscilador, que no suena). Ahora **la última nota manda**; al soltarla vuelve la anterior, sin volver a disparar.
+- **Granular:** el primer grano de cada nota sonaba a la altura de la nota anterior (la nota del segundo oscilador llegaba después del disparo); ahora llega antes y cada nota empieza en su altura.
+
+## Beta 1.25 — 2026-10-17
+
+**Beta 1.25** (marca `B1.25`; = SC43.5) = Beta 1.24 + lo siguiente. Las RC siguen en RC0.9 / RC0.9S.
+
+### Cambios (solo Beta 1.25)
+- **Pitch de los drums en dos partes:** **K1 = cromático** (un semitono por paso del knob, propio del mod; se guarda con el proyecto; LED tenue en el centro) y **Shift + K6 = el pitch de stock**, continuo y lineal como en el Circuit original. El pitch guardado en los proyectos, su automatización y su CC son el continuo, así que un proyecto de stock suena igual. Clear + K1 a la derecha = cromático al centro; Clear + K6 a la derecha = también el continuo al centro.
+- **Vista cromática de los drums:** los pads fijan el valor cromático (K1); ya no se graba la altura por paso.
+
+### Novedades (solo Beta 1.25)
+- **Clear + Synth 1 / 2** (con su vista en pantalla): sus ocho macros vuelven a los valores del patch cargado (leído otra vez del pack).
+
+## Beta 1.24 — 2026-10-16
+
+**Beta 1.24** (marca `B1.24`; = SC43.4) = Beta 1.23 + lo siguiente. Las RC siguen en RC0.9 / RC0.9S.
+
+### Novedades (solo Beta 1.24)
+- **Sidechain disparado por patrones de Synth 1 / 2 y MIDI 1 / 2:** en la vista Sidechain (Shift + FX), los pads 1-4 de la fila 1 (antes apagados) eligen Synth 1, Synth 2, MIDI 1 o MIDI 2 como fuente del ducking de la pista elegida, junto a los drums 1-4 (pads 5-8). Cada nota del patrón de esa pista dispara la envolvente, como un golpe de drum. Se guarda con el proyecto.
+- **Mixer, Shift + pad de pista (1-8):** silencia / activa esa pista **en el compás siguiente**; el pad parpadea mientras espera; otra vez lo cancela. Parado, al momento.
+- **Clear + botón de un drum** (con su vista en pantalla): sus ocho knobs (las dos capas) vuelven a sus valores por defecto.
+
+### Cambios (solo Beta 1.24)
+- **Step-drummer de MIDI 1 / 2:** todos los destinos son bipolares: un par vacío está en el centro (64, LED tenue) y el knob suma o resta al valor que tenga el parámetro en la página del motor; el LED se ilumina más cuanto más se aleja, hacia los dos lados (Beta 1.23 dejaba WAVE, FM, MIX, SHAPE y decay en 0).
+
+### Arreglos (solo Beta 1.24)
+- **Clear + K8 de drums** ya pone a 0 el bitcrush (la zona a la izquierda del 0), no solo la distorsión.
+
 ## Beta 1.23 — 2026-10-16
 
 **Beta 1.23** (marca `B1.23`; = SC43.3) = Beta 1.22 + un cambio en el step-drummer. Las RC siguen en RC0.9 / RC0.9S.
@@ -278,6 +379,107 @@ Primera versión candidata (= SC36.2; RC0S = SC362S, sin escrituras propias en l
 # Changelog — CIRCUIT-HACKS
 
 New features and fixes of every release candidate (RC). Every RC has a **safer build** (suffix **S**) without the features that write to the SD card on their own (pack management, A8). The references (A4, C6…) are the sections of the [manual](https://ghillermo.github.io/CIRCUITS-HACKS-RC/en.html). The technical detail is in [`docs/NOTAS.md`](docs/NOTAS.md) (Spanish).
+
+## RC2 / RC2S — 2026-10-17
+
+**RC2** (marker `RC2`) = **Beta 1.30** (SC44) as the second release candidate: RC0.9 + everything of betas 1.0-1.30 (their entries, below). **RC2S** (marker `RC2S`) = the safer build: RC2, but nothing of the mod writes or deletes on the card or in the internal memory: those requests are refused on every pack (the Save LED red) and the original's saves pass. In RC2S saving the capture with the project, exchanging or copying samples and patches between packs, the own-synth patches, saving the synth patch, copying projects and deleting packs do nothing. What the earlier manuals marked «Beta 1.x only» is now «since RC2».
+
+### Changes
+- Sample mode: rows 1-2 of the picker (the steps) have a cyan background.
+
+## Beta 1.30 — 2026-10-17
+
+**Beta 1.30** (marker `B1.30`; = SC44) = Beta 1.29 + the following. The RCs stay RC0.9 / RC0.9S.
+
+### New (Beta 1.30 only)
+- **Sample mode of the own synth of MIDI 1 / 2 (C15):** a new state of pad 27 (cyan, between the granular and the FX sequencer): the track plays **a pack sample one-shot** at the pitch of each note (**C3 = as recorded**), through the engine's filter, effect and LFO; the VCA stays open and the sample plays to its end (one voice per track: every note restarts it).
+- **Sample picker in the expanded Note view** (Note twice, in that mode): rows 3-4 = 16 samples, **Octave ▼ / ▲** = 4 pages (all 64 of the pack); touching one = the track's sample (and it sounds). Rows 1-2 = the steps: **hold a step and touch a sample** = that step's **sample flip**; **Clear + step** removes it; **1-16 / 17-32** = the other half. With **Record + Play**, touching a sample records the note and its flip.
+
+### Changes (Beta 1.30 only)
+- Pad 27 reaches the FX sequencer one press later (the sample mode comes first).
+- The flips live in the MIDI track's level automation lane: a flip replaces the level recorded on its step.
+
+## Beta 1.29 — 2026-10-17
+
+**Beta 1.29** (marker `B1.29`; = SC43.9) = Beta 1.28 + the following. The RCs stay RC0.9 / RC0.9S.
+
+### New (Beta 1.29 only)
+- **LFO shapes of the own synth of MIDI 1 / 2:** on knob page 5, **Shift + K8** picks the LFO's shape: reverse saw (orange, the one it always had), saw (magenta), triangle (green), square (red), sine (cyan) and sample & hold (white: a random value each cycle). One step every 4 clicks, no wrap. With Shift, K8's LED shows the shape in its colour. Saved with the project and in the own-synth patches (patches saved before load the usual one). With the VA-drum engine the LFO stays its noise.
+
+### Internal (Beta 1.29 only)
+- **A shorter DSP program:** the mod's code on core 0 uses the one-word form of the memory reads and writes with a displacement (the one the original's voices use): 441 words fewer and the same sound (checked in emulation: the memory identical block by block). It leaves room for what comes next: 372 words free after the LFO shapes (8 before).
+
+## Beta 1.28 — 2026-10-17
+
+**Beta 1.28** (marker `B1.28`; = SC43.8) = Beta 1.27 + the following. The RCs stay RC0.9 / RC0.9S.
+
+### New (Beta 1.28 only)
+- **Drum side-chain from Synth 1 / 2 and MIDI 1 / 2:** on the drum pages of the Sidechain view (**Shift + FX**, then **Octave ▼**), **row 1 pads 1-4** pick **Synth 1, Synth 2, MIDI 1 or MIDI 2** as the trigger of the drum whose preset was touched last: every **pattern** note of that track opens its envelope, as a drum hit does (notes played live do not). The chosen one shows in the drum's colour; a pad 5-8 goes back to a drum. Like the rest of the side-chain between drums, it is not saved with the project.
+
+### Fixes (Beta 1.28 only)
+- **The own synth of MIDI 1 / 2 over a power cycle:** the OSC 2 page's values, the Shift knobs of the granular (Shift + K1-K5 and K7) and of the oscillator (Shift + K2 / K3), pads 28 (two oscillators) and 29 (chain order) and the knob page went back to their defaults at every power-up. Now they are saved in the unit with the rest of the engine. The first power-up with Beta 1.28 still shows the defaults: what was saved before did not hold them.
+
+## Beta 1.27 — 2026-10-17
+
+**Beta 1.27** (marker `B1.27`; = SC43.7) = Beta 1.26 + the following. The RCs stay RC0.9 / RC0.9S.
+
+### Changes (Beta 1.27 only)
+- **Drum pitch:** **K1 is the stock pitch again**, continuous and linear as on the original (saved, automated, sent as CC). The **pads of the chromatic view transpose on top** in semitones (the two multiply) and, while recording, each pad stays on its step inside the drum's **own pitch lane**: a step holds a knob movement or a chromatic note. Shift + K6 is the stock one again.
+- **Clear + K1:** to the left (held, as on the original) deletes the pitch automation, chromatic steps included; to the right, the pitch to the centre. Both also put the chromatic value back to the centre.
+- **Clear + a drum's button:** deletes the automation of its knobs in the playing pattern and puts its eight knobs back to their defaults.
+- **Arpeggiator resolution** (Shift + pads 17-24 of Pattern Settings, on the note tracks and the drums): now in the order of the stock's sync rate pads, **slower to the left and faster to the right**: pad 17 = 1/4 … pad 21 = 1/16 … pad 24 = 1/32T (it was the other way round). What projects hold keeps its resolution.
+
+### New (Beta 1.27 only)
+- **Shift + Play = quantize** the pattern the selected track plays (the one whose view is on the screen): notes and hits recorded off the grid go to the nearest step (on micro steps 1-2, to the start of their step; on 3-5, to the start of the next one; the last step's, to the first). On the drums, a step with several hits (a roll) stays as it is. While Shift is held the Play LED is yellow, and green after quantizing. It replaces the original's Shift + Play (another way to start playback).
+- **Gate retrigger of the own synth of MIDI 1 / 2:** in its Preset view, **Shift + pad 29** turns it on / off (with Shift: green = on, the default; yellow = off). Off = **legato**: with other notes held, a new note changes the pitch without restarting the envelope. Saved with the project.
+
+### Fixes (Beta 1.27 only)
+- **Arpeggiator on MIDI 1 / 2:** when the arpeggio of the held notes started, the first note was not stopped: on MIDI 1 / 2 it kept sounding under the whole arpeggio (on the MIDI out and in the own synth, whose gate never closed); on Synth 1 / 2, until the arpeggio came back to it. Now it stops when the arpeggio starts.
+- **Step-drummer of Synth 1 / 2:** Play and Record no longer take you out of its view; going back to the synth (its button) shows the step-drummer again if it was open (pad 30 closes it).
+- **Rollers:** while playing, the rollers of a drum muted in the Mixer did not sound (the original firmware skips the step of a muted track); now they do.
+- **Drum pan:** in Beta 1.26 the chromatic steps went to the pan automation lane and the original firmware also applied them as the pan. Now the pan lane is the pan's alone again (recorded and played as on the original). Chromatic steps recorded with Beta 1.26 will play as pan moves: delete them with Clear + that drum's knob on the Mixer's pan page (to the left) or record them again.
+
+## Beta 1.26 — 2026-10-17
+
+**Beta 1.26** (marker `B1.26`; = SC43.6) = Beta 1.25 + the following. The RCs stay RC0.9 / RC0.9S.
+
+### New (Beta 1.26 only)
+- **Cue mode in the Mixer:** on the pan page (Octave ▼), **Shift + a knob turned right** turns it on and **turned left** turns it off (Octave ▼ pink on, white off; stored in the unit). In the mode the **left output** carries the mix in mono as always and the **right** one only the tracks you send to the cue: each pan knob is that track's cue send, from the centre to the right (to the left it does nothing; Clear + knob = no cue). A muted track can be heard in the cue too: it follows the pattern at the step it is on and plays only on the right; its pad stays dim and the track pads (Shift + pad too, on the next bar) take it out of or into the mix. The tracks' pans are not touched and come back when you leave; reverb, delay and Master FX are the mix's (the cue hears them).
+- **The drums' chromatic view:** while recording, each pad is written to its step again (K1's chromatic value); Clear + K1 to the left deletes the chromatic steps of the playing pattern.
+
+### Changes (Beta 1.26 only)
+- The drums no longer record or play **pan** automation: that lane of the pattern now holds their chromatic steps (none of the 173 sessions of the card's copy used it).
+- **The own synth of MIDI 1 / 2, page 3 (OSC 2):** its eight values on the eight knobs, no Shift, following the printed labels: K1 Oscillator = TUNE 2, K2 Osc mod = SHAPE 2, K3 Amp envelope = MIX OSC 1 ↔ OSC 2, K4 Filter envelope = FM, K5 Filter frequency = FINE 2, K6 Resonance = BITSYNC, K7 Modulation = WAVE 2, K8 FX = RING.
+
+### Fixes (Beta 1.26 only)
+- **One oscillator:** with a note held, another note triggered the gate but did not change the pitch (it went to the second oscillator, which is silent). Now **the last note has priority**; releasing it goes back to the previous one, without a new trigger.
+- **Granular:** the first grain of every note played at the previous note's pitch (the second oscillator's note arrived after the trigger); now it arrives first and every note starts at its pitch.
+
+## Beta 1.25 — 2026-10-17
+
+**Beta 1.25** (marker `B1.25`; = SC43.5) = Beta 1.24 + the following. The RCs stay RC0.9 / RC0.9S.
+
+### Changes (Beta 1.25 only)
+- **Drum pitch in two parts:** **K1 = chromatic** (one semitone per knob step, the mod's own; saved with the project; LED dim at the centre) and **Shift + K6 = the stock pitch**, continuous and linear as on the original Circuit. The pitch saved in projects, its automation and its CC are the continuous one, so a stock project sounds the same. Clear + K1 right = chromatic back to the centre; Clear + K6 right = the continuous one back to the centre too.
+- **The drums' chromatic view:** the pads set the chromatic value (K1); the pitch is no longer recorded per step.
+
+### New (Beta 1.25 only)
+- **Clear + Synth 1 / 2** (with its view on screen): its eight macros go back to the values of the loaded patch (read again from the pack).
+
+## Beta 1.24 — 2026-10-16
+
+**Beta 1.24** (marker `B1.24`; = SC43.4) = Beta 1.23 + the following. The RCs stay RC0.9 / RC0.9S.
+
+### New (Beta 1.24 only)
+- **Sidechain triggered by Synth 1 / 2 and MIDI 1 / 2 patterns:** in the Sidechain view (Shift + FX), row 1 pads 1-4 (dark before) pick Synth 1, Synth 2, MIDI 1 or MIDI 2 as the ducking source of the chosen track, next to drums 1-4 (pads 5-8). Every pattern note of that track fires the envelope, as a drum hit does. Saved with the project.
+- **Mixer, Shift + a track pad (1-8):** mutes / unmutes that track **on the next bar**; the pad blinks while it waits; again cancels it. Stopped, at once.
+- **Clear + a drum's button** (with its view on screen): its eight knobs (both layers) back to their defaults.
+
+### Changes (Beta 1.24 only)
+- **MIDI 1 / 2 step-drummer:** every destination is bipolar: an empty pair sits at the centre (64, LED dim) and the knob adds to or takes from the value the parameter has on the engine's page; the LED gets brighter the further it goes, either way (Beta 1.23 had WAVE, FM, MIX, SHAPE and decay at 0).
+
+### Fixes (Beta 1.24 only)
+- **Drums' Clear + K8** now puts the bitcrush (the zone left of 0) back to 0 too, not only the distortion.
 
 ## Beta 1.23 — 2026-10-16
 

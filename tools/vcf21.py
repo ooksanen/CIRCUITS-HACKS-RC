@@ -291,6 +291,39 @@ CLR_LAV = 0x07                                    # the stock's colour of a knob
 EDITOR0, EDITOR_SZ, LANE_CLEAR = 0x20039E50, 0x3A0, 0x0803D3B8   # the note tracks' pattern editors (Synth 1, 2, MIDI 1, 2); (editor, lane): the lane to 0xFF
 
 
+LASTNOTE = False                                  # SC43.6 (use_lastnote)
+N2FIRST = False                                   # SC43.6 (use_n2first)
+
+
+def use_lastnote():
+    """SC43.6 (the user, 2026-10-17: «in single OSC mode, when two notes are held, the second note triggers Gate signal but doesn't change pitch.  Last
+    note held should get priority»): with one oscillator (bit 7 of RT_VEL clear) a note played while another is held takes OSC1 (n1) and the one it
+    replaces waits in n2 (unused by the DSP with one oscillator: the key follow takes the mean only with two); releasing it goes back to n2 (the
+    stock c_vnote_off already does n1 := n2), without a new gate.  Two oscillators: the paraphonic assignment as before."""
+    global LASTNOTE
+    assert DUALUI
+    LASTNOTE = True
+
+
+def use_n2first():
+    """SC43.6 (the user, 2026-10-17: «on granular, the pitch doesn't seem to track the scale very well»): the granular voice (DSP core 1) starts a
+    note's grains alternating NOTE2 (code 14) and NOTE, the first one with NOTE2; a new note marks NOTE, VEL, GATE, TRIG and code 14, and c_vsend sent
+    code 14 last, one message every 2 ms: the first grain of every note (up to 500 ms) played the note before.  Now code 14 goes right after NOTE and
+    VEL, before the gate and the trigger (emulated on core 1: NOTE 60 + k with NOTE2 60 gives an increment of 1.0 for the first grain)."""
+    global N2FIRST
+    assert DUALUI
+    N2FIRST = True
+
+
+def use_osc2pg():
+    """SC43.6 (the user, 2026-10-17: «on osc2 knobs, the layer is all wrong. Assign the controls to non-shift knobs when available, making sense of the
+    printed tags»): the OSC 2 page (page 3) has its eight values on the eight knobs, none with Shift: K1 Oscillator = TUNE 2, K2 Osc mod = SHAPE 2 (as
+    on the OSC 1 page), K3 Amp envelope = MIX OSC 1 / OSC 2 (the level), K4 Filter envelope = FM (the brightness), K5 Filter frequency = FINE 2,
+    K6 Resonance = BITSYNC (hard sync, the resonant sweep), K7 Modulation = WAVE 2 (as on the OSC 1 page), K8 FX = RING (one of the FX types)."""
+    global KNOB_CODES_C
+    KNOB_CODES_C = (27, 30, 31, 33, 28, 32, 29, 34,  0, 0, 0, 0, 0, 0, 0, 0)
+
+
 def use_routecol():
     """SC42.7 (the user, 2026-10-16: «cambiar color del pad 29 a amarillo (color del filtro)»): pad 29 of the MIDI Preset view (the chain order) in
     the colours of the VCA / VCF page pad."""
@@ -422,6 +455,133 @@ def use_fxseq2():
     global FXSEQ2
     assert FXSEQ
     FXSEQ2 = True
+
+
+V2SAVE = False                                    # SC43.8 (see use_v2save)
+LFOSHAPE = False                                  # SC43.9 (see use_lfoshape)
+SAMPLER = False                                   # SC44 (see use_sampler)
+SM_PEND = (953, 997)                              # (SAMPLER) the project's tail: + 953 / + 997 = 0xC0 | the next note's sample (MIDI 1 / 2; RAM: a flip, then 0)
+COL_SM = 0x4D                                     # pad 27 in the sample state (cyan)
+
+
+def use_sampler():
+    """SC44: the sample state of the own engine (vcf21_dsp.use_sampler: ACT = 3) and what tools/smpick.py needs.
+      * pad 27: off -> line in -> oscillator -> VA-drum -> granular -> SAMPLE -> FX sequencer -> off.  The sample state is the combination nobody
+        used: the mode on, no oscillator source, no VA-drum bit, the engine nibble's velocity bit (the granular's with the oscillator); pad 27 cyan;
+      * the ACT message: line in + the granular bit (the velocity bit converted) = ACT 3, the bit cleared;
+      * the TRIG message: 1, or $100 | s when the track's next note has a sample flip pending (the tail + 953 / + 997 = 0xC0 | s, set by smpick
+        from the pattern's lane 8, cleared here);
+      * c_vsmode(track) -> 1 in the sample state; c_vsmpend(track, value) stores the pending byte.
+    The track's sample is code 25 (the granular's source: 0..63 = the pack's sample, < 0 = the capture), saved with the engine."""
+    global SAMPLER
+    assert GRAN and FXSEQ and OSC3 and DUALUI
+    SAMPLER = True
+
+
+def sampler_routines(a, L):
+    E = a.emit
+    def imm32(rd, v): E(movw, rd, v & 0xFFFF); E(movt, rd, (v >> 16) & 0xFFFF)
+    # ---- c_vsmode(r0 = track 0 / 1) -> r0 = 1 in the sample state; clobbers r1-r3
+    a.label("c_vsmode")
+    E(push_list, [4], lr=True); E(mov_reg, 4, 0)
+    E(bl, "c_von"); E(cmp_imm, 0, 0); E(b_cond, "vm_0", "eq")
+    E(mov_reg, 0, 4); E(movs_imm, 1, 2); E(bl, "c_vflag"); E(cmp_imm, 0, 0); E(b_cond, "vm_0", "ne")
+    E(mov_reg, 0, 4); E(bl, "c_vdbit"); E(cmp_imm, 0, 0); E(b_cond, "vm_0", "ne")
+    E(mov_reg, 0, 4); E(adds_imm8, 0, 2); E(bl, "c_vdbit"); E(pop_list, [4], pc=True)
+    a.label("vm_0"); E(movs_imm, 0, 0); E(pop_list, [4], pc=True)
+    # ---- c_vsmpb(r0 = track) -> r0 = the address of its pending byte, or 0; clobbers r1
+    a.label("c_vsmpb")
+    imm32(1, LS_SESSION); E(ldr_imm, 1, 1, 0x14); E(cmp_imm, 1, 0); E(b_cond, "vp_b0", "eq")
+    E(cmp_imm, 0, 0); E(b_cond, "vp_b1", "eq"); imm32(0, LS_TAIL + SM_PEND[1]); E(b, "vp_b2")
+    a.label("vp_b1"); imm32(0, LS_TAIL + SM_PEND[0])
+    a.label("vp_b2"); E(adds_reg, 0, 0, 1); E(raw, h(0x4770))
+    a.label("vp_b0"); E(movs_imm, 0, 0); E(raw, h(0x4770))
+    # ---- c_vsmpend(r0 = track, r1 = the byte: 0xC0 | s, or 0); clobbers r0-r2
+    a.label("c_vsmpend")
+    E(push_list, [4], lr=True); E(mov_reg, 4, 1); E(bl, "c_vsmpb"); E(cmp_imm, 0, 0); E(b_cond, "vpe_x", "eq"); E(strb_imm, 4, 0, 0)
+    a.label("vpe_x"); E(pop_list, [4], pc=True)
+    # ---- c_vsmtrig(r0 = track) -> r0 = the TRIG value: $100 | s for a pending flip (taken), else 1; clobbers r1-r3
+    a.label("c_vsmtrig")
+    E(push_list, [4], lr=True); E(bl, "c_vsmpb"); E(movs_imm, 4, 1); E(cmp_imm, 0, 0); E(b_cond, "vt_x", "eq")
+    E(ldrb_imm, 1, 0, 0); E(lsrs_imm, 2, 1, 6); E(cmp_imm, 2, 3); E(b_cond, "vt_x", "ne")
+    E(movs_imm, 2, 0); E(strb_imm, 2, 0, 0); E(movs_imm, 2, 63); E(ands_reg, 1, 2); E(movs_imm, 4, 1); E(lsls_imm, 4, 4, 8); E(orrs_reg, 4, 1)
+    a.label("vt_x"); E(mov_reg, 0, 4); E(pop_list, [4], pc=True)
+LS_SESSION, LS_TAIL, O_LS = 0x2003D71C, 0x27024, 561   # (LFOSHAPE) the project's tail + 561 + t = 0xB0 | the shape; + 563 the knob's accumulator
+LS_TAG, LS_N, LS_STEP = 0xB0, 6, 4                 # 6 shapes; one step every 4 knob clicks
+LS_COLS = (0x09, 0x32, 0x17, 0x53, 0x4D, 0x01)     # reverse saw orange, saw magenta, triangle green, square red, sine cyan, sample & hold white
+LS_PAGE, LS_KNOB = 4, 15                          # page 5 (KNOB_CODES_E), Shift + K8 (its free slot)
+
+
+def use_lfoshape():
+    """SC43.9 (the user, 2026-10-17: «add waveshapes to own synth's lfo … on page 5 Shift + K8»): the LFO shape of the own engine (vcf21_dsp.use_lfoshape):
+    page 5 of the knobs, Shift + K8 (KNOB_CODES_E had nothing there; the table keeps the 0, so Clear, CC and the lanes leave it alone) = one of 6
+    shapes, a step every LS_STEP clicks (no wrap); with Shift its LED in the shape's colour; the shape goes to the DSP in bits 13-15 of the ACT
+    message (sent again by the heartbeat).  The shape is the project's (the record's tail + 561 / 562 = 0xB0 | shape, as the gate retrigger;
+    another value = the reverse saw) and the own-synth patch's (mpatch.use_lshape)."""
+    global LFOSHAPE
+    assert DUALUI and PAGES5 and TYPEZONE
+    LFOSHAPE = True
+
+
+def lfoshape_routines(a, L):
+    E = a.emit
+    def imm32(rd, v): E(movw, rd, v & 0xFFFF); E(movt, rd, (v >> 16) & 0xFFFF)
+    RET = h(0x4770)
+
+    # ---- c_vlsb(r0 = track) -> r0 = the address of its shape byte in the project's tail, or 0; clobbers r1, r2
+    a.label("c_vlsb")
+    imm32(1, LS_SESSION); E(ldr_imm, 1, 1, 0x14); E(cmp_imm, 1, 0); E(b_cond, "lb_0", "eq")
+    imm32(2, LS_TAIL + O_LS); E(adds_reg, 1, 1, 2); E(adds_reg, 0, 0, 1); E(raw, RET)
+    a.label("lb_0"); E(movs_imm, 0, 0); E(raw, RET)
+
+    # ---- c_vlsh(r0 = track) -> r0 = its shape 0..5 (0 without the tag); clobbers r1, r2
+    a.label("c_vlsh")
+    E(push_list, [3], lr=True); E(bl, "c_vlsb"); E(cmp_imm, 0, 0); E(b_cond, "lh_x", "eq")
+    E(ldrb_imm, 1, 0, 0); E(lsrs_imm, 2, 1, 4); E(movs_imm, 0, 0); E(cmp_imm, 2, LS_TAG >> 4); E(b_cond, "lh_x", "ne")
+    E(movs_imm, 0, 7); E(ands_reg, 0, 1); E(cmp_imm, 0, LS_N); E(b_cond, "lh_x", "lo"); E(movs_imm, 0, 0)
+    a.label("lh_x"); E(pop_list, [3], pc=True)
+
+    # ---- c_vlsset(r0 = track, r1 = shape 0..5): stored, ACT to be sent again; clobbers r0-r3
+    a.label("c_vlsset")
+    E(push_list, [4, 5], lr=True); E(mov_reg, 4, 0); E(mov_reg, 5, 1)
+    E(bl, "c_vlsb"); E(cmp_imm, 0, 0); E(b_cond, "ls_x", "eq")
+    E(movs_imm, 1, LS_TAG); E(orrs_reg, 1, 5); E(strb_imm, 1, 0, 0)
+    imm32(0, TAIL + O_RT + RT_AUX); E(lsls_imm, 1, 4, 3); E(adds_reg, 0, 0, 1); E(ldrb_imm, 1, 0, 0); E(movs_imm, 2, 1); E(orrs_reg, 1, 2); E(strb_imm, 1, 0, 0)
+    a.label("ls_x"); E(pop_list, [4, 5], pc=True)
+
+    # ---- c_vlsknob(r0 = track, r1 = delta): the accumulator (tail + 563); a step every LS_STEP clicks
+    a.label("c_vlsknob")
+    E(push_list, [4, 5, 6, 7], lr=True); E(mov_reg, 4, 0); E(mov_reg, 5, 1)
+    E(bl, "c_vlsb"); E(cmp_imm, 0, 0); E(b_cond, "lk_x", "eq")
+    E(subs_reg, 6, 0, 4); E(adds_imm8, 6, 2)                                       # r6 = the accumulator's address
+    E(ldrb_imm, 7, 6, 0); E(raw, sxtb(7, 7)); E(adds_reg, 7, 7, 5)                  # r7 = the accumulator + delta
+    E(mov_reg, 0, 4); E(bl, "c_vlsh"); E(mov_reg, 1, 0)                             # r1 = the shape
+    E(cmp_imm, 7, LS_STEP); E(b_cond, "lk_d", "lt")
+    E(movs_imm, 7, 0); E(cmp_imm, 1, LS_N - 1); E(b_cond, "lk_w", "hs"); E(adds_imm8, 1, 1); E(b, "lk_s")
+    a.label("lk_d"); E(movs_imm, 0, 0); E(subs_imm8, 0, LS_STEP); E(cmp_reg, 7, 0); E(b_cond, "lk_w", "gt")
+    E(movs_imm, 7, 0); E(cmp_imm, 1, 0); E(b_cond, "lk_w", "eq"); E(subs_imm8, 1, 1)
+    a.label("lk_s"); E(strb_imm, 7, 6, 0); E(mov_reg, 0, 4); E(bl, "c_vlsset"); E(b, "lk_x")
+    a.label("lk_w"); E(strb_imm, 7, 6, 0)
+    a.label("lk_x"); E(pop_list, [4, 5, 6, 7], pc=True)
+
+    # ---- c_vlsled(r0 = track) -> r0 = the knob LED halfword: full brightness, the shape's colour; clobbers r1-r3
+    a.label("c_vlsled")
+    E(push_list, [4], lr=True); E(bl, "c_vlsh")
+    lo = sum(c << (8 * i) for i, c in enumerate(LS_COLS[:4])); hi = sum(c << (8 * i) for i, c in enumerate(LS_COLS[4:]))
+    imm32(1, lo); E(cmp_imm, 0, 4); E(b_cond, "ld_l", "lo"); imm32(1, hi); E(subs_imm8, 0, 4)
+    a.label("ld_l"); E(lsls_imm, 0, 0, 3); E(lsrs_reg, 1, 0); E(movs_imm, 0, 0xFF); E(ands_reg, 0, 1)      # the colour byte
+    E(movw, 1, (127 + 2) << 8); E(orrs_reg, 0, 1)
+    E(pop_list, [4], pc=True)
+
+
+def use_v2save():
+    """SC43.8 (the user, 2026-10-17: «revisa el guardado de sintes propios y granular, hay parametros que no parecen cargarse al reiniciar,
+    especialmente los shift»): the volatile codes 27..34 (the OSC 2 page; the granular page's Shift + K1-K5 / K7; the oscillator page's Shift + K2 /
+    K3) and the toggles of pads 28 / 29 (two oscillators, the chain order: bits 7 of RT_VEL / RT_NOTE) were never saved: every power-up put the
+    defaults back.  tools/engsave.py puts them into the record the stock writes; here their changes ask for the save too (c_vsave: deferred by
+    lazysave), as the codes 1..26 do."""
+    global V2SAVE
+    V2SAVE = True
 
 
 def use_grsrc():
@@ -1404,6 +1564,11 @@ def dualui_routines(a, L, tail, mulstride, bc):
     a.label("no_c")
     a.emit(lsrs_imm, 7, 7, 4); a.emit(lsls_imm, 7, 7, 4); a.emit(orrs_reg, 7, 3)                      # r7 = the new RT_CNT byte
     a.emit(cmp_imm, 1, 0); a.emit(b_cond, "no_f", "eq")
+    if LASTNOTE:                                                                  # one oscillator: the new note takes OSC1, the one it replaces waits in n2
+        a.emit(ldrb_imm, 3, 5, RT_VEL); a.emit(lsrs_imm, 3, 3, 7); a.emit(b_cond, "no_dl", "ne")
+        a.emit(ldrb_imm, 0, 5, RT_NOTE); a.emit(movs_imm, 3, 0x7F); a.emit(ands_reg, 0, 3); a.emit(strb_imm, 0, 6, 0)
+        a.emit(movs_imm, 0, RT_NOTE); a.emit(bl, "c_vsetn"); a.emit(movs_imm, 3, 0x80); a.emit(orrs_reg, 7, 3); a.emit(b, "no_d")
+        a.label("no_dl")
     a.emit(cmp_imm, 1, 1); a.emit(b_cond, "no_2", "eq")
     a.emit(movs_imm, 3, 0x80); a.emit(tst_reg, 7, 3); a.emit(b_cond, "no_s2", "ne")
     a.emit(movs_imm, 0, RT_NOTE); a.emit(bl, "c_vsetn"); a.emit(movs_imm, 3, 0x80); a.emit(orrs_reg, 7, 3); a.emit(b, "no_d")   # three or more: the older oscillator takes the note (OSC1 first)
@@ -1621,7 +1786,7 @@ def gran_routines(a, tail, bc, t_gr, t_st=None):
     a.label("gk_s")
     a.emit(mov_reg, 0, 7); a.emit(mov_reg, 1, 5); a.emit(bl, "c_vmark")
     if CCIO: a.emit(mov_reg, 0, 7); a.emit(mov_reg, 1, 5); a.emit(mov_reg, 2, 6); a.emit(bl, "c_vsync")
-    a.emit(cmp_imm, 5, 26); a.emit(b_cond, "gk_x", "hi")                          # the volatile codes (27..34) are not saved
+    if not V2SAVE: a.emit(cmp_imm, 5, 26); a.emit(b_cond, "gk_x", "hi")          # the volatile codes (27..34) are not saved
     a.emit(bl, "c_vsave")
     a.label("gk_x"); a.emit(pop_list, [4, 5, 6, 7], pc=True)
 
@@ -2839,6 +3004,11 @@ def arm_code(base, L):
         a.label("vk_nc")
     a.emit(bl, L["c_shift"]); a.emit(cmp_imm, 0, 0); a.emit(b_cond, "vk_ns", "eq"); a.emit(adds_imm8, 5, 8)
     a.label("vk_ns")
+    if LFOSHAPE:                                                                  # page 5, Shift + K8: the LFO shape
+        a.emit(cmp_imm, 5, LS_KNOB); a.emit(b_cond, "vk_nls", "ne")
+        a.emit(mov_reg, 0, 7); a.emit(bl, "c_vpage"); a.emit(cmp_imm, 0, LS_PAGE); a.emit(b_cond, "vk_nls", "ne")
+        a.emit(mov_reg, 0, 7); a.emit(mov_reg, 1, 6); a.emit(bl, "c_vlsknob"); a.emit(pop_list, [4, 5, 6, 7], pc=True)
+        a.label("vk_nls")
     if GRAN:                                                                      # the granular page (OSC1 page of a granular track): its own table and ranges
         a.emit(mov_reg, 0, 7); a.emit(bl, "c_grpg"); a.emit(cmp_imm, 0, 0); a.emit(b_cond, "vk_ngr", "eq")
         if GRSRC:
@@ -2902,7 +3072,7 @@ def arm_code(base, L):
         a.label("vk_nc2")
         a.emit(mov_reg, 0, 7); a.emit(mov_reg, 1, 5); a.emit(bl, "c_vmark")
         if CCIO: a.emit(mov_reg, 0, 7); a.emit(mov_reg, 1, 5); a.emit(mov_reg, 2, 4); a.emit(bl, "c_vsync")      # out as MIDI, recorded in its lane
-        a.emit(cmp_imm, 5, 26); bc("vk_done", "hi")                               # the volatile codes (27..34) are not saved
+        if not V2SAVE: a.emit(cmp_imm, 5, 26); bc("vk_done", "hi")               # the volatile codes (27..34) are not saved
         a.emit(bl, "c_vsave")
     else:
         tail(2); mulstride(3, 7); a.emit(adds_reg, 2, 2, 3); a.emit(adds_reg, 2, 2, 5); a.emit(strb_imm, 0, 2, 0)
@@ -2934,6 +3104,11 @@ def arm_code(base, L):
     a.label("vk2_c")
     a.emit(bl, L["c_shift"]); a.emit(movs_imm, 4, 0); a.emit(cmp_imm, 0, 0); a.emit(b_cond, "vk2_l", "eq"); a.emit(movs_imm, 4, 8)
     a.label("vk2_l")                                                              # r4 = code - 1 (0..7, or 8..15 with Shift)
+    if LFOSHAPE:                                                                  # page 5, Shift + K8: the shape's colour
+        a.emit(cmp_imm, 4, LS_KNOB); a.emit(b_cond, "vk2_nls", "ne")
+        a.emit(mov_reg, 0, 7); a.emit(bl, "c_vpage"); a.emit(cmp_imm, 0, LS_PAGE); a.emit(b_cond, "vk2_nls", "ne")
+        a.emit(mov_reg, 0, 7); a.emit(bl, "c_vlsled"); a.emit(b_w, "vk2_st")
+        a.label("vk2_nls")
     if GRAN:
         a.emit(mov_reg, 0, 7); a.emit(bl, "c_grpg"); a.emit(cmp_imm, 0, 0); a.emit(b_cond, "vk2_ngr", "eq")
         if GRSRC:
@@ -3190,6 +3365,14 @@ def arm_code(base, L):
         a.emit(b, "tr_pg")
         a.label("tr_on")
         a.emit(cmp_imm, 0, 0); bc("tr_off", "ne")
+        if SAMPLER:                                                               # the sample (the velocity bit, no oscillator) -> the FX sequencer
+            a.emit(mov_reg, 0, 6); a.emit(adds_imm8, 0, 2); a.emit(bl, "c_vdbit"); a.emit(cmp_imm, 0, 0); bc("tr_nsm", "eq")
+            a.emit(mov_reg, 0, 6); a.emit(adds_imm8, 0, 2); a.emit(movs_imm, 1, 0); a.emit(bl, "c_vdput")
+            a.emit(mov_reg, 0, 6); a.emit(movs_imm, 1, 1); a.emit(bl, "c_vdput")
+            a.emit(mov_reg, 0, 6); a.emit(movs_imm, 1, 1); a.emit(bl, "c_vset")
+            a.emit(mov_reg, 0, 6); a.emit(bl, "c_sdnib"); a.emit(movs_imm, 1, 1); a.emit(orrs_reg, 1, 0); a.emit(mov_reg, 0, 6); a.emit(bl, "c_sdsetnib")
+            a.emit(b_w, "tr_sv")
+            a.label("tr_nsm")
         if FXSEQ:                                                                 # mode on, no oscillator: line in, or the FX sequencer (VA-drum bit) -> off
             a.emit(mov_reg, 0, 6); a.emit(bl, "c_vdbit"); a.emit(cmp_imm, 0, 0); bc("tr_ln", "eq")
             a.emit(mov_reg, 0, 6); a.emit(movs_imm, 1, 0); a.emit(bl, "c_vdput")
@@ -3207,6 +3390,8 @@ def arm_code(base, L):
             a.emit(mov_reg, 0, 6); a.emit(movs_imm, 1, 0); a.emit(bl, "c_vdput")
             a.emit(mov_reg, 0, 6); a.emit(adds_imm8, 0, 2); a.emit(movs_imm, 1, 1); a.emit(bl, "c_vdput"); a.emit(b, "tr_sv")
             a.label("tr_gr")
+            if SAMPLER:                                                           # granular -> the sample: only the oscillator source off
+                a.emit(mov_reg, 0, 6); a.emit(movs_imm, 1, 0); a.emit(bl, "c_vsetosc"); a.emit(b, "tr_sv")
             a.emit(mov_reg, 0, 6); a.emit(adds_imm8, 0, 2); a.emit(movs_imm, 1, 0); a.emit(bl, "c_vdput")
             if FXSEQ:                                                             # granular -> the FX sequencer: oscillator off, VA-drum bit, the step-drummer enabled
                 a.emit(mov_reg, 0, 6); a.emit(movs_imm, 1, 1); a.emit(bl, "c_vdput")
@@ -3235,6 +3420,7 @@ def arm_code(base, L):
             a.emit(mov_reg, 0, 6); a.emit(bl, "c_von"); a.emit(cmp_imm, 0, 0); bc(lab + "_x", "eq")
             if DUALHIDE and off == RT_VEL: a.emit(mov_reg, 0, 6); a.emit(bl, "c_vosc"); a.emit(cmp_imm, 0, 0); bc(lab + "_x", "eq")   # no oscillators: nothing
             a.emit(mov_reg, 0, 6); a.emit(movs_imm, 1, off); a.emit(bl, "c_vflip7")
+            if V2SAVE: a.emit(mov_reg, 7, 0); a.emit(bl, "c_vsave"); a.emit(mov_reg, 0, 7)                         # (V2SAVE) saved too
             if off == RT_VEL:
                 a.emit(cmp_imm, 0, 0); bc(lab + "_x", "ne")                                                          # now one oscillator: the OSC2 page is gone
                 a.emit(mov_reg, 0, 6); a.emit(bl, "c_vpage"); a.emit(cmp_imm, 0, 2); bc(lab + "_x", "ne")
@@ -3266,6 +3452,8 @@ def arm_code(base, L):
         a.emit(mov_reg, 0, 6); a.emit(movs_imm, 1, 2); a.emit(bl, "c_vflag")
         if FXSEQ:
             a.emit(cmp_imm, 0, 0); a.emit(b_cond, "vle_os", "ne")
+            if SAMPLER:
+                a.emit(mov_reg, 0, 6); a.emit(adds_imm8, 0, 2); a.emit(bl, "c_vdbit"); a.emit(movs_imm, 1, COL_SM); a.emit(cmp_imm, 0, 0); bc("vle_t", "ne")
             a.emit(mov_reg, 0, 6); a.emit(bl, "c_vdbit"); a.emit(movs_imm, 1, COL_ON); a.emit(cmp_imm, 0, 0); a.emit(b_cond, "vle_t", "eq"); a.emit(movs_imm, 1, COL_FS); a.emit(b, "vle_t")
             a.label("vle_os"); a.emit(movs_imm, 1, COL_OSC[0])
         else:
@@ -3446,6 +3634,13 @@ def arm_code(base, L):
             a.emit(movw, 2, 0x0400); a.emit(tst_reg, 1, 2); a.emit(b_cond, "sd_ng", "ne")
             a.emit(movw, 2, 0x1800); a.emit(eors_reg, 1, 2)
             a.label("sd_ng")
+        if SAMPLER:                                                               # line in + the granular bit = the sample: ACT 3
+            a.emit(movs_imm, 2, 3); a.emit(ands_reg, 2, 1); a.emit(cmp_imm, 2, 1); a.emit(b_cond, "sd_nsm", "ne")
+            a.emit(movw, 2, 0x1000); a.emit(tst_reg, 1, 2); a.emit(b_cond, "sd_nsm", "eq")
+            a.emit(bics_reg, 1, 2); a.emit(movs_imm, 2, 3); a.emit(orrs_reg, 1, 2)
+            a.label("sd_nsm")
+        if LFOSHAPE:                                                              # + the LFO shape << 13
+            a.emit(push_list, [1]); a.emit(mov_reg, 0, 6); a.emit(bl, "c_vlsh"); a.emit(pop_list, [1]); a.emit(lsls_imm, 0, 0, 13); a.emit(orrs_reg, 1, 0)
         a.emit(movs_imm, 0, 19); a.emit(b, "sd_send")
     else:
         a.emit(ldrb_w, 1, 5, O_FLAGS); a.emit(lsrs_reg, 1, 6); a.emit(movs_imm, 2, 1); a.emit(ands_reg, 1, 2); a.emit(movs_imm, 0, 19); a.emit(b, "sd_send")
@@ -3460,6 +3655,11 @@ def arm_code(base, L):
     if DUALUI: a.emit(movs_imm, 2, 0x7F); a.emit(ands_reg, 1, 2)
     a.emit(movs_imm, 0, 20); a.emit(b, "sd_send")
     a.label("sd_3")
+    if N2FIRST:                                                                   # SC43.6: the note of OSC 2 (code 14) before the gate and the trigger
+        a.emit(ldrb_imm, 1, 7, RT_DHI); a.emit(movs_imm, 2, 0x20); a.emit(tst_reg, 1, 2); a.emit(b_cond, "sd_3n", "eq")
+        a.emit(bics_reg, 1, 2); a.emit(strb_imm, 1, 7, RT_DHI)
+        mulstride(1, 6); a.emit(adds_reg, 1, 1, 5); a.emit(raw, ldrsb_w(1, 1, 14)); a.emit(movs_imm, 0, 14); a.emit(b, "sd_send")
+        a.label("sd_3n")
     if SDRUM:                                                                     # step-drummer: the values the pitch row moves (codes 17 / 18 / 19 / 20, 3, 6) go before the gate and the trigger
         a.emit(ldrb_imm, 1, 7, RT_DX); a.emit(movs_imm, 2, 0x0F); a.emit(ands_reg, 1, 2); a.emit(ldrb_imm, 2, 7, RT_DLO); a.emit(movs_imm, 3, 0x24); a.emit(ands_reg, 2, 3); a.emit(orrs_reg, 1, 2)
         a.emit(cmp_imm, 1, 0); a.emit(b_cond, "sd_3a", "eq")
@@ -3473,7 +3673,10 @@ def arm_code(base, L):
     a.label("sd_g"); a.emit(mov_reg, 1, 2); a.emit(movs_imm, 0, 17); a.emit(b, "sd_send")
     a.label("sd_4")
     a.emit(movs_imm, 1, 0x10); a.emit(tst_reg, 0, 1); a.emit(b_cond, "sd_5", "eq")                               # TRIG
-    a.emit(bics_reg, 0, 1); a.emit(strb_imm, 0, 7, RT_AUX); a.emit(movs_imm, 1, 1); a.emit(movs_imm, 0, 21); a.emit(b, "sd_send")
+    if SAMPLER:                                                                   # the value: a pending sample flip ($100 | s), else 1
+        a.emit(bics_reg, 0, 1); a.emit(strb_imm, 0, 7, RT_AUX); a.emit(mov_reg, 0, 6); a.emit(bl, "c_vsmtrig"); a.emit(mov_reg, 1, 0); a.emit(movs_imm, 0, 21); a.emit(b, "sd_send")
+    else:
+        a.emit(bics_reg, 0, 1); a.emit(strb_imm, 0, 7, RT_AUX); a.emit(movs_imm, 1, 1); a.emit(movs_imm, 0, 21); a.emit(b, "sd_send")
     a.label("sd_5")
     a.emit(ldrb_imm, 0, 7, RT_DLO); a.emit(ldrb_imm, 1, 7, RT_DHI); a.emit(lsls_imm, 1, 1, 8); a.emit(orrs_reg, 0, 1)
     if OSC: a.emit(ldrb_imm, 1, 7, RT_DX); a.emit(lsls_imm, 1, 1, 16); a.emit(orrs_reg, 0, 1)
@@ -3591,6 +3794,8 @@ def arm_code(base, L):
     if DUALUI: dualui_routines(a, L, tail, mulstride, bc)
     if GRAN: gran_routines(a, tail, bc, t_gr, t_st)
     if GRSRC: grsrc_routines(a, L, t_gr)
+    if LFOSHAPE: lfoshape_routines(a, L)
+    if SAMPLER: sampler_routines(a, L)
     if CCIO: ccio_routines(a, tail, bc, movmask, t_cc, t_ln, L["stk_emit"], L["stk_mid"])
     if SDRUM: sd_routines(a, L, tail, bc, t_sd)
     if OCTLED: octled_routines(a, L, tail)
