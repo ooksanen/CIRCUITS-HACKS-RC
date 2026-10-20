@@ -1,6 +1,6 @@
 """tools/rc_uploader.html: a web page that takes the OFFICIAL Circuit Tracks firmware from the user, patches it in the browser and sends it (no Novation code inside).
 
-    python tools/make_rc_uploader.py [VERSION ...]          (default: RC2 RC2S RC0.9 RC0.9S; needs firmware/<dir>/*.bin and stock/*.bin of a full checkout)
+    python tools/make_rc_uploader.py [VERSION ...]          (default: R202 R202S B3.3 R201 R201S RC2 RC2S RC0.9 RC0.9S; needs firmware/<dir>/*.bin and stock/*.bin of a full checkout)
 Each version becomes a patch against the official image: COPY (offset, length) from the user's official image, or ADD (our bytes).  The matching is greedy
 on 8-byte keys, so an ADD run never holds 8 or more consecutive bytes that also occur in the official image: the page carries only our own work.  The page:
   1. reads the official .syx (Components: https://components.novationmusic.com/api/v2/firmwares/168/file) or its .bin, checks its SHA-256;
@@ -77,7 +77,19 @@ def main(versions):
     print("tools/rc_uploader.html", len(page), "bytes")
 
 
-DESC = {"RC2": ("RC2 — la versión candidata 2 (= Beta 1.30 / SC44): RC0.9 + todo lo de las betas 1.0-1.30",
+DESC = {"R202": ("RC2.02 — la versión candidata 2.02 (= SC44.3): RC2.01 + matriz de modulación del sinte propio de MIDI 1 / 2, teclado partido con cualquier par de pistas de notas, LFO con triángulo por defecto y sample & hold suavizado",
+                 "RC2.02 — release candidate 2.02 (= SC44.3): RC2.01 + mod matrix of the MIDI 1 / 2 own synth, split keyboard with any pair of note tracks, LFO with a triangle by default and slewed sample & hold"),
+        "R202S": ("RC2.02S — versión más segura: RC2.02, pero nada del mod escribe ni borra ficheros en la SD ni en la memoria interna (esas funciones no hacen nada)",
+                  "RC2.02S — safer build: RC2.02, but nothing of the mod writes or deletes files on the SD card or in the internal memory (those features do nothing)"),
+        "R201": ("RC2.01 — la versión candidata 2.01 (= SC44.1): RC2 + el sample capturado antes del filtro master",
+                 "RC2.01 — release candidate 2.01 (= SC44.1): RC2 + the captured sample before the master filter"),
+        "R201S": ("RC2.01S — versión más segura: RC2.01, pero nada del mod escribe ni borra ficheros en la SD ni en la memoria interna (esas funciones no hacen nada)",
+                  "RC2.01S — safer build: RC2.01, but nothing of the mod writes or deletes files on the SD card or in the internal memory (those features do nothing)"),
+        "B3.3": ("Beta 3.3 — beta (= SC44.6): RC2.02 + vista FX: Shift + Octave ▲ / ▼ = resonancia del filtro master de 16 en 16; Shift + pad 25 = filtro master apagado / encendido. Funciones nuevas sin probar",
+                 "Beta 3.3 — beta (= SC44.6): RC2.02 + FX view: Shift + Octave ▲ / ▼ = master filter resonance in steps of 16; Shift + pad 25 = master filter off / on. New features not yet tested"),
+        "B3.0": ("Beta 3.0 — beta (= SC44.3): RC2.01 + matriz de modulación del sinte propio de MIDI 1 / 2 (pad 6: K1-K8 = ocho fuentes, la posición del knob = destino y cantidad), teclado partido con cualquier par de pistas de notas, LFO con triángulo por defecto y sample & hold suavizado",
+                 "Beta 3.0 — beta (= SC44.3): RC2.01 + mod matrix of the own synth of MIDI 1 / 2 (pad 6: K1-K8 = eight sources, the knob position = destination and amount), split keyboard with any pair of note tracks, LFO with triangle by default and smoothed sample & hold"),
+        "RC2": ("RC2 — la versión candidata 2 (= Beta 1.30 / SC44): RC0.9 + todo lo de las betas 1.0-1.30",
                 "RC2 — release candidate 2 (= Beta 1.30 / SC44): RC0.9 + everything of betas 1.0-1.30"),
         "RC2S": ("RC2S — versión más segura: RC2, pero nada del mod escribe ni borra ficheros en la SD ni en la memoria interna (esas funciones no hacen nada)",
                  "RC2S — safer build: RC2, but nothing of the mod writes or deletes files on the SD card or in the internal memory (those features do nothing)"),
@@ -197,6 +209,7 @@ TEMPLATE = r"""<!doctype html>
   progress { width:100%; height:14px; }
   ol { margin:0; padding-left:20px; } a { color:var(--acc); }
   .note { border-left:4px solid var(--warn); padding-left:10px; }
+  .sub-steps { margin:4px 0 0; }
   html[lang="es"] .en, html[lang="en"] .es { display:none !important; }
   .top { display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap; }
   .lang { display:flex; gap:4px; }
@@ -218,6 +231,7 @@ TEMPLATE = r"""<!doctype html>
       <li><span class="es">Cierra Novation Components y cualquier DAW o programa MIDI (en Windows, un puerto MIDI solo lo puede abrir una aplicación).</span><span class="en">Close Novation Components and any DAW or MIDI program (on Windows a MIDI port can only be opened by one application).</span></li>
       <li><span class="es">Conecta el Circuit Tracks por USB y enciéndelo de forma normal (o en modo bootloader: Scales + Preset + Note al encender). No lo desconectes durante el envío.</span><span class="en">Connect the Circuit Tracks over USB and power it on normally (or in bootloader mode: Scales + Preset + Note at power-on). Do not disconnect it while sending.</span></li>
       <li><span class="es">Usa Chrome o Edge (Web MIDI con SysEx).</span><span class="en">Use Chrome or Edge (Web MIDI with SysEx).</span></li>
+      <li class="note"><div class="es"><b>En caso de brick</b> (el aparato no arranca):<ol class="sub-steps"><li>Desconéctalo de la corriente.</li><li>Pulsa el botón de apagado 15-30 s.</li><li>Mantén <b>Scales + Preset + Note</b> mientras lo enciendes.</li><li>Sube la última versión estable o el firmware de stock («Oficial») a través de esta misma página.</li></ol></div><div class="en"><b>If the device is bricked</b> (it does not start):<ol class="sub-steps"><li>Unplug it from power.</li><li>Press the power button for 15-30 s.</li><li>Hold <b>Scales + Preset + Note</b> while you power it on.</li><li>Send the latest stable version or the stock firmware (“Official”) with this same page.</li></ol></div></li>
     </ol>
   </section>
 
@@ -502,4 +516,4 @@ setLang(LANG); updateSend();
 """
 
 if __name__ == "__main__":
-    main(sys.argv[1:] or ["RC2", "RC2S", "RC0.9", "RC0.9S"])
+    main(sys.argv[1:] or ["R202", "R202S", "B3.3", "R201", "R201S", "RC2", "RC2S", "RC0.9", "RC0.9S"])

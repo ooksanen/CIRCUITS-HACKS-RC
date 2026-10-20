@@ -12,7 +12,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = "RC2"
+VERSION = "RC2.02"
 
 # ---------------------------------------------------------------------------------------------------- colours (approximations of the pad colours)
 C = dict(red="#ff3b30", orange="#ff8a00", yellow="#ffd23f", green="#3ddc5a", teal="#00c2a8", blue="#2f7bff", purple="#8e5cff", magenta="#e040fb",
@@ -126,11 +126,11 @@ sec("atajos", "A", "Mapa de atajos",
 | 3 | **Shift + Preset** con un drum | Vista cromática / de escala (A7) |
 | 4 | **Clear + knob** | Valor por defecto del knob, también en Master FX; en drums, a la izquierda borra la automatización (A4) |
 | 5 | **Octave ▲ / ▼** en la vista FX | Envíos de delay / reverb; **Shift + knob** = sus parámetros (A3, B2) |
-| 6 | **Duplicate** / **1-16 / 17-32** en la vista FX | Reset de envíos y Master FX / resonancia del filtro master (A3) |
+| 6 | **Duplicate** / **Shift + Octave ▲ / ▼** (solo Beta 3.3; en RC2.02 **1-16 / 17-32**) en la vista FX | Reset de envíos y Master FX / resonancia del filtro master (A3) |
 | 7 | **Shift + FX**, luego **Octave ▼**, con los drums | Sidechain entre drums (D7) |
 | 8 | **MIDI 1 / 2**, **Preset** | Pad 27 motor, 25 editor de CC, 26 patch flip, 30 step-drummer (C1) |
 | 9 | Master FX: **pad 8** | Apagar todo lo fijado (A5) |
-| 10 | Master FX: **pad 7** / **pad 32** / **pad 31** | Tocar / grabar el sample (C5), Glitch (C6) |
+| 10 | Master FX: **pad 7** / **pad 32** / **pad 6** | Tocar / grabar el sample (C5), Glitch (C6) |
 | 11 | Preset de drums / de sinte: **Clear + pad dos veces** / **Duplicate + pad + pad** | Sustituir por la captura / intercambiar o copiar entre packs samples y patches (A9, A8) |
 | 12 | Vista de packs: **Clear**, el pack, **Clear** | Borrar un pack (A8) |
 | 13 | **Save** | Guarda también las capturas usadas como samples (A8) |
@@ -139,7 +139,7 @@ sec("atajos", "A", "Mapa de atajos",
 | 16 | Master FX: **Shift + pad 7** | Sample en bucle enganchado hasta volver a pulsar el 7 (C5) |
 | 17 | Preset de MIDI 1 / 2: **Clear + pad de página (1-5)** | Los valores de esa página de knobs a los iniciales (C1, **desde RC2**) |
 | 18 | Advanced Setup: **Duplicate** | MIDI Thru: Thru → Out 2 → Merge → Filter (B7, **desde RC2**) |
-| 19 | **Synth 1 + Synth 2** a la vez | Teclado partido: arriba Synth 1, abajo Synth 2 (A12, **desde RC2**) |
+| 19 | **Synth 1 + Synth 2** a la vez | Teclado partido: arriba Synth 1, abajo Synth 2 (A12, **desde RC2**); **desde RC2.02**: cualquier par de Synth 1, Synth 2, MIDI 1 y MIDI 2, arriba la pista que mantuviste primero |
 | 20 | **Shift + Pattern Settings**, un paso, **fila 4** | Random-mutate del paso: octava / escala al azar (C8, **desde RC2**) |
 | 21 | Preset de MIDI 1 / 2: **pads 9-24**, **Clear + pad** dos veces, **Duplicate + A + B**, **Octave ▼ / ▲** | Patches del sinte propio: cargar, guardar, intercambiar, página (A14, **desde RC2**) |
 | 22 | MIDI 1 / 2: **Clear + el botón de la pista** | El motor de la pista a sus valores iniciales (A14, **desde RC2**) |
@@ -161,7 +161,8 @@ sec("atajos", "A", "Mapa de atajos",
 | 38 | Step-drummer: **pad 32**; página velocity: **pads 17-24** | Toggle pitch-vel (transponer en la escala / velocity) y destino propio de la página 2 (**desde RC2**) |
 | 39 | **Shift + Play** | Cuantizar el patrón que suena en la pista elegida (**desde RC2**) |
 | 40 | MIDI 1 / 2 en modo muestra: **Note dos veces**; **paso mantenido + sample** | Selector de los 64 samples del pack (Octave ▼ / ▲) y sample flip por paso, también en vivo con Record (**desde RC2**) |
-""", [fig("Mapa de atajos: los números remiten a la tabla.", pads={7: ("yellow", "Sample"), 8: ("white", "Apagar"), 27: ("magenta", "Motor"), 31: ("teal", "Glitch"), 32: ("red", "Grabar")},
+| 41 | Preset de MIDI 1 / 2: **pad 6**; **K1-K8**, **Shift + K4 / K5 / K6 / K8**, **Clear + pad 6** | Matriz de modulación del sinte propio: cada knob una fuente, su posición = destino y cantidad (C16, **desde RC2.02**) |
+""", [fig("Mapa de atajos: los números remiten a la tabla.", pads={7: ("yellow", "Sample"), 8: ("white", "Apagar"), 27: ("magenta", "Motor"), 31: ("peach", "Gesto"), 32: ("red", "Grabar")},
           knobs={k_: "Clear+" for k_ in range(1, 9)},
           buttons={"Mixer": "white", "Synth 1": "white", "Preset": "white", "Clear": "red", "Oct ▲": "peach", "Oct ▼": "cream", "Duplicate": "white", "1-16 / 17-32": "green",
                    "FX": "white", "MIDI 1": "orange", "Drum 1": "white", "Save": "white", "Projects": "white", "Scales": "yellow", "Note": "yellow", "Shift": "grey"},
@@ -176,15 +177,15 @@ Master FX es una vista de actuación con efectos sobre la salida master, un song
 1. Pulsa **Mixer**.
 2. Pulsa **Mixer** otra vez: se abre Master FX.
 3. Cualquier otro botón de vista vuelve a la vista normal.
-""", [fig("Master FX: pads 1-6 efectos, 7 sample, 8 apagar todo, 9-24 song pointer, fila inferior asignable, 31 Glitch, 32 grabar.",
-          pads={1: ("red", "Gater"), 2: ("orange", "AF LP"), 3: ("blue", "AF HP"), 4: ("lime", "Digitise"), 5: ("magenta", "Phaser"), 6: ("peach", "Vinyl"),
+""", [fig("Master FX: pads 1-6 efectos, 7 sample, 8 apagar todo, 9-24 song pointer, fila inferior asignable, 31 gesto mecánico, 32 grabar.",
+          pads={1: ("red", "Gater"), 2: ("orange", "AF LP"), 3: ("blue", "AF HP"), 4: ("lime", "Digitise"), 5: ("magenta", "Phaser"), 6: ("teal", "Glitch"),
                 7: ("yellow", "Sample"), 8: ("white", "Apagar"), **{n: ("grey", "paso\n" + str(n - 8), True) for n in range(9, 25)}, 25: ("white", "FX off", True),
-                **{n: ("cream", "hueco", True) for n in range(26, 31)}, 31: ("teal", "Glitch"), 32: ("red", "Grabar")},
+                **{n: ("cream", "hueco", True) for n in range(26, 31)}, 31: ("peach", "Gesto"), 32: ("red", "Grabar")},
           knobs={1: "P1", 2: "P2", 3: "P3", 4: "P4"}, buttons={"Mixer": "white"}, view="Master FX")])
 
 sec("vista-fx", "A", "Teclas de la vista FX",
     ["**Octave ▲ / ▼** = envíos de delay / reverb; **Shift + knob** = parámetros de reverb y delay.",
-     "**Duplicate** = reset (envíos a 0, filtro master al centro, Master FX apagado); **1-16 / 17-32** = resonancia del filtro master."],
+     "**Duplicate** = reset (envíos a 0, filtro master al centro, Master FX apagado); **Shift + Octave ▲ / ▼** = resonancia del filtro master ±16 (solo Beta 3.3; en RC2.02, **1-16 / 17-32**); **Shift + pad 25** = filtro master apagado / encendido (solo Beta 3.3)."],
     """
 | Control | Función |
 |---|---|
@@ -192,12 +193,14 @@ sec("vista-fx", "A", "Teclas de la vista FX",
 | **Octave ▼** | Los knobs controlan los **envíos de reverb** (color del pad 17) |
 | **Shift + knob** | **Parámetros del efecto**. Reverb: tipo, decay, damping. Delay: time, sync, feedback, width, ratio, slew. Se guardan con el proyecto |
 | **Duplicate** | Reset: envíos a 0, filtro master al centro (sin tocar la resonancia), Master FX apagado |
-| **1-16 / 17-32** | Sube la resonancia del filtro master (LED verde) |
+| **Shift + Octave ▲ / ▼** | **Solo Beta 3.3.** Resonancia del filtro master +16 / −16; se para en 127 / 0 (con Shift, Octave en amarillo) |
+| **Shift + pad 25** | **Solo Beta 3.3.** Filtro master apagado (suena al centro aunque se mueva el knob) / encendido (en la posición actual del knob). Apagado: LED del knob del filtro en rojo; con Shift, pad 25 amarillo / rojo |
+| **1-16 / 17-32** | En RC2.02: sube la resonancia del filtro master (LED verde); en la Beta 3.3 hace lo de siempre |
 
-- La fila inferior (pads 25-32) es la misma que la de Master FX: huecos asignables, el Glitch (31) y grabar (32).
+- La fila inferior (pads 25-32) es la misma que la de Master FX: huecos asignables, el gesto mecánico (31) y grabar (32).
 - Si en Setup el retorno de reverb / delay va a la tira 3 / 4, los envíos de esas tiras tienen tope a la mitad y van a media velocidad.
 """, [fig("Vista FX: Octave elige delay / reverb; la fila inferior es la de Master FX.", pads={**{n: ("peach", "", True) for n in range(1, 17)}, **{n: ("cream", "", True) for n in range(17, 25)},
-                                                                                                     31: ("teal", "Glitch"), 32: ("red", "Grabar")},
+                                                                                                     31: ("peach", "Gesto"), 32: ("red", "Grabar")},
           knobs={k: "envío" for k in range(1, 9)}, buttons={"FX": "white", "Oct ▲": "peach", "Oct ▼": "cream", "Duplicate": "white", "1-16 / 17-32": "green"}, view="FX")])
 
 sec("clear-knob", "A", "Clear + knob = valor por defecto",
@@ -205,12 +208,12 @@ sec("clear-knob", "A", "Clear + knob = valor por defecto",
     """
 | Dónde | Clear + knob a la derecha | Clear + knob a la izquierda |
 |---|---|---|
-| Drums (knobs de stock y nuevos) | Valor por defecto; LED **azul** | Knobs de stock: borra su automatización; LED **rojo** (como el original) |
-| Motor de las pistas MIDI y oscilador | Valor por defecto; LED rojo mientras Clear | Igual |
+| Drums (knobs de stock y nuevos) | Valor por defecto; LED **lavanda** (el azul del original) | Knobs de stock: borra su automatización; LED **rojo** (como el original) |
+| Motor de las pistas MIDI y oscilador | Valor por defecto; LED **lavanda** | **Desde RC2:** borra la automatización del knob (los carriles con y sin Shift); LED **rojo** |
 | **Master FX** (desde RC0.3) | El knob del efecto elegido vuelve a su valor por defecto | Nada (Master FX no tiene automatización) |
 
 - En drums y en el motor MIDI restablece **las dos capas** del knob: la normal y la de Shift.
-- **Master FX:** mientras Clear está pulsado, los knobs del efecto elegido se ven **azules** si están en su valor por defecto y **rojos** si no. Vale para los efectos de los pads 1-6, el Glitch (velocidad normal, sin repetición, sin retraso ni caos) y el sample (sin transposición, one-shot, inicio 0, final al máximo).
+- **Master FX:** mientras Clear está pulsado, los knobs del efecto elegido que están en su valor por defecto se ven **lavanda** (sin rojo: no hay automatización; en RC0.9, azul / rojo). Vale para los efectos de los pads 1-6, el Glitch (velocidad normal, sin repetición, sin retraso ni caos) y el sample (sin transposición, one-shot, inicio 0, final al máximo).
 - RC0.3: el azul de los drums es el del original (antes salía un rojo anaranjado tenue).
 """)
 
@@ -327,6 +330,15 @@ sec("mixer-shift", "A", "Mixer: Shift + knob = nivel a 100 / 0",
 """, [fig("Mixer: Shift + knob a la derecha = nivel 100, a la izquierda = 0.", knobs={k: "100 / 0" for k in range(1, 9)}, buttons={"Mixer": "white", "Shift": "grey"},
           view="Mixer")])
 
+sec("mixer-cue", "A", "Modo cue, mutes al compás y cuantizar (desde RC2)",
+    ["**Desde RC2.** Mixer, página de panorama: **Shift + knob** = modo cue (la salida derecha escucha las pistas que elijas). **Shift + pads 1-8** del Mixer = silenciar / activar al compás siguiente. **Shift + Play** = cuantizar el patrón de la pista elegida."],
+    """
+- **Modo cue:** en la página de panorama (Octave ▼), Shift + knob a la derecha lo enciende y a la izquierda lo apaga (Octave ▼ rosa). Con el modo, los knobs de panorama son el envío de cada pista al cue: la salida izquierda lleva la mezcla en mono y la derecha solo las pistas en cue. Se guarda en el aparato; los paneos vuelven al apagarlo.
+- **Mutes al compás:** Shift + pad de pista (fila 1 del Mixer) = esa pista se silencia o se activa al empezar el compás siguiente; el pad parpadea mientras espera, otra vez lo cancela; parado, al momento.
+- **Cuantizar:** Shift + Play mueve las notas y golpes grabados fuera de la rejilla al paso más cercano (micropasos 1-2 → su paso, 3-5 → el siguiente), en el patrón que suena de la pista elegida. Sustituye al Shift + Play del original.
+- Detalle en la guía por vistas (Mixer y botones de todas las vistas).
+""")
+
 sec("teclado-partido", "A", "Teclado partido Synth 1 + Synth 2",
     ["**Desde RC2.** Mantén **Synth 1** y pulsa **Synth 2** (o al revés): las dos filas de arriba tocan Synth 1 y las dos de abajo Synth 2."],
     """
@@ -334,6 +346,7 @@ sec("teclado-partido", "A", "Teclado partido Synth 1 + Synth 2",
 - Los knobs y Octave son los del primer sinte que pulsaste.
 - **Salir:** cualquier botón de pista o de vista (Note, Preset, Mixer, FX, un Synth solo…). Las notas pulsadas se sueltan. Play, Record, Octave y Shift no la cierran.
 - Synth 1 o Synth 2 solos siguen como siempre (dos veces = la vista de la fuente, A6).
+- **Desde RC2.02: cualquier par de pistas de notas** (Synth 1, Synth 2, MIDI 1, MIDI 2): mantén un botón y pulsa otro; las filas de arriba tocan la que mantuviste primero (en RC2, arriba siempre Synth 1). Los botones de drum no lo abren.
 """, [fig("Teclado partido: filas 1-2 = Synth 1, filas 3-4 = Synth 2.", pads={**{n: ("magenta", "", n not in (1, 8, 9, 16)) for n in range(1, 17)}, **{n: ("green", "", n not in (17, 24, 25, 32)) for n in range(17, 33)}},
           buttons={"Synth 1": "white", "Synth 2": "white"}, view="Synth 1 + Synth 2")])
 
@@ -621,7 +634,7 @@ Los knobs de tipo: color = tipo, brillo = posición dentro del tipo.
 | K7 | WAVE (morph seno → triángulo → sierra → cuadrada) | — |
 | K8 | LFO → morph | Envolvente → morph |
 
-Página 3 (OSC 2): K1 TUNE 2 / FINE 2, K2 SHAPE 2 / FM, Shift + K3 RING, K7 WAVE 2 (**desde RC2**: los ocho sin Shift, K1 TUNE 2, K2 SHAPE 2, K3 MIX, K4 FM, K5 FINE 2, K6 BITSYNC, K7 WAVE 2, K8 RING). Página 4: los 8 valores secuenciables (B6). Página 5: ADSR arriba, LFO abajo (**desde RC2**: Shift + K8 = forma del LFO, seis formas).
+Página 3 (OSC 2): K1 TUNE 2 / FINE 2, K2 SHAPE 2 / FM, Shift + K3 RING, K7 WAVE 2 (**desde RC2**: los ocho sin Shift, K1 TUNE 2, K2 SHAPE 2, K3 MIX, K4 FM, K5 FINE 2, K6 BITSYNC, K7 WAVE 2, K8 RING). Página 4: los 8 valores secuenciables (B6). Página 5: ADSR arriba, LFO abajo (**desde RC2**: Shift + K8 = forma del LFO, seis formas; **desde RC2.02**: siete, con el sample & hold suavizado, y el triángulo cuando el proyecto no guarda ninguna).
 
 - Los valores del motor se guardan en el aparato (no con el proyecto); los del OSC 2, los knobs con Shift del granular y del oscilador y los pads 28 / 29 también desde Beta 1.28 (antes volvían a los iniciales al encender).
 """, [fig("Vista Preset de MIDI 1 con el oscilador (pad 27 verde): fila de páginas y pads del motor; el pad 28 solo se ve con oscilador o VA-drum.",
@@ -683,7 +696,7 @@ sec("fx-seq", "C", "Secuenciador de efectos",
 | 3 | pad 28 |
 | 4 | pad 29 |
 | 5 | pad 30 |
-| 6 | pad 31 (el Glitch) |
+| 6 | pad 31 (el gesto mecánico; en RC0.9, el Glitch) |
 
 4. Con el secuenciador en marcha, en cada paso con nota se enciende lo que tenga ese hueco: un efecto (con su copia de parámetros) o el Glitch. El LED del knob toma el color de ese efecto; apagado = nada.
 
@@ -692,7 +705,7 @@ sec("fx-seq", "C", "Secuenciador de efectos",
 - Al salir del estado azul, el step-drummer de la pista se apaga.
 """, [fig("Secuenciador de efectos: cada knob = el hueco de la fila inferior de Master FX para su par de pasos.",
           pads={1: ("yellow", ""), 3: ("yellow", ""), 4: ("yellow", ""), 9: ("red", ""), 11: ("red", ""), 27: ("blue", "FX seq"), 30: ("purple", "Step\ndrum")},
-          knobs={1: "Gater", 2: "nada", 3: "Phaser", 4: "Glitch", 5: "nada", 6: "Vinyl", 7: "nada", 8: "Glitch"}, buttons={"MIDI 1": "orange", "Play": "green"}, view="Secuenciador FX")])
+          knobs={1: "Gater", 2: "nada", 3: "Phaser", 4: "Glitch", 5: "nada", 6: "Digitise", 7: "nada", 8: "Glitch"}, buttons={"MIDI 1": "orange", "Play": "green"}, view="Secuenciador FX")])
 
 sec("song-pointer", "C", "Song pointer (Master FX)",
     ["Pads 9-24 = pasos 1-16: un paso mantenido = retrigger; dos pasos = frase momentánea; Shift + dos = frase fijada.",
@@ -714,6 +727,7 @@ sec("sample", "C", "Sample capturado",
 - **Mantener:** graba mientras se mantiene (hasta 3,46 s).
 - **Pulsación corta:** graba hasta la siguiente pulsación.
 - **Efectos de Master FX (desde RC0.5):** el sample que suena pasa por los efectos de Master FX; la captura graba la salida sin ellos (en RC0-RC0.4 era al revés: la captura llevaba los efectos y el sample sonaba sin ellos).
+- **Filtro master (desde RC2.01):** la captura y el sample que suena van antes del filtro master: el filtro actúa sobre el sample al sonar y la captura graba la mezcla sin el filtro (hasta RC2, al revés: la captura llevaba el filtro y el sample sonaba sin él).
 - **Shift + pad 32:** armado: con el transporte en marcha graba el compás siguiente; parado, empieza al pulsar **Play**, desde el primer pulso, y graba ese compás (desde RC0.4; antes empezaba un compás tarde).
 
 ### Tocar (pad 7)
@@ -725,11 +739,11 @@ sec("sample", "C", "Sample capturado",
 Mantén el pad 7 y toca un pad de la fila inferior: ese hueco toca el sample con una copia de sus knobs.
 """, [fig("Sample capturado.", pads={7: ("yellow", "Tocar"), 32: ("red", "Grabar"), 27: ("yellow", "sample", True)}, knobs={1: "Pitch", 2: "Modo", 3: "Start", 4: "End"}, view="Master FX")])
 
-sec("glitch-pad", "C", "Glitch (pad 31) y su asignación",
-    ["**Mantén el pad 31** (Master FX o vista FX): la salida se rompe y se retrasa como una cinta. K1 velocidad, K2 repetición, K3 retraso, K4 caos (mitad de abajo) o sobrecarga (mitad de arriba).",
-     "**Pad 31 mantenido + otro pad de la fila inferior** = ese hueco también es un Glitch, con su copia de K1-K4."],
+sec("glitch-pad", "C", "Glitch (pad 6) y su asignación",
+    ["**Mantén el pad 6** (Master FX o vista FX): la salida se rompe y se retrasa como una cinta. K1 velocidad, K2 repetición, K3 retraso, K4 caos (mitad de abajo) o sobrecarga (mitad de arriba).",
+     "**Pad 6 mantenido + un pad de la fila inferior** = ese hueco también es un Glitch, con su copia de K1-K4."],
     """
-- **Mantener el pad 31:** la salida master se sustituye por una cabeza de cinta que lee el audio reciente (D6). Al soltar vuelve el audio normal.
+- **Mantener el pad 6:** la salida master se sustituye por una cabeza de cinta que lee el audio reciente (D6). Al soltar vuelve el audio normal.
 - Al pulsarlo en Master FX, K1-K4 son sus parámetros:
 
 | Knob | Función |
@@ -739,16 +753,16 @@ sec("glitch-pad", "C", "Glitch (pad 31) y su asignación",
 | K3 | Retraso, hasta unos 2,6 s |
 | K4 | Mitad de abajo: **caos** (saltos atrás, cortes y cambios de sentido al azar). Mitad de arriba: **sobrecarga** — bloques que llegan tarde (se repiten 32 muestras y luego se recupera: chasquidos con el tono normal); desde ~3/4 del recorrido además frena: todo más grave y lento, como el DSP sobrecargado (desde RC0.2) |
 
-- **Asignar:** mantén el pad 31 y toca otro pad de la fila inferior (sin Shift): ese hueco guarda un Glitch con la copia actual de K1-K4 y se ilumina en turquesa. Tocar ese hueco lo hace sonar con sus valores.
+- **Asignar:** mantén el pad 6 y toca un pad de la fila inferior (sin Shift): ese hueco guarda un Glitch con la copia actual de K1-K4 y se ilumina en turquesa. Tocar ese hueco lo hace sonar con sus valores.
 - **Dos huecos con Glitch a la vez:** suena el último que pulsas; al soltarlo vuelve el otro con sus valores. Ninguno copia los valores del otro (en RC0, pulsar uno mientras sonaba otro le copiaba los knobs).
-- El pad 31 se ilumina mientras el Glitch suena.
-""", [fig("Glitch: pad 31; asignado también al pad 28.", pads={31: ("teal", "Glitch"), 28: ("teal", "Glitch", True)}, knobs={1: "Veloc.", 2: "Repet.", 3: "Retraso", 4: "Caos"}, view="Master FX")])
+- El pad 6 se ilumina mientras el Glitch suena.
+""", [fig("Glitch: pad 6; asignado también al pad 28.", pads={6: ("teal", "Glitch"), 28: ("teal", "Glitch", True)}, knobs={1: "Veloc.", 2: "Repet.", 3: "Retraso", 4: "Caos"}, view="Master FX")])
 
 sec("fila-inferior", "C", "Fila inferior asignable (Master FX / FX)",
     ["Mantén un efecto de arriba (o el pad 7, o el pad 31) y toca un pad de abajo: ese hueco guarda el efecto con una copia de sus parámetros. Se guarda con el proyecto."],
     """
-- **Pads 26-30** (y el 31 como Glitch): huecos asignables. Un hueco sin asignar es el efecto de actuación de la vista FX de stock.
-- **Asignar:** mantén el efecto de arriba (pads 1-6), el pad 7 (sample) o el pad 31 (Glitch) y toca el hueco.
+- **Pads 26-30**: huecos asignables (el 31 es el gesto mecánico). Un hueco sin asignar es el efecto de actuación de la vista FX de stock.
+- **Asignar:** mantén el efecto de arriba (pads 1-6), el pad 7 (sample) o el pad 31 (gesto mecánico) y toca el hueco.
 - **Tocar el hueco:** carga su copia de parámetros y activa el efecto mientras se mantiene. **Shift + hueco** lo fija.
 - Las asignaciones van con el proyecto y vuelven al encender; al cambiar de sesión se mantienen las de la RAM.
 - El secuenciador de efectos (C3) dispara estos huecos.
@@ -875,6 +889,18 @@ sec("modo-muestra", "C", "Modo muestra de las pistas MIDI (desde RC2)",
                 **{n: ("grey", "", True) for n in range(17, 33)}, 22: ("teal", "sample")},
           buttons={"MIDI 1": "white", "Note": "white", "Oct ▼": "white", "1-16 / 17-32": "white"}, view="Note")])
 
+sec("matriz-mod", "C", "Matriz de modulación del sinte propio (desde RC2.02)",
+    ["**Desde RC2.02.** Con el motor de MIDI 1 / 2 encendido, el **pad 6** de su vista Preset es una página de knobs nueva: **K1-K8 = ocho fuentes** (velocity, nota, azar por nota, LFO 2, envolvente 2, golpe de un drum, posición del patrón, azar por pasos).",
+     "La **posición** de cada knob es el **destino** (todos los parámetros de las páginas de knobs, 33, un tramo cada uno, en el color de su página) y, dentro del tramo, la **cantidad**. Knobs lentos: dos clics por paso, 16 pasos por destino."],
+    """
+- **Fuentes:** K1 velocity, K2 nota (C3 = 0), K3 un valor al azar en cada nota, K4 LFO 2, K5 envolvente 2 (ataque / caída desde cada nota), K6 una caída desde cada golpe de un drum, K7 la posición en el patrón (del primer al último paso), K8 un valor al azar cada N pasos.
+- **Con Shift:** K4 = forma (triángulo, sierra, cuadrada, sample & hold, sample & hold suavizado) × velocidad (0,05-20 Hz); K5 = ataque (0 / corto / medio / largo) × caída (20 ms-4 s); K6 = drum 1-4 × caída; K8 = N (1, 2, 4, 8, 16). Su LED en el color de la zona.
+- **LEDs:** el knob en el color de la página del destino y el brillo de la cantidad. Mientras giras (y 1,5 s después) los pads enseñan el destino: su página (pads 1-5) y su knob en esa página (pads 9-16 = K1-K8, 17-24 = Shift + K1-K8).
+- **Cantidad entera** = la fuente recorre todo el rango del parámetro; se suma al valor guardado al enviarlo (el valor guardado no cambia). Varias fuentes en un destino se suman.
+- **Clear + knob** = fuente apagada; **Clear + Shift + knob** = su parámetro al valor inicial; **Clear + pad 6** = todo apagado.
+- **Se guarda con los patches del sinte propio** (A14); no con el proyecto ni al apagar el aparato. Sin CC / NRPN. Unas 100-250 actualizaciones por segundo, repartidas entre lo que se mueve en la pista.
+""")
+
 sec("master-fx-beta", "C", "Master FX desde RC2: gesto mecánico, Glitch, Digitise y guardado por sesión",
     ["**Desde RC2.** El pad 6 de Master FX es el **Glitch** y el pad 31 un **gesto mecánico** (parada de cinta, scratch…); Digitise gana **K3 = envío momentáneo al delay** y **K4 = envolvente**; los knobs y los huecos de Master FX **se guardan con cada proyecto**."],
     """
@@ -885,15 +911,15 @@ sec("master-fx-beta", "C", "Master FX desde RC2: gesto mecánico, Glitch, Digiti
 """)
 
 sec("efectos-grid", "D", "Efectos de Master FX",
-    ["Gater, Auto-Filter LP / HP, Digitise, Phaser y Vinyl sobre la salida master, con 4 parámetros cada uno."],
+    ["Gater, Auto-Filter LP / HP, Digitise, Phaser y Glitch sobre la salida master, con 4 parámetros cada uno."],
     """
 | Pad | Efecto | K1-K4 |
 |---|---|---|
 | 1 | Gater | división, profundidad, ancho, suavizado |
 | 2 / 3 | Auto-Filter paso bajo / alto | velocidad, profundidad, resonancia, frecuencia central |
-| 4 | Digitise | reducción de muestreo, reducción de bits (K3 y K4 no hacen nada) |
+| 4 | Digitise | reducción de muestreo, reducción de bits, envío al delay (K3), envolvente de la cantidad (K4) |
 | 5 | Phaser | velocidad, profundidad, realimentación, mezcla |
-| 6 | Vinyl | crackle, siseo, tono (paso bajo), desgaste (paso alto) |
+| 6 | Glitch (en RC0.9, el Vinyl) | velocidad, repetición, retraso, caos / sobrecarga |
 
 - Mantener = activo; Shift = fijado. El brillo de los LED de los knobs enseña el valor.
 """)
@@ -904,7 +930,7 @@ sec("vca-vcf", "D", "VCA-VCF de las pistas MIDI",
 - Cadena por voz: VCA → efecto → filtro, o filtro → VCA → efecto (pad 29).
 - Filtro de estado variable con seguimiento de la nota; LP / HP de 24 dB = dos etapas.
 - VCA con ADSR, velocity, ganancia hasta +18 dB con saturación suave.
-- LFO en rampa inversa hacia nivel, filtro, tono, forma y morph.
+- LFO de siete formas (triángulo por defecto; página 5, Shift + K8) hacia nivel, filtro, tono, forma y morph.
 - Los valores por defecto dejan pasar la entrada limpia.
 """)
 
@@ -1006,15 +1032,17 @@ sec("pack-interno", "E", "El pack de la memoria interna: solo lectura",
 sec("instalar", "E", "Instalar y volver atrás",
     ["`tools/ct_uploader.html` envía el `.syx` por Web MIDI; solo acepta firmwares verificados. Recuperación: Scales + Preset + Note al encender."],
     """
-0. **Sin compilar:** `tools/rc_uploader.html` parchea el firmware oficial ([descarga de Novation](https://components.novationmusic.com/api/v2/firmwares/168/file)) en el navegador y lo envía. Elige RC2, RC2S (o las anteriores RC0.9 / RC0.9S) u «Oficial».
+0. **Sin compilar:** `tools/rc_uploader.html` parchea el firmware oficial ([descarga de Novation](https://components.novationmusic.com/api/v2/firmwares/168/file)) en el navegador y lo envía. Elige RC2.02, RC2.02S (o las anteriores RC2.01 / RC2.01S, RC2 / RC2S, RC0.9 / RC0.9S) u «Oficial».
 1. Abre `tools/ct_uploader.html` en Chrome y conecta el Circuit Tracks por USB.
 2. Elige el `.syx` de `firmware/<versión>/`: el uploader comprueba su SHA-256.
 3. Envía. El bootloader de Novation no se modifica.
 - **Volver atrás:** envía otra versión o el firmware oficial. Si el aparato no arranca: mantén **Scales + Preset + Note** al encender (modo de recuperación del bootloader).
 - En la rama RC los `.syx` no se publican: se generan con `tools/patch_official.py` a partir del firmware oficial.
+- **RC2.02** (ficheros y marca `R202`) = RC2.01 + todo lo marcado **desde RC2.02**: la matriz de modulación del sinte propio, el teclado partido con cualquier par de pistas de notas y el LFO con triángulo por defecto y sample & hold suavizado (lo de la Beta 3.0).
+- **RC2.01** (ficheros y marca `R201`) = RC2 + el sample capturado antes del filtro master (el filtro le afecta al sonar; la captura graba la mezcla sin el filtro).
 - **RC2** (versión candidata 2, marca `RC2`) = SC44 = RC0.9 + todo lo marcado **desde RC2** en este manual: lo de las betas 1.0-1.30 (gesto mecánico y Glitch en el pad 6, Digitise K3 / K4, Master FX por sesión, knobs del sidechain y del compresor, frecuencia, dinámicas y random-mutate por paso, cadenas de patrones y escenas, Nudge y órdenes de reproducción, patches del sinte propio, arpegiadores, rollers, escala propia, cuenta atrás, modo cue, sidechain desde las pistas de notas, cuantizar, formas del LFO, modo muestra…) y sus arreglos. Gran parte está sin probar en el aparato: úsala con una copia de la SD.
 - **RC0.9** (décima versión candidata) = RC0.8 + el pack de la memoria interna, de solo lectura para el mod; RC0.8 = RC0.7 + un arreglo (los knobs de pitch del step-drummer conservan su valor: desde RC0 cada giro escribía solo su incremento); RC0.7 = RC0.6 + dos arreglos (el step-drummer, el secuenciador de efectos y el stretch siguen el patrón de su propia pista, antes el de otra; el knob selector del secuenciador de efectos, más lento); RC0.6 = RC0.5 + dos arreglos (el LFO del Auto-Filter y del Phaser arranca al activar el efecto; el blanco tenue de Clear ya no pulsa); RC0.5 = RC0.4 + el sample capturado delante de los efectos de Master FX; RC0.4 = RC0.3 + los arreglos de SC38.2-SC38.6; RC0.3 = SC38, RC0.2 = SC37.5, RC0.1 = SC37.4, RC0 = SC36.2.
-- **Versión más segura:** RC2S = RC2, pero todo lo que el mod pediría escribir o borrar en la tarjeta o en la memoria interna se rechaza (el LED de Save se pone rojo): no hacen nada guardar la captura con el proyecto (A8), los intercambios y copias de samples y patches entre packs, los patches del sinte propio, guardar el patch del sinte, copiar proyectos ni borrar packs; los guardados del original (proyectos, patches, ajustes) sí. Las anteriores: RC0.9S = RC0.9 sin esas funciones. **Haz una copia de la SD antes de instalar** cualquier versión.
+- **Versión más segura:** RC2.02S (ficheros `R202S`; antes RC2.01S, RC2S) = RC2.02, pero todo lo que el mod pediría escribir o borrar en la tarjeta o en la memoria interna se rechaza (el LED de Save se pone rojo): no hacen nada guardar la captura con el proyecto (A8), los intercambios y copias de samples y patches entre packs, los patches del sinte propio, guardar el patch del sinte, copiar proyectos ni borrar packs; los guardados del original (proyectos, patches, ajustes) sí. Las anteriores: RC0.9S = RC0.9 sin esas funciones. **Haz una copia de la SD antes de instalar** cualquier versión.
 - Novedades y arreglos de cada versión: `CHANGELOG.md`.
 """)
 
@@ -1051,7 +1079,7 @@ El resto, NRPN MSB 4 con LSB = código (4, 12, 13, 15, 16, 21-26, 32, 33).
 LSB 1 env. de tono, 2 ring (frecuencia), 3 LFO, 4 velocidad LFO, 5 env → corte, 6 resonancia, 7 forma de la envolvente, 8 ring (cantidad), 9 modo de filtro, 10 inicio (0-120; antes 0-15), 11 bitcrush, 12 tipo de distorsión, 13 corte (0-120), 14 ataque.
 
 ### Master FX — canal 16, NRPN MSB 9
-LSB = 4 × conjunto + knob: Gater 0-3, Auto-Filter 4-7, Digitise 8-11, Phaser 12-15, Vinyl 16-19.
+LSB = 4 × conjunto + knob: Gater 0-3, Auto-Filter 4-7, Digitise 8-11, Phaser 12-15, Glitch 16-19 (en RC0.9, Vinyl).
 """)
 
 

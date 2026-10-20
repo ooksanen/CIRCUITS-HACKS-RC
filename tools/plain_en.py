@@ -12,7 +12,7 @@ UI = dict(lang="en", title="Circuit Tracks mod guide, in plain words", cover="A 
           footer="CIRCUIT-HACKS — firmware mod for the Novation Circuit Tracks (1.2.1, build 4486). Not affiliated with Novation.",
           html="plain.html", md="docs/PLAIN.en.md", pdf="plain.pdf")
 
-INTRO = f"""First draft by [reddit.com/u/luxurysoft1337](https://www.reddit.com/user/luxurysoft1337/), whom we thank. This guide explains the CIRCUIT-HACKS mod in plain words, view by view, with drawings of the panel. It follows the structure and the plain style of the community guide «Circuit Tracks mod manual, in plain English» by **[reddit.com/u/luxurysoft1337](https://www.reddit.com/user/luxurysoft1337/)**, written for RC0.9 and Beta 1.3. This edition is rewritten for **RC2** and **RC2S**, keeps the names of the mod's own manual (capture, step-drummer, slots…), corrects what that guide got wrong or left open, and adds every feature that came after Beta 1.3. The detailed references are the [guide by views](guide.html) and the [feature list](en.html).
+INTRO = f"""First draft by [reddit.com/u/luxurysoft1337](https://www.reddit.com/user/luxurysoft1337/), whom we thank. This guide explains the CIRCUIT-HACKS mod in plain words, view by view, with drawings of the panel. It follows the structure and the plain style of the community guide «Circuit Tracks mod manual, in plain English» by **[reddit.com/u/luxurysoft1337](https://www.reddit.com/user/luxurysoft1337/)**, written for RC0.9 and Beta 1.3. This edition is rewritten for **RC2.01** and **RC2.01S**, keeps the names of the mod's own manual (capture, step-drummer, slots…), corrects what that guide got wrong or left open, and adds every feature that came after Beta 1.3. The detailed references are the [guide by views](guide.html) and the [feature list](en.html).
 
 Nothing here has been tested on a real unit unless the [CHANGELOG](https://github.com/Ghillermo/CIRCUITS-HACKS-RC/blob/main/CHANGELOG.md) says so. The mod is not affiliated with Novation."""
 
@@ -28,7 +28,7 @@ sec("what", "What the mod is", f"""
 The mod is Novation's own Circuit Tracks firmware (1.2.1, build 4486) with extra features patched in. Whatever this guide does not mention works exactly as on a stock unit, so **Novation's user guide still applies**.
 
 - Features with no mark are in every build.
-- Features marked **{B}** are new since RC0.9. Many of them have not been tried on a real unit yet: keep a copy of your card.
+- Features marked **{B}** are new compared with RC0.9; *(since RC2.02)*, compared with RC2.01; *Beta 3.3 only*, only in the beta with the new features (not in RC2.02). Many of them have not been tried on a real unit yet: keep a copy of your card.
 - Novation's bootloader (the part that installs firmware) is never modified, so you can always go back.
 """)
 
@@ -40,9 +40,10 @@ sec("install", "Before you install", f"""
 
 | Build | What it is |
 |---|---|
-| **RC2** | The release candidate: everything in this guide. |
-| **RC2S** | The *safer* build: RC2, but nothing of the mod writes files to the card on its own: saving captures into the pack, copying samples, patches or projects between packs, the own-synth patches and deleting packs do nothing (the Save LED turns red). |
-| **RC0.9 / RC0.9S** | The earlier versions, without what is marked {B}. |
+| **RC2.02** | The release candidate: everything in this guide (RC2.01 + the mod matrix, the split keyboard with any pair and the new LFO shapes). |
+| **RC2.02S** | The *safer* build: RC2.02, but nothing of the mod writes files to the card on its own: saving captures into the pack, copying samples, patches or projects between packs, the own-synth patches and deleting packs do nothing (the Save LED turns red). |
+| **RC2.01 / RC2.01S, RC2 / RC2S, RC0.9 / RC0.9S** | The earlier ones: RC2.01 without what is marked *(since RC2.02)*; RC2 with the sample after the master filter; RC0.9 without what is marked {B}. |
+| **Beta 3.3** | The test build: RC2.02 + the new features marked *Beta 3.3 only*, not tried on a unit. It writes to the card like RC2.02. |
 
 ### Installing
 1. Download Novation's official firmware 1.2.1 (the update file from Components).
@@ -127,8 +128,9 @@ Press **FX** to open the FX view:
 | **Octave ▲ / ▼** | The 8 knobs = the delay sends / the reverb sends, one per track. |
 | **Shift + knob** | The effect itself, for every track: reverb K1 type, K2 decay, K3 damping; delay K1 time, K2 sync, K3 feedback, K4 width, K5 ratio, K6 slew. Saved with the project. |
 | **Duplicate** | Reset: sends to 0, master filter centred, Master FX off. |
-| **1-16 / 17-32** | Resonance of the master filter (green LED). |
-| Bottom row | The same as in Master FX: slots, Glitch, recording the capture. |
+| **Shift + Octave ▲ / ▼** | *Beta 3.3 only:* master filter resonance, 16 up / 16 down; it stops at the top and the bottom. In RC2.02 it is on **1-16 / 17-32** (green LED). |
+| **Shift + pad 25** | *Beta 3.3 only:* switches the master filter off: it sounds as with the filter at the centre even if you move its knob; again, it switches it on wherever the knob is at that moment. While off, the filter knob's light is red. |
+| Bottom row | The same as in Master FX: slots, mechanical gesture, recording the capture. |
 
 - If Setup routes the reverb / delay return through strip 3 or 4 (section 14), the sends of those strips stop at half range and move at half speed.
 """, [F("FX view: Octave ▲ / ▼ choose delay / reverb sends; Shift + knob, the effect itself.",
@@ -145,12 +147,12 @@ Live effects on the whole output. **Hold** a pad to hear its effect; **Shift + p
 | 2 / 3 | Auto-Filter, low pass / high pass | speed, depth, resonance, centre |
 | 4 | Digitise | sample rate, bits; {B}: K3 = a momentary throw into the delay, K4 = envelope of the amount |
 | 5 | Phaser | speed, depth, feedback, mix |
-| 6 | RC: Vinyl (crackle, hiss, tone, wear); {B}: **Glitch** | Glitch: speed, repeat, delay, chaos / overload |
+| 6 | **Glitch** {B} (in RC0.9, the Vinyl) | Glitch: speed, repeat, delay, chaos / overload |
 | 7 | Play the **capture** | pitch, mode, start, end |
 | 8 | Release everything latched (effects, slots, song pointer, capture) and bypass | — |
 | 9-24 | **Song pointer**: steps 1-16 | — |
 | 26-30 | **Slots** | the stored effect's |
-| 31 | RC: **Glitch**; {B}: **mechanical gesture** | gesture: moves, kind, stop time, start time |
+| 31 | **Mechanical gesture** {B} (in RC0.9, the Glitch) | gesture: moves, kind, stop time, start time |
 | 32 | **Record** the capture | — |
 
 - **Clear + knob right** = that knob back to its default. RC: while Clear is held the knobs show lavender at their default and red elsewhere; {B}: only lavender (Master FX has no automation to delete).
@@ -164,7 +166,7 @@ Live effects on the whole output. **Hold** a pad to hear its effect; **Shift + p
 - The playing step shows white; the pointer starts off when a project loads.
 
 ### The capture (pads 32 and 7)
-- **Pad 32 (red):** hold = record while held (up to about 3.5 s); a short tap = record until the next tap; **Shift + pad 32** = armed: with the sequencer running it records the next bar, stopped it waits for Play and records the first bar.
+- **Pad 32 (red):** hold = record while held (up to about 3.5 s); a short tap = record until the next tap; **Shift + pad 32** = armed: with the sequencer running it records the next bar, stopped it waits for Play and records the first bar. Since RC2.01 the capture and the playing sample sit before the master filter: the filter acts on the sample and the capture does not hold it.
 - It records the output **without** the Master FX effects; when it plays, it goes through them.
 - **Pad 7 (yellow)** plays it: K1 pitch (±24 semitones), K2 mode by colour (yellow one-shot, green gate, blue loop: the loop sounds while you hold the pad), K3 start, K4 end (end before start = backwards). **Shift + pad 7** keeps it playing in any mode until pad 7 again (or pad 8).
 - Hold pad 7 and touch a slot to store it there; replace a drum with it (section 8); use it as a granular source (section 10).
@@ -250,7 +252,7 @@ A layer over the pattern: the pattern decides which steps play; the knobs give e
 - {B} **Pitch-vel toggle (pad 32 of the view, green):** on top of their destinations, the pitch page moves the **notes** one degree of the project's scale every 8 knob steps (MIDI −8 … +8 from the centre, synths 0 … +16) and the velocity page also sets the notes' velocity. With the toggle, pitch destinations of the pitch page no longer detune the own synth (the note moves instead).
 
 ### {BETA} extras
-- **Split keyboard:** hold Synth 1 and press Synth 2 (or the other way round): the top two rows play Synth 1, the bottom two Synth 2, each with its scale, octave and velocity. Knobs and Octave follow the synth pressed first; any track or view button leaves.
+- **Split keyboard:** hold Synth 1 and press Synth 2 (or the other way round): the top two rows play Synth 1, the bottom two Synth 2, each with its scale, octave and velocity. Knobs and Octave follow the synth pressed first; any track or view button leaves. *(since RC2.02:* with any pair of Synth 1, Synth 2, MIDI 1 and MIDI 2; the track you held first on top.*)*
 - **Patch colours** in the Preset view: dark blue = mono, lavender = mono with glide, track colour = poly; the chosen one lighter.
 - **Save a patch into the pack:** Preset view, **Clear + pad**, then **Clear + the same pad** within about 5 s: the patch as it sounds goes into that slot (the stock cannot save patches on the device). Refused in the internal memory's pack.
 - **Macro destinations:** in the source view, pad 32 opens the editor. Turn a knob to pick its macro; the knob changes the current field and **Octave ▼ / ▲** walk the fields (slot 1-4, start, end, destination, depth); the pads draw the number. Any pad drops the macro; pad 32 closes the editor. Destinations are the CC / NRPN numbers of Novation's Programmer's Reference Guide (for example CC 74 = filter cutoff).
@@ -284,6 +286,7 @@ In the MIDI 1 / 2 Preset view, each press of **pad 27** moves to the next engine
 | Pad | Function |
 |---|---|
 | 1-5 | Knob page: 1 VCA-VCF, 2 OSC 1 (the granular controls in granular), 3 OSC 2, 4 the 8 automatable values, 5 modulation. {B}: **Clear + page pad** = that page back to its defaults. |
+| 6 | *(since RC2.02)* **Mod matrix** (below). |
 | 9-24 | {B} **Own-synth patches** (below). |
 | 25 | CC editor of the template's macros. |
 | 26 | Patch flip: every note goes out as a Program Change ({B}: only on the track's channel). Exclusive with the engine. |
@@ -298,7 +301,7 @@ In the MIDI 1 / 2 Preset view, each press of **pad 27** moves to the next engine
 - **Page 1, VCA-VCF:** K1 attack (Shift sustain), K2 release (Shift decay), K3 envelope → level (Shift LFO → level), K4 envelope → filter (Shift LFO → filter), K5 filter (Shift filter type: DJ, LP 12, HP 12, band pass, notch, LP 24, HP 24), K6 resonance (Shift VCA gain, up to +18 dB with saturation), K7 LFO speed, K8 effect amount (Shift effect type: soft, hard, folded, wavefold, ring, comb, chorus).
 - **Page 2, OSC 1:** K1 tune (Shift fine), K2 shape (Shift mix OSC 1 ↔ OSC 2), K3 envelope → pitch (Shift bitsync), K4 envelope → shape, K5 LFO → pitch, K6 LFO → shape, K7 WAVE, K8 LFO → morph (Shift envelope → morph).
 - **Page 2, granular:** K1 pitch ±24 (Shift fine), K2 position (Shift position spread), K3 scan: centre freezes, right forward, left backward (Shift chance of a reversed grain), K4 grain size 5-500 ms (Shift pitch spread), K5 density 1-16 (Shift window), K6 scan zone (Shift note mode: pitch / slicer; {B} stretch = from the position to the end over a set number of steps, without changing pitch), K7 LFO → position (Shift LFO → size), K8 envelope → position (Shift source: RC a pack sample or, left, the capture; {B} the capture or the current sample of a drum).
-- **Page 3, OSC 2:** {B}: K1 tune 2, K2 shape 2, K3 mix OSC 1 / OSC 2, K4 FM, K5 fine 2, K6 BITSYNC, K7 WAVE 2, K8 ring, all without Shift (RC0.9: K1 tune 2 with Shift fine 2, K2 shape 2 with Shift FM, Shift + K3 ring, K7 WAVE 2). **Page 4:** the 8 automatable values (tune, release, envelope → level, envelope → filter, filter, resonance, LFO speed, effect). **Page 5:** ADSR on top, LFO below ({B}: **Shift + K8** = the LFO's shape, six shapes in colours).
+- **Page 3, OSC 2:** {B}: K1 tune 2, K2 shape 2, K3 mix OSC 1 / OSC 2, K4 FM, K5 fine 2, K6 BITSYNC, K7 WAVE 2, K8 ring, all without Shift (RC0.9: K1 tune 2 with Shift fine 2, K2 shape 2 with Shift FM, Shift + K3 ring, K7 WAVE 2). **Page 4:** the 8 automatable values (tune, release, envelope → level, envelope → filter, filter, resonance, LFO speed, effect). **Page 5:** ADSR on top, LFO below ({B}: **Shift + K8** = the LFO's shape, six shapes in colours; *(since RC2.02)* seven, with a slewed sample & hold, and the triangle to start with).
 - **Automation:** with Record + Play, the moves of the page 4 values are recorded into the pattern. {B}: **Clear + knob left** deletes that knob's automation (red), **Clear + knob right** = default (lavender).
 
 ### FX sequencer
@@ -306,6 +309,9 @@ Put effects into the Master FX slots first. Then open the step-drummer (pad 30) 
 
 ### CC editor (pad 25)
 Move a knob to pick it; its CC number is drawn on the pads. **Octave ▼ / ▲** walk the fields; turning the knob changes the value. A plain CC has number, start and end; 99 / 98 / 6 = 7-bit NRPN (MSB, LSB…), 38 = 14-bit NRPN. Save with pad 26; any view button or pad 25 discards.
+
+### Mod matrix *(since RC2.02)*
+With the engine on, **pad 6** of the MIDI Preset view turns the 8 knobs into **8 sources**: K1 velocity, K2 note, K3 random per note, K4 LFO 2, K5 envelope 2, K6 a drum hit, K7 the pattern position, K8 stepped random. **Turning a knob picks which parameter it moves** (any of the knob pages, one stretch each, in its page's colour) **and how much** (inside the stretch). While you turn, the pads show where that parameter is. **Shift + K4 / K5 / K6 / K8** = the LFO's shape and rate, the envelope's attack and decay, which drum, every how many steps. **Clear + knob** = source off; **Clear + pad 6** = all. Saved with the own-synth patches.
 
 ### Own-synth patches {B}
 Rows 2-3 of the MIDI Preset view are 16 patch slots, 4 pages with Octave ▼ / ▲ (64 per pack, shared by MIDI 1 and 2). Touch = load (the tonic sounds while you hold). **Clear + pad** twice = save. **Duplicate + A + B** = swap; **Duplicate + A**, another pack, **Duplicate + B** = copy. Dim peach = a patch, bright = the last used, violet = empty. A patch keeps the engine, both oscillators, the order, every value and the step-drummer setting (the steps belong to the pattern). **Clear + the track button** resets the whole engine.
@@ -445,7 +451,7 @@ sec("not", "What the mod does not do", """
 sec("midiref", "MIDI reference", f"""
 Everything new goes out and comes in over CC / NRPN, following the CC Tx / Rx filters of Setup. Full tables: the [MIDI reference](midi-en.html).
 - **Drums** (drum channel): NRPN MSB 5-8 = Drums 1-4; LSB 1 pitch envelope, 2 ring frequency, 3 LFO, 4 LFO speed, 5 envelope → cutoff, 6 resonance, 7 envelope shape, 8 ring amount, 9 filter mode, 10 start point, 11 bitcrush, 12 distortion type; {B} 13 cut, 14 attack.
-- **Master FX** (channel 16): NRPN MSB 9, LSB = 4 × effect + knob: Gater 0-3, Auto-Filter 4-7, Digitise 8-11, Phaser 12-15, Vinyl (RC) / Glitch {B} 16-19.
+- **Master FX** (channel 16): NRPN MSB 9, LSB = 4 × effect + knob: Gater 0-3, Auto-Filter 4-7, Digitise 8-11, Phaser 12-15, Glitch 16-19 (in RC0.9, Vinyl).
 - **MIDI track engine** (the track's channel): filter CC 74, resonance 71, envelope → filter 79, attack 73, decay 75, sustain 70, release 72, effect 91, gain 59, tune 26, fine 27, wave 20, shape 21, tune 2 37, fine 2 39, wave 2 30, shape 2 31, mix 52, ring 54, LFO speed NRPN 0:76; the rest NRPN MSB 4.
 - **Program Change** {B}: the project's listen / send channels in Setup (pads 29 / 30); patch flip on the track's channel.
 """)

@@ -1,4 +1,4 @@
-# Feature list — CIRCUIT-HACKS (RC2)
+# Feature list — CIRCUIT-HACKS (RC2.02)
 
 Circuit Tracks running the official firmware 1.2.1 (build 4486), patched. Anything not described here works as on the original device. Every feature in one line, by topic. **The user manual is the [guide by views](GUIA.en.md)** (in colour: [guide.html](https://ghillermo.github.io/CIRCUITS-HACKS-RC/guide.html)); the CCs / NRPNs, in the [MIDI reference](MIDI.en.md). Illustrated version of this list: [https://ghillermo.github.io/CIRCUITS-HACKS-RC/en.html](https://ghillermo.github.io/CIRCUITS-HACKS-RC/en.html). Versión en español: [`docs/MANUAL.md`](MANUAL.md).
 
@@ -19,13 +19,14 @@ Circuit Tracks running the official firmware 1.2.1 (build 4486), patched. Anythi
 - [A9 Replace a drum with the capture](#a9-sustituir)
 - [A10 CC editor of the MIDI macros](#a10-editor-cc)
 - [A11 Mixer: Shift + knob = level to 100 / 0](#a11-mixer-shift)
-- [A12 Split keyboard Synth 1 + Synth 2](#a12-teclado-partido)
-- [A13 Synth patches by voice mode](#a13-colores-patch)
-- [A14 Patches of the own synth (MIDI 1 / 2)](#a14-patches-midi)
-- [A15 Saving the synth’s patch into the pack](#a15-guardar-patch)
-- [A16 Macro knob destinations](#a16-destinos-macro)
-- [A17 Copying projects to another slot or another pack](#a17-copiar-proyectos)
-- [A18 Own-synth patches to another pack](#a18-patches-entre-packs)
+- [A12 Cue mode, mutes on the bar and quantize (since RC2)](#a12-mixer-cue)
+- [A13 Split keyboard Synth 1 + Synth 2](#a13-teclado-partido)
+- [A14 Synth patches by voice mode](#a14-colores-patch)
+- [A15 Patches of the own synth (MIDI 1 / 2)](#a15-patches-midi)
+- [A16 Saving the synth’s patch into the pack](#a16-guardar-patch)
+- [A17 Macro knob destinations](#a17-destinos-macro)
+- [A18 Copying projects to another slot or another pack](#a18-copiar-proyectos)
+- [A19 Own-synth patches to another pack](#a19-patches-entre-packs)
 
 **B. Exposed controls**
 
@@ -45,7 +46,7 @@ Circuit Tracks running the official firmware 1.2.1 (build 4486), patched. Anythi
 - [C3 FX sequencer](#c3-fx-seq)
 - [C4 Song pointer (Master FX)](#c4-song-pointer)
 - [C5 Captured sample](#c5-sample)
-- [C6 Glitch (pad 31) and its assignment](#c6-glitch-pad)
+- [C6 Glitch (pad 6) and its assignment](#c6-glitch-pad)
 - [C7 Assignable bottom row (Master FX / FX)](#c7-fila-inferior)
 - [C8 Random-mutate per step](#c8-random-mutate)
 - [C9 Step frequency and dynamics](#c9-frecuencia-dinamicas)
@@ -55,7 +56,8 @@ Circuit Tracks running the official firmware 1.2.1 (build 4486), patched. Anythi
 - [C13 Drums micro-step rollers (since RC2)](#c13-rollers)
 - [C14 Custom scale (since RC2)](#c14-escala-propia)
 - [C15 Sample mode of the MIDI tracks (since RC2)](#c15-modo-muestra)
-- [C16 Master FX since RC2: mechanical gesture, Glitch, Digitise and saving per session](#c16-master-fx-beta)
+- [C16 Mod matrix of the own synth (since RC2.02)](#c16-matriz-mod)
+- [C17 Master FX since RC2: mechanical gesture, Glitch, Digitise and saving per session](#c17-master-fx-beta)
 
 **D. DSP**
 
@@ -89,7 +91,7 @@ Circuit Tracks running the official firmware 1.2.1 (build 4486), patched. Anythi
 <a id="a3-vista-fx"></a>
 ### A3. Keys of the FX view
 - **Octave ▲ / ▼** = delay / reverb sends; **Shift + knob** = reverb and delay parameters.
-- **Duplicate** = reset (sends to 0, master filter centred, Master FX off); **1-16 / 17-32** = master filter resonance.
+- **Duplicate** = reset (sends to 0, master filter centred, Master FX off); **Shift + Octave ▲ / ▼** = master filter resonance ±16 (Beta 3.3 only; in RC2.02, **1-16 / 17-32**); **Shift + pad 25** = master filter off / on (Beta 3.3 only).
 
 <a id="a4-clear-knob"></a>
 ### A4. Clear + knob = default value
@@ -124,32 +126,36 @@ Circuit Tracks running the official firmware 1.2.1 (build 4486), patched. Anythi
 ### A11. Mixer: Shift + knob = level to 100 / 0
 - Mixer view: **Shift + a knob turned right** sets that track’s level to **100**; **turned left**, to **0**.
 
-<a id="a12-teclado-partido"></a>
-### A12. Split keyboard Synth 1 + Synth 2
+<a id="a12-mixer-cue"></a>
+### A12. Cue mode, mutes on the bar and quantize (since RC2)
+- **Since RC2.** Mixer, pan page: **Shift + knob** = cue mode (the right output listens to the tracks you choose). **Shift + pads 1-8** of the Mixer = mute / unmute on the next bar. **Shift + Play** = quantize the pattern of the selected track.
+
+<a id="a13-teclado-partido"></a>
+### A13. Split keyboard Synth 1 + Synth 2
 - **Since RC2.** Hold **Synth 1** and press **Synth 2** (or the other way round): the two top rows play Synth 1 and the two bottom rows Synth 2.
 
-<a id="a13-colores-patch"></a>
-### A13. Synth patches by voice mode
+<a id="a14-colores-patch"></a>
+### A14. Synth patches by voice mode
 - **Since RC2.** In the Preset view of Synth 1 / 2 every patch is drawn by its voice mode: **mono dark blue**, **glide lavender**, **poly as always**.
 
-<a id="a14-patches-midi"></a>
-### A14. Patches of the own synth (MIDI 1 / 2)
+<a id="a15-patches-midi"></a>
+### A15. Patches of the own synth (MIDI 1 / 2)
 - **Since RC2.** In the Preset view of MIDI 1 / 2, rows 2 and 3 are 16 patch slots of the track engine: touch = load (the root note sounds), **Clear + pad** twice = save, **Duplicate + A + B** = exchange; **Octave ▼ / ▲** = 4 pages (64 slots per pack).
 
-<a id="a15-guardar-patch"></a>
-### A15. Saving the synth’s patch into the pack
+<a id="a16-guardar-patch"></a>
+### A16. Saving the synth’s patch into the pack
 - **Since RC2.** In the Preset view of Synth 1 / 2: **Clear + pad** asks (it blinks white) and **Clear + the same pad again** saves the patch as it sounds into that slot.
 
-<a id="a16-destinos-macro"></a>
-### A16. Macro knob destinations
+<a id="a17-destinos-macro"></a>
+### A17. Macro knob destinations
 - **Since RC2.** In the synth source view (A6), **pad 32** opens the editor: a knob picks its macro, **Octave ▼ / ▲** steps the field and the pads draw the number.
 
-<a id="a17-copiar-proyectos"></a>
-### A17. Copying projects to another slot or another pack
+<a id="a18-copiar-proyectos"></a>
+### A18. Copying projects to another slot or another pack
 - **Since RC2.** In the Projects view: **Duplicate + pad A** picks the project (it blinks yellow) and **Duplicate + pad B** copies it into that slot, of the same pack or of another one.
 
-<a id="a18-patches-entre-packs"></a>
-### A18. Own-synth patches to another pack
+<a id="a19-patches-entre-packs"></a>
+### A19. Own-synth patches to another pack
 - **Since RC2.** In the Preset view of MIDI 1 / 2: **Duplicate + slot A**, load another pack and **Duplicate + slot B** copies the patch (engine, parameters and name).
 
 ## B. Exposed controls
@@ -217,9 +223,9 @@ Circuit Tracks running the official firmware 1.2.1 (build 4486), patched. Anythi
 - The sample can be assigned to the bottom row (pad 7 + a bottom pad) and can replace a drum (A8).
 
 <a id="c6-glitch-pad"></a>
-### C6. Glitch (pad 31) and its assignment
-- **Hold pad 31** (Master FX or FX view): the output breaks up and lags like a tape. K1 speed, K2 repeat, K3 delay, K4 chaos (lower half) or overload (upper half).
-- **Pad 31 held + another bottom-row pad** = that slot is a Glitch too, with its copy of K1-K4.
+### C6. Glitch (pad 6) and its assignment
+- **Hold pad 6** (Master FX or FX view): the output breaks up and lags like a tape. K1 speed, K2 repeat, K3 delay, K4 chaos (lower half) or overload (upper half).
+- **Pad 6 held + a bottom-row pad** = that slot is a Glitch too, with its copy of K1-K4.
 
 <a id="c7-fila-inferior"></a>
 ### C7. Assignable bottom row (Master FX / FX)
@@ -258,15 +264,20 @@ Circuit Tracks running the official firmware 1.2.1 (build 4486), patched. Anythi
 - **Since RC2.** A new state of pad 27 (cyan, after the granular): the MIDI track plays **a pack sample one-shot**, at the note's pitch (**C3 = note 60 = as recorded**), through the engine's filter, effect and LFO; the VCA stays open and the sample plays to its end.
 - The **expanded Note view** (Note twice) is the picker: rows 3-4 = 16 samples × 4 pages (Octave ▼ / ▲: all 64 of the pack), rows 1-2 = the steps; **a held step + a sample** = that step's sample flip, also live with Record.
 
-<a id="c16-master-fx-beta"></a>
-### C16. Master FX since RC2: mechanical gesture, Glitch, Digitise and saving per session
+<a id="c16-matriz-mod"></a>
+### C16. Mod matrix of the own synth (since RC2.02)
+- **Since RC2.02.** With the MIDI 1 / 2 engine on, **pad 6** of its Preset view is a new knob page: **K1-K8 = eight sources** (velocity, note, random per note, LFO 2, envelope 2, a drum hit, the pattern position, stepped random).
+- Each knob's **position** is the **destination** (every parameter of the knob pages, 33, one stretch each, in its page's colour) and, inside the stretch, the **amount**. Slow knobs: two clicks a step, 16 steps a destination.
+
+<a id="c17-master-fx-beta"></a>
+### C17. Master FX since RC2: mechanical gesture, Glitch, Digitise and saving per session
 - **Since RC2.** Pad 6 of Master FX is the **Glitch** and pad 31 a **mechanical gesture** (tape stop, scratch…); Digitise gains **K3 = momentary send to the delay** and **K4 = envelope**; the Master FX knobs and slots **are saved with every project**.
 
 ## D. DSP
 
 <a id="d1-efectos-grid"></a>
 ### D1. Master FX effects
-- Gater, Auto-Filter LP / HP, Digitise, Phaser and Vinyl on the master output, with 4 parameters each.
+- Gater, Auto-Filter LP / HP, Digitise, Phaser and Glitch on the master output, with 4 parameters each.
 
 <a id="d2-vca-vcf"></a>
 ### D2. VCA-VCF of the MIDI tracks

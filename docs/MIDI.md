@@ -1,4 +1,4 @@
-# Referencia MIDI de las funciones nuevas — CIRCUIT-HACKS (RC2)
+# Referencia MIDI de las funciones nuevas — CIRCUIT-HACKS (RC2.02)
 
 Los CC / NRPN que añade el mod. Los parámetros del aparato original (sintes, drums, mixer, FX) siguen con los números de la *Programmer’s Reference Guide* de Novation. Todo respeta los filtros CC Tx / CC Rx de la vista Setup.
 
@@ -79,7 +79,7 @@ Canal 16. **CC 99 = 9**, **CC 98 = 4 × efecto + knob** (knob 0-3 = K1-K4), **CC
 | 4-7 | Auto-Filter (pads 2 / 3) | velocidad, profundidad, resonancia, centro |
 | 8-11 | Digitise | muestreo, bits, envío al delay (RC2), envolvente (RC2) |
 | 12-15 | Phaser | velocidad, profundidad, realimentación, mezcla |
-| 16-19 | Vinyl (RC0.9) / Glitch (RC2) | RC: crackle, siseo, tono, desgaste; RC2: velocidad, repetición, retraso, caos |
+| 16-19 | Glitch (RC0.9: Vinyl) | velocidad, repetición, retraso, caos / sobrecarga (RC0.9: crackle, siseo, tono, desgaste) |
 
 ## Program Change
 

@@ -53,11 +53,11 @@ sec("atajos", "Shortcut map",
 | 3 | **Shift + Preset** with a drum | Chromatic / scale view (A7) |
 | 4 | **Clear + knob** | Default value of the knob, also in Master FX; on the drums, turned left it deletes the automation (A4) |
 | 5 | **Octave ▲ / ▼** in the FX view | Delay / reverb sends; **Shift + knob** = their parameters (A3, B2) |
-| 6 | **Duplicate** / **1-16 / 17-32** in the FX view | Reset of sends and Master FX / master filter resonance (A3) |
+| 6 | **Duplicate** / **Shift + Octave ▲ / ▼** (Beta 3.3 only; in RC2.02 **1-16 / 17-32**) in the FX view | Reset of sends and Master FX / master filter resonance (A3) |
 | 7 | **Shift + FX**, then **Octave ▼**, with the drums | Sidechain between drums (D7) |
 | 8 | **MIDI 1 / 2**, **Preset** | Pad 27 engine, 25 CC editor, 26 patch flip, 30 step-drummer (C1) |
 | 9 | Master FX: **pad 8** | Switch off everything latched (A5) |
-| 10 | Master FX: **pad 7** / **pad 32** / **pad 31** | Play / record the sample (C5), Glitch (C6) |
+| 10 | Master FX: **pad 7** / **pad 32** / **pad 6** | Play / record the sample (C5), Glitch (C6) |
 | 11 | Drum / synth Preset: **Clear + pad twice** / **Duplicate + pad + pad** | Replace with the capture / swap or copy samples and patches between packs (A9, A8) |
 | 12 | Packs view: **Clear**, the pack, **Clear** | Delete a pack (A8) |
 | 13 | **Save** | Also saves the captures used as samples (A8) |
@@ -66,7 +66,7 @@ sec("atajos", "Shortcut map",
 | 16 | Master FX: **Shift + pad 7** | Sample in a latched loop until pad 7 is pressed again (C5) |
 | 17 | MIDI 1 / 2 Preset: **Clear + a page pad (1-5)** | The values of that knob page back to their initial values (C1, **since RC2**) |
 | 18 | Advanced Setup: **Duplicate** | MIDI Thru: Thru → Out 2 → Merge → Filter (B7, **since RC2**) |
-| 19 | **Synth 1 + Synth 2** together | Split keyboard: Synth 1 on top, Synth 2 below (A12, **since RC2**) |
+| 19 | **Synth 1 + Synth 2** together | Split keyboard: Synth 1 on top, Synth 2 below (A12, **since RC2**); **Since RC2.02**: any pair of Synth 1, Synth 2, MIDI 1 and MIDI 2, the track you held first on top |
 | 20 | **Shift + Pattern Settings**, a step, **row 4** | Random-mutate of the step: random octave / scale changes (C8, **since RC2**) |
 | 21 | MIDI 1 / 2 Preset: **pads 9-24**, **Clear + pad** twice, **Duplicate + A + B**, **Octave ▼ / ▲** | Patches of the own synth: load, save, exchange, page (A14, **since RC2**) |
 | 22 | MIDI 1 / 2: **Clear + the track button** | The track engine back to its initial values (A14, **since RC2**) |
@@ -88,6 +88,7 @@ sec("atajos", "Shortcut map",
 | 38 | Step-drummer: **pad 32**; velocity page: **pads 17-24** | Pitch-vel toggle (transpose in the scale / velocity) and page 2's own destination (**since RC2**) |
 | 39 | **Shift + Play** | Quantize the pattern the selected track plays (**since RC2**) |
 | 40 | MIDI 1 / 2 in the sample mode: **Note twice**; **a held step + a sample** | Picker of the pack's 64 samples (Octave ▼ / ▲) and a sample flip per step, also live with Record (**since RC2**) |
+| 41 | MIDI 1 / 2 Preset: **pad 6**; **K1-K8**, **Shift + K4 / K5 / K6 / K8**, **Clear + pad 6** | Mod matrix of the own synth: each knob a source, its position = destination and amount (C16, **Since RC2.02**) |
 """, ["Shortcut map: the numbers refer to the table."])
 
 sec("master-fx-acceso", "Master FX on the Mixer button",
@@ -98,11 +99,11 @@ Master FX is a performance view with effects on the master output, a song pointe
 1. Press **Mixer**.
 2. Press **Mixer** again: Master FX opens.
 3. Any other view button goes back to the normal view.
-""", ["Master FX: pads 1-6 effects, 7 sample, 8 all off, 9-24 song pointer, assignable bottom row, 31 Glitch, 32 record."])
+""", ["Master FX: pads 1-6 effects, 7 sample, 8 all off, 9-24 song pointer, assignable bottom row, 31 mechanical gesture, 32 record."])
 
 sec("vista-fx", "Keys of the FX view",
     ["**Octave ▲ / ▼** = delay / reverb sends; **Shift + knob** = reverb and delay parameters.",
-     "**Duplicate** = reset (sends to 0, master filter centred, Master FX off); **1-16 / 17-32** = master filter resonance."],
+     "**Duplicate** = reset (sends to 0, master filter centred, Master FX off); **Shift + Octave ▲ / ▼** = master filter resonance ±16 (Beta 3.3 only; in RC2.02, **1-16 / 17-32**); **Shift + pad 25** = master filter off / on (Beta 3.3 only)."],
     """
 | Control | Function |
 |---|---|
@@ -110,9 +111,11 @@ sec("vista-fx", "Keys of the FX view",
 | **Octave ▼** | The knobs control the **reverb sends** (colour of pad 17) |
 | **Shift + knob** | **Effect parameters**. Reverb: type, decay, damping. Delay: time, sync, feedback, width, ratio, slew. Saved with the project |
 | **Duplicate** | Reset: sends to 0, master filter centred (resonance untouched), Master FX off |
-| **1-16 / 17-32** | Raises the master filter resonance (green LED) |
+| **Shift + Octave ▲ / ▼** | **Beta 3.3 only.** Master filter resonance +16 / −16; stops at 127 / 0 (with Shift, Octave lights yellow) |
+| **Shift + pad 25** | **Beta 3.3 only.** Master filter off (it sounds centred even if the knob moves) / on (at the knob's current position). While off: the filter knob's LED red; with Shift, pad 25 yellow / red |
+| **1-16 / 17-32** | In RC2.02: raises the master filter resonance (green LED); in Beta 3.3 it does what it always did |
 
-- The bottom row (pads 25-32) is the same as in Master FX: assignable slots, the Glitch (31) and record (32).
+- The bottom row (pads 25-32) is the same as in Master FX: assignable slots, the mechanical gesture (31) and record (32).
 - If Setup routes the reverb / delay return to strip 3 / 4, the sends of those strips stop at half range and move at half speed.
 """, ["FX view: Octave picks delay / reverb; the bottom row is the Master FX one."])
 
@@ -121,12 +124,12 @@ sec("clear-knob", "Clear + knob = default value",
     """
 | Where | Clear + knob right | Clear + knob left |
 |---|---|---|
-| Drums (stock and new knobs) | Default value; **blue** LED | Stock knobs: deletes their automation; **red** LED (as on the original) |
-| MIDI track engine and oscillator | Default value; red LED while Clear is held | The same |
+| Drums (stock and new knobs) | Default value; **lavender** LED (the original's blue) | Stock knobs: deletes their automation; **red** LED (as on the original) |
+| MIDI track engine and oscillator | Default value; **lavender** LED | **Since RC2:** deletes the knob's automation (the lanes with and without Shift); **red** LED |
 | **Master FX** (from RC0.3) | The knob of the selected effect goes back to its default | Nothing (Master FX has no automation) |
 
 - On the drums and the MIDI engine it resets **both layers** of the knob: the plain one and the Shift one.
-- **Master FX:** while Clear is held, the knobs of the selected effect show **blue** at their default and **red** elsewhere. It works for the effects of pads 1-6, the Glitch (normal speed, no repeat, no delay or chaos) and the sample (no transposition, one-shot, start 0, end at maximum).
+- **Master FX:** while Clear is held, the knobs of the selected effect that are at their default show **lavender** (no red: there is no automation; in RC0.9, blue / red). It works for the effects of pads 1-6, the Glitch (normal speed, no repeat, no delay or chaos) and the sample (no transposition, one-shot, start 0, end at maximum).
 - RC0.3: the drum blue is the original’s (before, a dim red-orange showed).
 """)
 
@@ -240,6 +243,15 @@ sec("mixer-shift", "Mixer: Shift + knob = level to 100 / 0",
 - From RC0.3 (also in RC0.3S).
 """, ["Mixer: Shift + knob right = level 100, left = 0."])
 
+sec("mixer-cue", "Cue mode, mutes on the bar and quantize (since RC2)",
+    ["**Since RC2.** Mixer, pan page: **Shift + knob** = cue mode (the right output listens to the tracks you choose). **Shift + pads 1-8** of the Mixer = mute / unmute on the next bar. **Shift + Play** = quantize the pattern of the selected track."],
+    """
+- **Cue mode:** on the pan page (Octave ▼), Shift + knob to the right turns it on and to the left off (Octave ▼ pink). With the mode, the pan knobs are each track's send to the cue: the left output carries the mix in mono and the right one only the tracks in cue. Saved in the device; the pans come back when it is turned off.
+- **Mutes on the bar:** Shift + a track pad (row 1 of the Mixer) = that track mutes or unmutes when the next bar starts; the pad blinks while it waits, again cancels it; stopped, at once.
+- **Quantize:** Shift + Play moves the notes and hits recorded off the grid to the nearest step (micro steps 1-2 → their step, 3-5 → the next one), in the playing pattern of the selected track. It replaces the original's Shift + Play.
+- Details in the guide by views (Mixer and buttons of every view).
+""")
+
 sec("teclado-partido", "Split keyboard Synth 1 + Synth 2",
     ["**Since RC2.** Hold **Synth 1** and press **Synth 2** (or the other way round): the two top rows play Synth 1 and the two bottom rows Synth 2."],
     """
@@ -247,6 +259,7 @@ sec("teclado-partido", "Split keyboard Synth 1 + Synth 2",
 - The knobs and Octave belong to the synth you pressed first.
 - **Leaving:** any track or view button (Note, Preset, Mixer, FX, a single Synth…). Held notes are released. Play, Record, Octave and Shift do not close it.
 - Synth 1 or Synth 2 alone work as always (twice = the source view, A6).
+- **Since RC2.02: any pair of note tracks** (Synth 1, Synth 2, MIDI 1, MIDI 2): hold one button and press another; the top rows play the one you held first (in RC2, Synth 1 always on top). The drum buttons do not open it.
 """, ["Split keyboard: rows 1-2 = Synth 1, rows 3-4 = Synth 2."])
 
 sec("colores-patch", "Synth patches by voice mode",
@@ -525,7 +538,7 @@ Type knobs: colour = type, brightness = position inside the type.
 | K7 | WAVE (morph sine → triangle → saw → square) | — |
 | K8 | LFO → morph | Envelope → morph |
 
-Page 3 (OSC 2): K1 TUNE 2 / FINE 2, K2 SHAPE 2 / FM, Shift + K3 RING, K7 WAVE 2 (**since RC2**: all eight without Shift, K1 TUNE 2, K2 SHAPE 2, K3 MIX, K4 FM, K5 FINE 2, K6 BITSYNC, K7 WAVE 2, K8 RING). Page 4: the 8 sequenceable values (B6). Page 5: ADSR on top, LFO at the bottom (**since RC2**: Shift + K8 = the LFO's shape, six shapes).
+Page 3 (OSC 2): K1 TUNE 2 / FINE 2, K2 SHAPE 2 / FM, Shift + K3 RING, K7 WAVE 2 (**since RC2**: all eight without Shift, K1 TUNE 2, K2 SHAPE 2, K3 MIX, K4 FM, K5 FINE 2, K6 BITSYNC, K7 WAVE 2, K8 RING). Page 4: the 8 sequenceable values (B6). Page 5: ADSR on top, LFO at the bottom (**since RC2**: Shift + K8 = the LFO's shape, six shapes; **Since RC2.02**: seven, with the slewed sample & hold, and the triangle when the project saves none).
 
 - The engine values are saved in the device (not with the project); the OSC 2 ones, the Shift knobs of the granular and the oscillator and pads 28 / 29 too since Beta 1.28 (before, they went back to their defaults at power-up).
 """, ["MIDI 1 Preset view with the oscillator (pad 27 green): page row and engine pads; pad 28 shows only with the oscillator or VA-drum."])
@@ -581,7 +594,7 @@ sec("fx-seq", "FX sequencer",
 | 3 | pad 28 |
 | 4 | pad 29 |
 | 5 | pad 30 |
-| 6 | pad 31 (the Glitch) |
+| 6 | pad 31 (the mechanical gesture; in RC0.9, the Glitch) |
 
 4. While the sequencer runs, every step with a note switches on what that slot holds: an effect (with its copy of the parameters) or the Glitch. The knob LED takes the colour of that effect; off = none.
 
@@ -609,6 +622,7 @@ sec("sample", "Captured sample",
 - **Hold:** records while held (up to 3.46 s).
 - **Short press:** records until the next press.
 - **Master FX effects (from RC0.5):** the sample that plays goes through the Master FX effects; the capture records the output without them (in RC0-RC0.4 it was the other way round: the capture held the effects and the sample played without them).
+- **Master filter (since RC2.01):** the capture and the sample that plays sit before the master filter: the filter acts on the sample as it plays and the capture records the mix without the filter (up to RC2 the other way round: the capture held the filter and the sample played without it).
 - **Shift + pad 32:** armed: with the transport running it records the next bar; stopped, it starts when you press **Play**, from the first beat, and records that bar (from RC0.4; it used to start a bar late).
 
 ### Playing (pad 7)
@@ -620,11 +634,11 @@ sec("sample", "Captured sample",
 Hold pad 7 and touch a pad of the bottom row: that slot plays the sample with a copy of its knobs.
 """, ["Captured sample."])
 
-sec("glitch-pad", "Glitch (pad 31) and its assignment",
-    ["**Hold pad 31** (Master FX or FX view): the output breaks up and lags like a tape. K1 speed, K2 repeat, K3 delay, K4 chaos (lower half) or overload (upper half).",
-     "**Pad 31 held + another bottom-row pad** = that slot is a Glitch too, with its copy of K1-K4."],
+sec("glitch-pad", "Glitch (pad 6) and its assignment",
+    ["**Hold pad 6** (Master FX or FX view): the output breaks up and lags like a tape. K1 speed, K2 repeat, K3 delay, K4 chaos (lower half) or overload (upper half).",
+     "**Pad 6 held + a bottom-row pad** = that slot is a Glitch too, with its copy of K1-K4."],
     """
-- **Holding pad 31:** the master output is replaced by a tape head reading the recent audio (D6). On release the normal audio comes back.
+- **Holding pad 6:** the master output is replaced by a tape head reading the recent audio (D6). On release the normal audio comes back.
 - When pressed in Master FX, K1-K4 are its parameters:
 
 | Knob | Function |
@@ -634,16 +648,16 @@ sec("glitch-pad", "Glitch (pad 31) and its assignment",
 | K3 | Delay, up to about 2.6 s |
 | K4 | Lower half: **chaos** (random jumps back, cuts and reversals). Upper half: **overload** — late blocks (32 samples played again, then caught up: clicks at the normal pitch); from ~3/4 of the travel it also brakes: everything lower and slower, like an overloaded DSP (from RC0.2) |
 
-- **Assign:** hold pad 31 and touch another bottom-row pad (without Shift): that slot stores a Glitch with the current copy of K1-K4 and lights turquoise. Touching that slot plays it with its values.
+- **Assign:** hold pad 6 and touch a bottom-row pad (without Shift): that slot stores a Glitch with the current copy of K1-K4 and lights turquoise. Touching that slot plays it with its values.
 - **Two Glitch slots at once:** the last one you press plays; release it and the other one comes back with its values. Neither copies the other’s values (in RC0, pressing one while another played copied its knobs).
-- Pad 31 lights while the Glitch plays.
-""", ["Glitch: pad 31; also assigned to pad 28."])
+- Pad 6 lights while the Glitch plays.
+""", ["Glitch: pad 6; also assigned to pad 28."])
 
 sec("fila-inferior", "Assignable bottom row (Master FX / FX)",
     ["Hold an effect of the top rows (or pad 7, or pad 31) and touch a bottom pad: that slot stores the effect with a copy of its parameters. Saved with the project."],
     """
-- **Pads 26-30** (and 31 as the Glitch): assignable slots. An unassigned slot is the stock performance effect of the FX view.
-- **Assign:** hold the effect on top (pads 1-6), pad 7 (sample) or pad 31 (Glitch) and touch the slot.
+- **Pads 26-30**: assignable slots (31 is the mechanical gesture). An unassigned slot is the stock performance effect of the FX view.
+- **Assign:** hold the effect on top (pads 1-6), pad 7 (sample) or pad 31 (mechanical gesture) and touch the slot.
 - **Touching the slot:** loads its copy of the parameters and enables the effect while held. **Shift + slot** latches it.
 - The assignments travel with the project and come back at power-on; when switching sessions the ones in RAM stay.
 - The FX sequencer (C3) triggers these slots.
@@ -763,6 +777,18 @@ sec("modo-muestra", "Sample mode of the MIDI tracks (since RC2)",
 - Without the sample mode, the expanded Note view is the usual one.
 """, ["Expanded Note view of MIDI 1 in the sample mode: steps on top, samples below."])
 
+sec("matriz-mod", "Mod matrix of the own synth (since RC2.02)",
+    ["**Since RC2.02.** With the MIDI 1 / 2 engine on, **pad 6** of its Preset view is a new knob page: **K1-K8 = eight sources** (velocity, note, random per note, LFO 2, envelope 2, a drum hit, the pattern position, stepped random).",
+     "Each knob's **position** is the **destination** (every parameter of the knob pages, 33, one stretch each, in its page's colour) and, inside the stretch, the **amount**. Slow knobs: two clicks a step, 16 steps a destination."],
+    """
+- **Sources:** K1 velocity, K2 the note (C3 = 0), K3 a random value at each note, K4 LFO 2, K5 envelope 2 (attack / decay from each note), K6 a decay from each hit of a drum, K7 the pattern position (first to last step), K8 a random value every N steps.
+- **With Shift:** K4 = shape (triangle, saw, square, sample & hold, slewed sample & hold) × rate (0.05-20 Hz); K5 = attack (0 / short / medium / long) × decay (20 ms-4 s); K6 = drum 1-4 × decay; K8 = N (1, 2, 4, 8, 16). Their LED in the zone's colour.
+- **LEDs:** the knob in the colour of the destination's page and the brightness of the amount. While you turn (and 1.5 s after) the pads show the destination: its page (pads 1-5) and its knob on that page (pads 9-16 = K1-K8, 17-24 = Shift + K1-K8).
+- **Full amount** = the source sweeps the parameter's whole range; it is added to the stored value when sent (the stored value does not change). Several sources on one destination add up.
+- **Clear + knob** = source off; **Clear + Shift + knob** = its parameter back to the default; **Clear + pad 6** = all off.
+- **Saved with the own-synth patches** (A14); not with the project nor across a power-down. No CC / NRPN. Some 100-250 updates a second, shared by what moves on the track.
+""", [])
+
 sec("master-fx-beta", "Master FX since RC2: mechanical gesture, Glitch, Digitise and saving per session",
     ["**Since RC2.** Pad 6 of Master FX is the **Glitch** and pad 31 a **mechanical gesture** (tape stop, scratch…); Digitise gains **K3 = momentary send to the delay** and **K4 = envelope**; the Master FX knobs and slots **are saved with every project**."],
     """
@@ -773,15 +799,15 @@ sec("master-fx-beta", "Master FX since RC2: mechanical gesture, Glitch, Digitise
 """, [])
 
 sec("efectos-grid", "Master FX effects",
-    ["Gater, Auto-Filter LP / HP, Digitise, Phaser and Vinyl on the master output, with 4 parameters each."],
+    ["Gater, Auto-Filter LP / HP, Digitise, Phaser and Glitch on the master output, with 4 parameters each."],
     """
 | Pad | Effect | K1-K4 |
 |---|---|---|
 | 1 | Gater | division, depth, width, smoothing |
 | 2 / 3 | Auto-Filter low / high pass | speed, depth, resonance, centre frequency |
-| 4 | Digitise | sample-rate reduction, bit reduction (K3 and K4 do nothing) |
+| 4 | Digitise | sample-rate reduction, bit reduction, send to the delay (K3), amount envelope (K4) |
 | 5 | Phaser | speed, depth, feedback, mix |
-| 6 | Vinyl | crackle, hiss, tone (low pass), wear (high pass) |
+| 6 | Glitch (in RC0.9, the Vinyl) | speed, repeat, delay, chaos / overload |
 
 - Hold = active; Shift = latched. The brightness of the knob LEDs shows the value.
 """)
@@ -792,7 +818,7 @@ sec("vca-vcf", "VCA-VCF of the MIDI tracks",
 - Per-voice chain: VCA → effect → filter, or filter → VCA → effect (pad 29).
 - State-variable filter with key tracking; 24 dB LP / HP = two stages.
 - VCA with ADSR, velocity, gain up to +18 dB with soft saturation.
-- Inverse-ramp LFO to level, filter, pitch, shape and morph.
+- LFO with seven shapes (triangle by default; page 5, Shift + K8) to level, filter, pitch, shape and morph.
 - The default values let the input through clean.
 """)
 
@@ -893,15 +919,17 @@ sec("pack-interno", "The internal memory pack: read only",
 sec("instalar", "Installing and going back",
     ["`tools/ct_uploader.html` sends the `.syx` over Web MIDI; it only accepts verified firmwares. Recovery: Scales + Preset + Note at power-on."],
     """
-0. **Without building:** `tools/rc_uploader.html` patches the official firmware ([Novation download](https://components.novationmusic.com/api/v2/firmwares/168/file)) in the browser and sends it. Pick RC2, RC2S (or the earlier RC0.9 / RC0.9S) or “Official”.
+0. **Without building:** `tools/rc_uploader.html` patches the official firmware ([Novation download](https://components.novationmusic.com/api/v2/firmwares/168/file)) in the browser and sends it. Pick RC2.02, RC2.02S (or the earlier RC2.01 / RC2.01S, RC2 / RC2S, RC0.9 / RC0.9S) or “Official”.
 1. Open `tools/ct_uploader.html` in Chrome and connect the Circuit Tracks over USB.
 2. Pick the `.syx` from `firmware/<version>/`: the uploader checks its SHA-256.
 3. Send. Novation’s bootloader is not modified.
 - **Going back:** send another version or the official firmware. If the device does not start: hold **Scales + Preset + Note** at power-on (bootloader recovery mode).
 - The RC branch does not publish `.syx` files: they are generated with `tools/patch_official.py` from the official firmware.
+- **RC2.02** (files and marker `R202`) = RC2.01 + everything marked **since RC2.02**: the mod matrix of the own synth, the split keyboard with any pair of note tracks and the LFO with a triangle by default and slewed sample & hold (what Beta 3.0 had).
+- **RC2.01** (files and marker `R201`) = RC2 + the captured sample before the master filter (the filter acts on it as it plays; the capture records the mix without the filter).
 - **RC2** (release candidate 2, marker `RC2`) = SC44 = RC0.9 + everything this manual marks **since RC2**: what betas 1.0-1.30 had (mechanical gesture and Glitch on pad 6, Digitise K3 / K4, Master FX per session, side-chain and compressor knobs, step frequency, dynamics and random-mutate, pattern chains and scenes, Nudge and play orders, own-synth patches, arpeggiators, rollers, custom scale, count-in, cue mode, side-chain from the note tracks, quantize, LFO shapes, sample mode…) and their fixes. Much of it is untested on the device: use it with a backup of the SD card.
 - **RC0.9** (tenth release candidate) = RC0.8 + the internal memory pack, read only for the mod; RC0.8 = RC0.7 + one fix (the pitch knobs of the step-drummer keep their value: since RC0 every turn wrote only its own delta); RC0.7 = RC0.6 + two fixes (the step-drummer, the FX sequencer and the stretch follow the pattern of their own track, not another one’s; the selector knob of the FX sequencer is slower); RC0.6 = RC0.5 + two fixes (the LFO of the Auto-Filter and of the Phaser starts when the effect comes on; the dim white of Clear no longer pulses); RC0.5 = RC0.4 + the captured sample in front of the Master FX effects; RC0.4 = RC0.3 + the fixes of SC38.2-SC38.6; RC0.3 = SC38, RC0.2 = SC37.5, RC0.1 = SC37.4, RC0 = SC36.2.
-- **Safer build:** RC2S = RC2, but everything the mod would ask to write or delete on the card or in the internal memory is refused (the Save LED turns red): saving the capture with the project (A8), exchanges and copies of samples and patches between packs, the own-synth patches, saving the synth patch, copying projects and deleting packs do nothing; the original's saves (projects, patches, settings) work. The earlier ones: RC0.9S = RC0.9 without those features. **Back up the SD card before installing** any version.
+- **Safer build:** RC2.02S (files `R202S`; before, RC2.01S, RC2S) = RC2.02, but everything the mod would ask to write or delete on the card or in the internal memory is refused (the Save LED turns red): saving the capture with the project (A8), exchanges and copies of samples and patches between packs, the own-synth patches, saving the synth patch, copying projects and deleting packs do nothing; the original's saves (projects, patches, settings) work. The earlier ones: RC0.9S = RC0.9 without those features. **Back up the SD card before installing** any version.
 - New features and fixes of every version: `CHANGELOG.md`.
 """)
 
@@ -938,5 +966,5 @@ The rest, NRPN MSB 4 with LSB = code (4, 12, 13, 15, 16, 21-26, 32, 33).
 LSB 1 pitch env., 2 ring (frequency), 3 LFO, 4 LFO speed, 5 env → cutoff, 6 resonance, 7 envelope shape, 8 ring (amount), 9 filter mode, 10 start (0-120; before 0-15), 11 bitcrush, 12 distortion type, 13 cut (0-120), 14 attack.
 
 ### Master FX — channel 16, NRPN MSB 9
-LSB = 4 × set + knob: Gater 0-3, Auto-Filter 4-7, Digitise 8-11, Phaser 12-15, Vinyl 16-19.
+LSB = 4 × set + knob: Gater 0-3, Auto-Filter 4-7, Digitise 8-11, Phaser 12-15, Glitch 16-19 (in RC0.9, Vinyl).
 """)
