@@ -1,4 +1,4 @@
-<!-- translated-from: CLAUDE.md @ 700c798 (adapted for this fork, not a 1:1 translation) -->
+<!-- translated-from: CLAUDE.md @ ec56599 (adapted for this fork, not a 1:1 translation) -->
 # CTPlay / CIRCUIT-HACKS (ooksanen) — context for Claude Code
 
 Firmware patches for the **Novation Circuit Tracks**, official firmware 1.2.1 build 4486, derived from
@@ -39,12 +39,13 @@ comments are in English. Upstream's original Spanish `CLAUDE.md`: `git show upst
 - `.venv/bin/python fork/translation_status.py [-d]` — which English translations are behind upstream (`-d` shows diffs).
 
 ## Docs map
-- `docs/VERSIONS.en.md` — **start here**: how the 150 versions stack up and which were confirmed on the device.
+- `docs/VERSIONS.en.md` — **start here**: how the 264 versions stack up and which were confirmed on the device.
 - `docs/RECURSOS.md` (second half English) — resource budget: flash, RAM, saved state, both DSP cores, external memory.
-  RC0.5 / BETA5 have almost nothing left (heap 4 B, DSP core 0 program 19 words, core 1 1 word; ~32 KB of flash).
+  The latest builds have almost nothing left: SC44.6 / Beta 3.3 80 B of flash (with `thumb.COMPACT`), DSP core 0 116
+  words (SC44.3), core 1 1 word, heap 4 B. Its English half stops at SC39 / BETA1; the Spanish half has SC43.9–SC44.5.
 - `docs/NOTAS.md` (Spanish, 384 KB, newest first) — technical detail of every patch and every finding. Read the
   section for the feature at hand rather than the whole file.
-- `CHANGELOG.md` — upstream's per-release changes, Spanish and English (RC0 → RC0.5 / RC0.5S and BETA0 → BETA5 = SC39.6, 2026-10-12).
+- `CHANGELOG.md` — upstream's per-release changes, Spanish and English (RC0 → RC2.02 / RC2.02S = SC44.3, BETA0 → BETA5 and Beta 1.0 → Beta 3.3 = SC44.6, 2026-10-19).
 - `docs/CHECKLIST.en.md` — upstream's on-device test checklist. `firmware/<dir>/PRUEBA.md` — per-build test plan (Spanish).
 - `LEEME.md`, `docs/DEPENDENCIAS.md`, `docs/LOCAL.en.md`, `docs/MANUAL.en.md` — already bilingual / English.
 - `fork/ct_uploader.en.html` — the firmware uploader with an English interface (slim's uploader is generated from it).
@@ -73,7 +74,9 @@ comments are in English. Upstream's original Spanish `CLAUDE.md`: `git show upst
 - **ARM:** STM32F745 (Cortex-M7). App at `0x08010000` (max 0x70000 B; stock image ends at `0x0805CDDC`, code caves
   from `0x0805CDE0`). SP `0x20050000`.
   - Block heap: limit `[0x20002B44]` = `0x20044E58`, current `[0x20002B48]` (`0x20044D68` on the device, 240 B free).
-    The allocator `0x0801D7D8` hits `bkpt` when exhausted and never frees. `0x20044E58–0x2004FE00` is **not** free (boot stack).
+    The allocator `0x0801D7D8` hits `bkpt` when exhausted and never frees. Above the heap, `0x20044E58–0x2004FDFF` (≈ 44 KB) is free according to upstream SC44.2 (stock's own memory report
+    `0x0801D426` counts it as remaining with a 512 B stack above; two RAM dumps show it never written), **not yet
+    confirmed on the device**: upstream stays below `0x2004F000` and signs what it keeps there (RAM is not cleared at power-on).
   - SC14+ reserves the end of the heap (`c_gst`, `build_sc14.ST`).
 - **Controller** `MGR` `0x20040B10` (vtable `0x0805A100`): button press `0x08033320(ctrl, id)` (`tbh` at `0x080333C4`),
   release `0x0803381A`, pad `0x08033282`, knob `0x08033848`.
