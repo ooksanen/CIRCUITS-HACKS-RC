@@ -2,7 +2,87 @@
 
 *English version below: [Changelog](#changelog).*
 
-Novedades y arreglos de cada versión candidata (RC). Cada RC tiene una **versión más segura** (sufijo **S**) sin las funciones que escriben en la tarjeta SD por su cuenta (gestión del pack, A8). Las referencias (A4, C6…) son las secciones del [manual](https://ghillermo.github.io/CIRCUITS-HACKS-RC/index.html). El detalle técnico está en [`docs/NOTAS.md`](docs/NOTAS.md).
+Novedades y arreglos de cada versión candidata (RC). Cada RC tiene una **versión más segura** (sufijo **S**) sin las funciones que escriben en la tarjeta SD por su cuenta (gestión del pack, A8). Las referencias (A4, C6…) son las secciones del [manual](https://ghillermo.github.io/CIRCUIT-HACKS-RC/index.html). El detalle técnico está en [`docs/NOTAS.md`](NOTAS.md).
+
+## Beta 3.22 — 2026-10-25
+
+**Beta 3.22** (marca `B3.22`; = SC46.5) = RC2.09 + lo de la Beta 3.21 + lo siguiente, sin probar en el aparato:
+- **Drums, K7 a la izquierda = scan del inicio:** en lugar del vibrato, cada golpe empieza donde está el LFO del drum, desde el inicio de Shift + K3 hasta |valor| / 64 del sample más allá (sin pasar nunca el corte). El LFO ya no vuelve a empezar con cada golpe; con el LFO a tempo, el primer tiempo cae en el inicio. A la derecha, el trémolo de siempre.
+- El arreglo de RC2.09.
+
+## RC2.09 / RC2.09S — 2026-10-25
+
+**RC2.09** (ficheros y marca `R209`; = RC2.08 + un arreglo) / **RC2.09S** (`R209S`). El mismo arreglo va en la Beta 3.22.
+- **El inicio del sample de los drums** (Shift + K3 a la izquierda) llegaba al final del sample a un cuarto del recorrido del knob, y más allá el golpe sonaba un instante y se callaba (el DSP cuenta la posición en unidades de 4 muestras). Ahora el knob recorre todo el sample (hasta 120/128), como dice el manual. Los proyectos guardados desde RC2 que ya usaban el inicio lo tienen 4 veces más cerca del principio.
+
+## Beta 3.21 — 2026-10-24
+
+**Beta 3.21** (marca `B3.21`; = SC46.4) = la Beta 3.20 + lo siguiente, sin probar en el aparato:
+- **Fusión USB** (petición del issue #10): en Advanced Setup, el **pad 23** hace que lo que entra por el **DIN In** (un teclado conectado con cable MIDI) salga también por **USB** hacia el ordenador, junto al MIDI del propio aparato. Verde encendida; se guarda en los ajustes. Con Clock Tx encendido no se copian el reloj ni el transporte del DIN In; el SysEx no se copia; lo que entra por USB no se reenvía.
+
+## Beta 3.20 — 2026-10-24
+
+**Beta 3.20** (marca `B3.20`; = SC46.3) = RC2.08 + lo de la Beta 3.17 + lo siguiente, sin probar en el aparato (reúne las Betas 3.18 y 3.19, que no se publicaron):
+- **Modo General MIDI de los drums** (vista Setup): **K4** lo enciende (a la derecha, verde) y lo apaga (a la izquierda); **K5-K8**, los knobs sobre las pistas de drums, eligen la nota GM de Drum 1-4 (35-81; de fábrica 36 bombo, 38 caja, 42 y 46 charles). Encendido, cada golpe de Drum 1-4 sale por MIDI con su nota GM en lugar de 60 / 62 / 64 / 65, por el canal de drums del Setup (10 de fábrica). Cada nota nueva suena una vez y su número se ve en los pads; **Shift** o salir de Setup lo confirma; apagar K4 cierra el número y los drums vuelven a salir como en stock. Se guarda en los ajustes del aparato.
+- **Disposición isomórfica Jankó** (un caso de la escala propia): en el editor (Shift + Scales), **Shift + pad 8** la enciende. Cada fila sube un semitono y cada columna un tono desde la tónica de stock: cada tipo de acorde tiene la misma forma en cualquier tono. **Octave = medio tono**. Se guarda con el proyecto.
+- **Pantalla de acordes** (Note ampliada de Synth 1 / 2 y MIDI 1 / 2, **Shift + pad 8**): fila 1 el tipo (mayor, menor, 7, m7, maj7, sus4, dim, aum; con Shift sus2, 6, m6, add9, 9, 7sus4, quinta), fila 2 la inversión, voicing abierto, la fundamental una octava abajo, diatónico y latch; las filas 3-4 son las fundamentales y tocan su acorde mientras se mantienen. Se graba como notas normales del patrón; el arpegiador arpegia el acorde. El tipo no se guarda.
+- **Arreglo (solo beta):** el sample & hold del LFO a tempo (motor del sinte propio y LFO 2 de la matriz) no cambiaba de valor con el transporte en marcha.
+- Los arreglos de RC2.08.
+
+## RC2.08 / RC2.08S — 2026-10-24
+
+**RC2.08** (ficheros y marca `R208`; = RC2.06 + dos arreglos; RC2.07 no se publicó aparte) / **RC2.08S** (`R208S`; sin escrituras propias en la SD, como RC2.06S). Los mismos arreglos van en la Beta 3.20.
+- **Longitud fija** (vista Micro Step, pad 31): elegir una longitud no redibujaba la vista (los pads se quedaban con las luces del selector) y la longitud no llegaba a todas las notas (al soltar antes el paso que la nota, en el paso 1 o en pasos borrados, y en los acordes solo a la última). Ahora la vista se redibuja y la longitud se pone en cada nota al introducirla.
+- **Teclado externo:** las notas que entran por MIDI (USB o DIN) en el canal de MIDI 1 / 2 se grababan pero no tocaban su sinte propio (el original no reenvía esas notas, y el motor las coge en la salida). Ahora lo tocan; siguen sin reenviarse a la salida MIDI.
+
+## Beta 3.17 — 2026-10-21
+
+**Beta 3.17** (marca `B3.17`; = SC46) = RC2.06 + lo de la Beta 3.15 + lo siguiente, sin probar en el aparato (reúne la Beta 3.16, que no se publicó):
+- **El sinte propio de MIDI 1 / 2 se guarda con el proyecto:** al guardar, el motor, sus valores, la matriz de modulación, los destinos de la página 4 y la FM de las dos pistas van con el proyecto; al cargarlo vuelven como sonaban (antes eran globales: cargar otro proyecto dejaba el sonido del anterior). Van en bytes que el original no usa de los patrones 1-5 de MIDI 1 / 2 (no cambian lo que suenan); un proyecto de antes no lo lleva y el sonido se queda como estaba.
+- **Página 4 del motor (los carriles): con Shift + knob, los pads 9-24 enseñan dónde está el destino** elegido, como la matriz de modulación (su página y su knob); mientras se ve, esos pads no cargan patches.
+
+## RC2.06 / RC2.06S — 2026-10-21
+
+**RC2.06** (ficheros y marca `R206`; = RC2.05 + un arreglo) / **RC2.06S** (`R206S`; sin escrituras propias en la SD, como RC2.05S). El mismo arreglo va en la Beta 3.15.
+- **Dos pads de la misma nota mantenidos a la vez** (en el teclado de una pista de notas la última nota de una fila es la primera de la de arriba: los pads 17 y 32, el mismo do) **dejaban la nota sonando** hasta volver a tocarla: el original mandaba dos note-on y un solo note-off (viene del firmware original). Ahora el segundo pad la vuelve a atacar (note-off y note-on) y se para al soltar el último.
+
+## Beta 3.15 — 2026-10-21
+
+**Beta 3.15** (marca `B3.15`; = SC45.8) = RC2.06 + lo de la Beta 3.14 + lo siguiente, sin probar en el aparato:
+- **Teclado partido: mantén un botón de pista** (Synth 1 / 2, MIDI 1 / 2, Drum 1-4): mientras lo mantienes, los 8 knobs (y sus luces) son los de esa pista; al soltarlo vuelven a la primera. Un toque corto (sin girar un knob) lo cierra, como antes.
+- **Arreglo** (el de RC2.06): dos pads de la misma nota mantenidos a la vez ya no dejan la nota colgada.
+
+## RC2.05 / RC2.05S — 2026-10-21
+
+**RC2.05** (ficheros y marca `R205`; = RC2.04 + un arreglo) / **RC2.05S** (`R205S`; sin escrituras propias en la SD, como RC2.04S). El mismo arreglo va en la Beta 3.14.
+- **Cambiar la escala propia con el transporte en marcha podía colgar el aparato:** una nota que no estaba en el teclado de la vista Note (justo después de cambiar la escala, o con un periodo corto que no cubre todas las notas) escribía la luz de su pad fuera de su sitio, dentro de los datos de otra pista. Ahora esas notas no encienden pad.
+
+## Beta 3.14 — 2026-10-21
+
+**Beta 3.14** (marca `B3.14`; = SC45.7) = RC2.05 + lo de la Beta 3.12 + lo siguiente, sin probar en el aparato (reúne la Beta 3.13, que no se publicó):
+- **FM de 4 operadores** como variante del oscilador del sinte propio de MIDI 1 / 2: **pad 24** de la fila de motores (violeta); sus knobs en el **pad 7**: K1-K4 ratio de cada operador, K5-K8 nivel; Shift + K1-K4 ataque, Shift + K5 algoritmo, Shift + K6 feedback, Shift + K7 ruido, Shift + K8 release (más largo con más velocity). Envolventes A/R con sustain fijo por operador. **16 algoritmos:** los clásicos (pila, ramas, órgano…), percusivos (bombo con caída de tono, caja con ruido, metal / charles, tom), campanas (campana, tubular) y cuerdas (cuerdas, ensemble). Se guarda con los patches del sinte propio.
+- **Arreglo** (el de RC2.05): cambiar la escala propia con el transporte en marcha ya no puede colgar el aparato.
+
+## RC2.04 / RC2.04S — 2026-10-21
+
+**RC2.04** (ficheros y marca `R204`; = RC2.02 + arreglos) / **RC2.04S** (`R204S`; sin escrituras propias en la SD, como RC2.02S). Reúne RC2.03, que no se publicó aparte. Los mismos arreglos van en la Beta 3.12.
+- **La cuenta atrás sigue el tempo del proyecto** (antes leía otro valor: los cuatro clics no iban al BPM).
+- **Las notas grabadas de 16 pasos o más ya no se cortan a 16 pasos:** el grabador original cortaba toda nota a 16 pasos; ahora la nota (o cada nota de un acorde) queda ligada y sigue hasta soltarla, también un acorde del arpegiador en un patrón de 32 pasos.
+- **Selector de samples del modo muestra:** mantener un sample y tocar pasos = el flip de esos pasos (antes solo funcionaba paso mantenido + sample).
+
+## Beta 3.12 — 2026-10-20
+
+**Beta 3.12** (marca `B3.12`; = SC45.5) = RC2.04 + funciones nuevas sin probar en el aparato (reúne las betas 3.3-3.11; de ellas solo se publicó la 3.3, su entrada abajo):
+- **Granular en estéreo:** Shift + K4 = dispersión estéreo de los granos, el panorama de la pista = la proporción izquierda / derecha; Shift + K3 bipolar: izquierda reverso, derecha dispersión del tono ±24.
+- **LFO a tempo:** los knobs de velocidad de LFO (motor de MIDI 1 / 2, LFO 2 de la matriz, drums, Auto-Filter y Phaser de Master FX) son bipolares: derecha = libre, izquierda = a tempo, con el ciclo en el primer tiempo del compás.
+- **Página 4 del motor de MIDI 1 / 2 (los carriles de automatización): Shift + knob = el destino de ese carril** (los 33 parámetros, en el orden y los colores de la matriz; Clear mantenido y luego Shift + knob = el de fábrica), guardado con los patches del sinte propio. **Record mantenido + un paso** = los valores que no están en su inicial, escritos en los carriles de ese paso (reasignando carriles si hace falta).
+- **Vista Velocity: Shift + pad de paso = ese paso suelta la automatización** (Synth 1 / 2, MIDI 1 / 2): ningún carril suena y lo automatizado vuelve a la posición de su knob.
+- **Pad 27 de la vista Preset de MIDI 1 / 2 = la fila de motores** en los pads 17-23 (pad 27 otra vez = la lista de patches).
+- **Banco de acordes:** con Record de Setup en amarillo (grabar los ruteos internos), nada se graba en una pista de notas silenciada en el Mixer; sus pasos suenan y se graban solo en el sinte del canal compartido.
+- **Mixer con Shift:** la repetición de escena que suena, en blanco, mientras suena una escena con 2 repeticiones o más.
+- **Arpegiador:** en el orden en que se pulsan las notas (una nota soltada deja su hueco y la siguiente lo ocupa), y con el random-mutate del paso del acorde, también en vivo.
+- **Motor de MIDI 1 / 2, SHAPE:** en la sierra, de sierra normal (izquierda del todo) a **supersaw** de 7 sierras (derecha del todo); en el triángulo, a la izquierda del centro, **rampas exponenciales**.
+- **Arreglos** (los de RC2.04): la cuenta atrás sigue el tempo del proyecto; las notas grabadas de 16 pasos o más ya no se cortan a 16 pasos; en el selector de samples del modo muestra, sample mantenido + paso = flip.
 
 ## Beta 3.3 — 2026-10-19
 
@@ -410,7 +490,87 @@ Primera versión candidata (= SC36.2; RC0S = SC362S, sin escrituras propias en l
 <a id="changelog"></a>
 # Changelog — CIRCUIT-HACKS
 
-New features and fixes of every release candidate (RC). Every RC has a **safer build** (suffix **S**) without the features that write to the SD card on their own (pack management, A8). The references (A4, C6…) are the sections of the [manual](https://ghillermo.github.io/CIRCUITS-HACKS-RC/en.html). The technical detail is in [`docs/NOTAS.md`](docs/NOTAS.md) (Spanish).
+New features and fixes of every release candidate (RC). Every RC has a **safer build** (suffix **S**) without the features that write to the SD card on their own (pack management, A8). The references (A4, C6…) are the sections of the [manual](https://ghillermo.github.io/CIRCUIT-HACKS-RC/en.html). The technical detail is in [`docs/NOTAS.md`](NOTAS.md) (Spanish).
+
+## Beta 3.22 — 2026-10-25
+
+**Beta 3.22** (marker `B3.22`; = SC46.5) = RC2.09 + what Beta 3.21 has + the following, not yet tested on the device:
+- **Drums, K7 to the left = start scan:** instead of the vibrato, every hit starts where the drum's LFO is, from the Shift + K3 start up to |value| / 64 of the sample further (never past the cut). The LFO no longer restarts with each hit; with the synced LFO, the first beat falls on the start. To the right, the usual tremolo.
+- RC2.09's fix.
+
+## RC2.09 / RC2.09S — 2026-10-25
+
+**RC2.09** (files and marker `R209`; = RC2.08 + a fix) / **RC2.09S** (`R209S`). Beta 3.22 has the same fix.
+- **The drums' sample start** (Shift + K3 to the left) reached the end of the sample at a quarter of the knob's travel, and beyond that the hit sounded for an instant and went silent (the DSP counts the position in units of 4 samples). Now the knob covers the whole sample (up to 120/128), as the manual says. Projects saved since RC2 that already used the start have it 4 times closer to the beginning.
+
+## Beta 3.21 — 2026-10-24
+
+**Beta 3.21** (marker `B3.21`; = SC46.4) = Beta 3.20 + the following, not yet tested on the device:
+- **USB merge** (the request of issue #10): in Advanced Setup, **pad 23** makes what comes in on the **DIN In** (a keyboard on a MIDI cable) also go out over **USB** to the computer, together with the device's own MIDI. Green on; saved in the settings. With Clock Tx on, the DIN In's clock and transport are not copied; SysEx is not copied; what comes in over USB is not sent on.
+
+## Beta 3.20 — 2026-10-24
+
+**Beta 3.20** (marker `B3.20`; = SC46.3) = RC2.08 + what Beta 3.17 has + the following, not yet tested on the device (it gathers Betas 3.18 and 3.19, which were not published):
+- **General MIDI mode of the drums** (Setup view): **K4** turns it on (to the right, green) and off (to the left); **K5-K8**, the knobs over the drum tracks, pick the GM note of Drum 1-4 (35-81; by default 36 kick, 38 snare, 42 and 46 hats). While on, every hit of Drum 1-4 goes out over MIDI with its GM note instead of 60 / 62 / 64 / 65, on the Setup's drums channel (10 by default). Every new note sounds once and its number shows on the pads; **Shift** or leaving Setup confirms it; turning K4 off closes the number and the drums go out as on stock again. Saved in the device settings.
+- **Isomorphic Jankó layout** (a case of the custom scale): in the editor (Shift + Scales), **Shift + pad 8** turns it on. Every row goes up a semitone and every column a whole tone from the stock root: every chord type has the same shape in any key. **Octave = a semitone**. Saved with the project.
+- **Chord screen** (expanded Note view of Synth 1 / 2 and MIDI 1 / 2, **Shift + pad 8**): row 1 the type (major, minor, 7, m7, maj7, sus4, dim, aug; with Shift sus2, 6, m6, add9, 9, 7sus4, fifth), row 2 the inversion, open voicing, the root an octave down, diatonic and latch; rows 3-4 are the roots and play their chord while held. Recorded as plain notes of the pattern; the arpeggiator arpeggiates the chord. The type is not saved.
+- **Fix (beta only):** the sample & hold of the synced LFO (the own synth's engine and the mod matrix's LFO 2) never changed value with the transport running.
+- RC2.08's fixes.
+
+## RC2.08 / RC2.08S — 2026-10-24
+
+**RC2.08** (files and marker `R208`; = RC2.06 + two fixes; RC2.07 was not published on its own) / **RC2.08S** (`R208S`; no writes of its own to the SD card, as RC2.06S). Beta 3.20 has the same fixes.
+- **Fixed length** (Micro Step view, pad 31): picking a length did not redraw the view (the pads kept the selector's lights) and the length did not reach every note (with the step let go before the note, on step 1 or on cleared steps, and in chords only the last note got it). Now the view is redrawn and the length goes to every note as it is entered.
+- **External keyboard:** notes coming in over MIDI (USB or DIN) on the channel of MIDI 1 / 2 were recorded but did not play its own synth (the original does not send those notes on, and the engine takes its notes at the output). Now they play it; they are still not sent again to the MIDI out.
+
+## Beta 3.17 — 2026-10-21
+
+**Beta 3.17** (marker `B3.17`; = SC46) = RC2.06 + what Beta 3.15 has + the following, not yet tested on the device (it gathers Beta 3.16, which was not published):
+- **The MIDI 1 / 2 own synth is saved with the project:** saving takes both tracks' engine, values, mod matrix, page 4 destinations and FM along with the project; loading it brings them back as they sounded (before they were global: loading another project kept the sound of the one before). They go into bytes of MIDI 1 / 2's patterns 1-5 the original does not use (what those patterns play does not change); an older project does not carry it and the sound stays as it was.
+- **Engine page 4 (the lanes): with Shift + knob, pads 9-24 show where the chosen destination lives**, as the mod matrix does (its page and its knob); meanwhile those pads do not load patches.
+
+## RC2.06 / RC2.06S — 2026-10-21
+
+**RC2.06** (files and marker `R206`; = RC2.05 + a fix) / **RC2.06S** (`R206S`; no writes of its own to the SD card, as RC2.05S). Beta 3.15 has the same fix.
+- **Two pads of the same note held together** (on a note track's keyboard the last note of a row is the first of the row above: pads 17 and 32, the same C) **left the note sounding** until touched again: the original sent two note-ons and a single note-off (it comes from the original firmware). Now the second pad strikes it again (note-off and note-on) and it stops when the last one is let go.
+
+## Beta 3.15 — 2026-10-21
+
+**Beta 3.15** (marker `B3.15`; = SC45.8) = RC2.06 + what Beta 3.14 has + the following, not yet tested on the device:
+- **Split keyboard: hold a track button** (Synth 1 / 2, MIDI 1 / 2, Drum 1-4): while you hold it, the 8 knobs (and their lights) are that track's; let go and they go back to the first one. A short tap (no knob turned) closes it, as before.
+- **Fix** (RC2.06's): two pads of the same note held together no longer leave the note hanging.
+
+## RC2.05 / RC2.05S — 2026-10-21
+
+**RC2.05** (files and marker `R205`; = RC2.04 + a fix) / **RC2.05S** (`R205S`; no writes of its own to the SD card, as RC2.04S). Beta 3.14 has the same fix.
+- **Changing the custom scale with the transport running could hang the device:** a note not on the Note view's keyboard (right after changing the scale, or with a short period that does not cover every note) wrote its pad's light out of place, into another track's data. Now those notes light no pad.
+
+## Beta 3.14 — 2026-10-21
+
+**Beta 3.14** (marker `B3.14`; = SC45.7) = RC2.05 + what Beta 3.12 has + the following, not yet tested on the device (it gathers Beta 3.13, which was not published):
+- **4-operator FM** as a variant of the MIDI 1 / 2 own synth's oscillator: **pad 24** of the engine row (violet); its knobs on **pad 7**: K1-K4 each operator's ratio, K5-K8 level; Shift + K1-K4 attack, Shift + K5 algorithm, Shift + K6 feedback, Shift + K7 noise, Shift + K8 release (longer with more velocity). A/R envelopes with a fixed sustain per operator. **16 algorithms:** the classic ones (stack, branches, organ…), percussive (kick with a pitch drop, snare with noise, metal / hi-hat, tom), bells (bell, tubular) and strings (strings, ensemble). Saved with the own-synth patches.
+- **Fix** (RC2.05's): changing the custom scale with the transport running can no longer hang the device.
+
+## RC2.04 / RC2.04S — 2026-10-21
+
+**RC2.04** (files and marker `R204`; = RC2.02 + fixes) / **RC2.04S** (`R204S`; no writes of its own to the SD card, as RC2.02S). It gathers RC2.03, which was not published on its own. Beta 3.12 has the same fixes.
+- **The count-in follows the project's tempo** (it read another value: the four clicks were not at the BPM).
+- **Recorded notes of 16 steps or more are no longer cut to 16 steps:** the original recorder cut every note to 16 steps; now the note (or each note of a chord) stays tied and goes on until released, an arpeggiator's chord in a 32-step pattern too.
+- **Sample mode's sample picker:** holding a sample and tapping steps = those steps' flip (before, only held step + sample worked).
+
+## Beta 3.12 — 2026-10-20
+
+**Beta 3.12** (marker `B3.12`; = SC45.5) = RC2.04 + new features not yet tested on the device (it gathers betas 3.3-3.11; of those only 3.3 was published, its entry below):
+- **Stereo granular:** Shift + K4 = the grains' stereo spread, the track's pan = the left / right proportion; Shift + K3 bipolar: left reverse, right pitch spread ±24.
+- **Tempo-synced LFO:** the LFO speed knobs (MIDI 1 / 2 engine, the matrix's LFO 2, drums, Master FX Auto-Filter and Phaser) are bipolar: right = free, left = synced to the tempo, the cycle starting on the bar's first beat.
+- **Page 4 of the MIDI 1 / 2 engine (the automation lanes): Shift + knob = that lane's destination** (the 33 parameters, in the matrix's order and colours; hold Clear, then Shift + knob = the factory one), saved with the own synth's patches. **Hold Record + a step** = the values that are not at their initial one, written to that step's lanes (reassigning lanes if needed).
+- **Velocity view: Shift + step pad = that step releases the automation** (Synth 1 / 2, MIDI 1 / 2): no lane plays and what was automated goes back to its knob's position.
+- **Pad 27 of the MIDI 1 / 2 Preset view = the engine row** on pads 17-23 (pad 27 again = the patch list).
+- **Chord bank:** with the Setup Record yellow (recording the internal routings), nothing is recorded on a note track muted in the Mixer; its steps play and are recorded only into the synth on the shared channel.
+- **Mixer with Shift:** the scene repetition that is playing, in white, while a scene with 2 or more repetitions plays.
+- **Arpeggiator:** in the order the notes are pressed (a released note leaves its slot and the next one takes it), and with the random-mutate of the chord's step, live too.
+- **MIDI 1 / 2 engine, SHAPE:** on the saw, from a plain saw (fully left) to a **supersaw** of 7 saws (fully right); on the triangle, left of centre, **exponential ramps**.
+- **Fixes** (those of RC2.04): the count-in follows the project's tempo; recorded notes of 16 steps or more are no longer cut to 16 steps; in the sample mode's sample picker, held sample + step = flip.
 
 ## Beta 3.3 — 2026-10-19
 

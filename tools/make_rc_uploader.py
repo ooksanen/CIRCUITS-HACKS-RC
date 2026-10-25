@@ -1,6 +1,6 @@
 """tools/rc_uploader.html: a web page that takes the OFFICIAL Circuit Tracks firmware from the user, patches it in the browser and sends it (no Novation code inside).
 
-    python tools/make_rc_uploader.py [VERSION ...]          (default: R202 R202S B3.3 R201 R201S RC2 RC2S RC0.9 RC0.9S; needs firmware/<dir>/*.bin and stock/*.bin of a full checkout)
+    python tools/make_rc_uploader.py [VERSION ...]          (default: R209 R209S B3.22 R208 R208S R206 R206S R205 R205S R204 R204S R202 R202S R201 R201S RC2 RC2S RC0.9 RC0.9S; needs firmware/<dir>/*.bin and stock/*.bin of a full checkout)
 Each version becomes a patch against the official image: COPY (offset, length) from the user's official image, or ADD (our bytes).  The matching is greedy
 on 8-byte keys, so an ADD run never holds 8 or more consecutive bytes that also occur in the official image: the page carries only our own work.  The page:
   1. reads the official .syx (Components: https://components.novationmusic.com/api/v2/firmwares/168/file) or its .bin, checks its SHA-256;
@@ -77,7 +77,39 @@ def main(versions):
     print("tools/rc_uploader.html", len(page), "bytes")
 
 
-DESC = {"R202": ("RC2.02 — la versión candidata 2.02 (= SC44.3): RC2.01 + matriz de modulación del sinte propio de MIDI 1 / 2, teclado partido con cualquier par de pistas de notas, LFO con triángulo por defecto y sample & hold suavizado",
+DESC = {"R209": ("RC2.09 — la versión candidata 2.09: RC2.08 + un arreglo (el inicio del sample de los drums recorre todo el sample)",
+                 "RC2.09 — release candidate 2.09: RC2.08 + a fix (the drums' sample start covers the whole sample)"),
+        "R209S": ("RC2.09S — versión más segura: RC2.09, pero nada del mod escribe ni borra ficheros en la SD ni en la memoria interna (esas funciones no hacen nada)",
+                  "RC2.09S — safer build: RC2.09, but nothing of the mod writes or deletes files on the SD card or in the internal memory (those features do nothing)"),
+        "B3.22": ("Beta 3.22 — beta (= SC46.5): RC2.09 + lo de la Beta 3.21 + el K7 de los drums a la izquierda = scan del inicio; sin probar en el aparato",
+                  "Beta 3.22 — beta (= SC46.5): RC2.09 + what Beta 3.21 has + the drums' K7 to the left = start scan; not tested on the device"),
+        "R208": ("RC2.08 — la versión candidata 2.08: RC2.06 + dos arreglos (la longitud fija de la vista Micro Step; un teclado externo toca el sinte propio de MIDI 1 / 2)",
+                 "RC2.08 — release candidate 2.08: RC2.06 + two fixes (the Micro Step view's fixed length; an external keyboard plays the MIDI 1 / 2 own synth)"),
+        "R208S": ("RC2.08S — versión más segura: RC2.08, pero nada del mod escribe ni borra ficheros en la SD ni en la memoria interna (esas funciones no hacen nada)",
+                  "RC2.08S — safer build: RC2.08, but nothing of the mod writes or deletes files on the SD card or in the internal memory (those features do nothing)"),
+        "B3.21": ("Beta 3.21 — beta (= SC46.4): RC2.08 + lo de la Beta 3.20 (modo GM de los drums, Jankó, pantalla de acordes…) + el DIN In mezclado en la salida USB; sin probar en el aparato",
+                  "Beta 3.21 — beta (= SC46.4): RC2.08 + what Beta 3.20 has (GM mode of the drums, Jankó, chord screen…) + the DIN In merged into the USB out; not tested on the device"),
+        "B3.20": ("Beta 3.20 — beta (= SC46.3): RC2.08 + lo de la Beta 3.17 + modo General MIDI de los drums, disposición Jankó, pantalla de acordes y el S&H del LFO a tempo arreglado; sin probar en el aparato",
+                  "Beta 3.20 — beta (= SC46.3): RC2.08 + what Beta 3.17 has + General MIDI mode of the drums, Jankó layout, chord screen and the synced LFO's S&H fixed; not tested on the device"),
+        "R206": ("RC2.06 — la versión candidata 2.06: RC2.05 + un arreglo (dos pads de la misma nota mantenidos a la vez ya no dejan la nota colgada)",
+                 "RC2.06 — release candidate 2.06: RC2.05 + a fix (two pads of the same note held together no longer leave the note hanging)"),
+        "R206S": ("RC2.06S — versión más segura: RC2.06, pero nada del mod escribe ni borra ficheros en la SD ni en la memoria interna (esas funciones no hacen nada)",
+                  "RC2.06S — safer build: RC2.06, but nothing of the mod writes or deletes files on the SD card or in the internal memory (those features do nothing)"),
+        "B3.15": ("Beta 3.15 — beta (= SC45.8): RC2.06 + lo de la Beta 3.14 (FM de 4 operadores…) + en el teclado partido, un botón de pista mantenido = sus knobs; sin probar en el aparato",
+                  "Beta 3.15 — beta (= SC45.8): RC2.06 + what Beta 3.14 has (4-operator FM…) + on the split keyboard, a track button held = its knobs; not tested on the device"),
+        "B3.17": ("Beta 3.17 — beta (= SC46): RC2.06 + lo de la Beta 3.15 + el sinte propio de MIDI 1 / 2 guardado con el proyecto + los destinos de la página 4 en los pads; sin probar en el aparato",
+                  "Beta 3.17 — beta (= SC46): RC2.06 + what Beta 3.15 has + the MIDI 1 / 2 own synth saved with the project + the page 4 destinations on the pads; not tested on the device"),
+        "R205": ("RC2.05 — la versión candidata 2.05: RC2.04 + un arreglo (cambiar la escala propia con el transporte en marcha ya no cuelga el aparato)",
+                 "RC2.05 — release candidate 2.05: RC2.04 + a fix (changing the custom scale with the transport running no longer hangs the device)"),
+        "R205S": ("RC2.05S — versión más segura: RC2.05, pero nada del mod escribe ni borra ficheros en la SD ni en la memoria interna (esas funciones no hacen nada)",
+                  "RC2.05S — safer build: RC2.05, but nothing of the mod writes or deletes files on the SD card or in the internal memory (those features do nothing)"),
+        "B3.14": ("Beta 3.14 — beta (= SC45.7): RC2.05 + lo de la Beta 3.12 + FM de 4 operadores en el sinte propio de MIDI 1 / 2 (16 algoritmos: clásicos, percusivos, campanas, cuerdas), sin probar en el aparato",
+                  "Beta 3.14 — beta (= SC45.7): RC2.05 + what Beta 3.12 has + 4-operator FM in the MIDI 1 / 2 own synth (16 algorithms: classic, percussive, bells, strings), not tested on the device"),
+        "R204": ("RC2.04 — la versión candidata 2.04: RC2.02 + arreglos (la cuenta atrás al tempo del proyecto, notas grabadas de más de 16 pasos sin cortar, sample mantenido + paso en el selector de samples)",
+                 "RC2.04 — release candidate 2.04: RC2.02 + fixes (the count-in at the project tempo, recorded notes longer than 16 steps not cut, held sample + step in the sample picker)"),
+        "R204S": ("RC2.04S — versión más segura: RC2.04, pero nada del mod escribe ni borra ficheros en la SD ni en la memoria interna (esas funciones no hacen nada)",
+                  "RC2.04S — safer build: RC2.04, but nothing of the mod writes or deletes files on the SD card or in the internal memory (those features do nothing)"),
+        "R202": ("RC2.02 — la versión candidata 2.02 (= SC44.3): RC2.01 + matriz de modulación del sinte propio de MIDI 1 / 2, teclado partido con cualquier par de pistas de notas, LFO con triángulo por defecto y sample & hold suavizado",
                  "RC2.02 — release candidate 2.02 (= SC44.3): RC2.01 + mod matrix of the MIDI 1 / 2 own synth, split keyboard with any pair of note tracks, LFO with a triangle by default and slewed sample & hold"),
         "R202S": ("RC2.02S — versión más segura: RC2.02, pero nada del mod escribe ni borra ficheros en la SD ni en la memoria interna (esas funciones no hacen nada)",
                   "RC2.02S — safer build: RC2.02, but nothing of the mod writes or deletes files on the SD card or in the internal memory (those features do nothing)"),
@@ -85,6 +117,8 @@ DESC = {"R202": ("RC2.02 — la versión candidata 2.02 (= SC44.3): RC2.01 + mat
                  "RC2.01 — release candidate 2.01 (= SC44.1): RC2 + the captured sample before the master filter"),
         "R201S": ("RC2.01S — versión más segura: RC2.01, pero nada del mod escribe ni borra ficheros en la SD ni en la memoria interna (esas funciones no hacen nada)",
                   "RC2.01S — safer build: RC2.01, but nothing of the mod writes or deletes files on the SD card or in the internal memory (those features do nothing)"),
+        "B3.12": ("Beta 3.12 — beta (= SC45.5): RC2.04 + granular en estéreo, LFO a tempo, destinos de la página 4 y Record + paso, soltar la automatización por paso, fila de motores, banco de acordes, arpegiador en orden pulsado y con random-mutate, supersaw y triángulo exponencial. Funciones nuevas sin probar",
+                  "Beta 3.12 — beta (= SC45.5): RC2.04 + stereo granular, tempo-synced LFO, page 4 destinations and Record + step, per-step automation release, engine row, chord bank, arpeggiator in pressed order and with random-mutate, supersaw and exponential triangle. New features not yet tested"),
         "B3.3": ("Beta 3.3 — beta (= SC44.6): RC2.02 + vista FX: Shift + Octave ▲ / ▼ = resonancia del filtro master de 16 en 16; Shift + pad 25 = filtro master apagado / encendido. Funciones nuevas sin probar",
                  "Beta 3.3 — beta (= SC44.6): RC2.02 + FX view: Shift + Octave ▲ / ▼ = master filter resonance in steps of 16; Shift + pad 25 = master filter off / on. New features not yet tested"),
         "B3.0": ("Beta 3.0 — beta (= SC44.3): RC2.01 + matriz de modulación del sinte propio de MIDI 1 / 2 (pad 6: K1-K8 = ocho fuentes, la posición del knob = destino y cantidad), teclado partido con cualquier par de pistas de notas, LFO con triángulo por defecto y sample & hold suavizado",
@@ -516,4 +550,4 @@ setLang(LANG); updateSend();
 """
 
 if __name__ == "__main__":
-    main(sys.argv[1:] or ["R202", "R202S", "B3.3", "R201", "R201S", "RC2", "RC2S", "RC0.9", "RC0.9S"])
+    main(sys.argv[1:] or ["R209", "R209S", "B3.22", "R208", "R208S", "R206", "R206S", "R205", "R205S", "R204", "R204S", "R202", "R202S", "R201", "R201S", "RC2", "RC2S", "RC0.9", "RC0.9S"])

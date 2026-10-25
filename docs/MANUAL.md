@@ -1,6 +1,6 @@
-# Lista de características — CIRCUIT-HACKS (RC2.02)
+# Lista de características — CIRCUIT-HACKS (RC2.09)
 
-Circuit Tracks con el firmware oficial 1.2.1 (build 4486) parcheado. Lo que no aparece aquí funciona como en el aparato original. Cada función en una línea, por temas. **El manual de uso es la [guía por vistas](GUIA.md)** (en color: [guia.html](https://ghillermo.github.io/CIRCUITS-HACKS-RC/guia.html)); los CC / NRPN, en la [referencia MIDI](MIDI.md). Versión ilustrada de esta lista: [https://ghillermo.github.io/CIRCUITS-HACKS-RC/index.html](https://ghillermo.github.io/CIRCUITS-HACKS-RC/index.html). English version: [`docs/MANUAL.en.md`](MANUAL.en.md).
+Circuit Tracks con el firmware oficial 1.2.1 (build 4486) parcheado. Lo que no aparece aquí funciona como en el aparato original. Cada función en una línea, por temas. **El manual de uso es la [guía por vistas](GUIA.md)** (en color: [guia.html](https://ghillermo.github.io/CIRCUIT-HACKS-RC/guia.html)); los CC / NRPN, en la [referencia MIDI](MIDI.md). Versión ilustrada de esta lista: [https://ghillermo.github.io/CIRCUIT-HACKS-RC/index.html](https://ghillermo.github.io/CIRCUIT-HACKS-RC/index.html). English version: [`docs/MANUAL.en.md`](MANUAL.en.md).
 
 **Convenciones:** pads 1-32 de arriba-izquierda a abajo-derecha (fila 1 = 1-8 … fila 4 = 25-32); knobs K1-K4 arriba, K5-K8 abajo; «Shift + X» = mantener Shift.
 
@@ -20,13 +20,14 @@ Circuit Tracks con el firmware oficial 1.2.1 (build 4486) parcheado. Lo que no a
 - [A10 Editor de CC de los macros MIDI](#a10-editor-cc)
 - [A11 Mixer: Shift + knob = nivel a 100 / 0](#a11-mixer-shift)
 - [A12 Modo cue, mutes al compás y cuantizar (desde RC2)](#a12-mixer-cue)
-- [A13 Teclado partido Synth 1 + Synth 2](#a13-teclado-partido)
-- [A14 Patches de sinte por modo de voz](#a14-colores-patch)
-- [A15 Patches del sinte propio (MIDI 1 / 2)](#a15-patches-midi)
-- [A16 Guardar el patch del sinte en el pack](#a16-guardar-patch)
-- [A17 Destinos de los macro knobs](#a17-destinos-macro)
-- [A18 Copiar proyectos a otro hueco o a otro pack](#a18-copiar-proyectos)
-- [A19 Patches del sinte propio a otro pack](#a19-patches-entre-packs)
+- [A13 LFO a tempo (solo Beta 3.22)](#a13-lfo-sync)
+- [A14 Teclado partido Synth 1 + Synth 2](#a14-teclado-partido)
+- [A15 Patches de sinte por modo de voz](#a15-colores-patch)
+- [A16 Patches del sinte propio (MIDI 1 / 2)](#a16-patches-midi)
+- [A17 Guardar el patch del sinte en el pack](#a17-guardar-patch)
+- [A18 Destinos de los macro knobs](#a18-destinos-macro)
+- [A19 Copiar proyectos a otro hueco o a otro pack](#a19-copiar-proyectos)
+- [A20 Patches del sinte propio a otro pack](#a20-patches-entre-packs)
 
 **B. Controles expuestos**
 
@@ -55,9 +56,11 @@ Circuit Tracks con el firmware oficial 1.2.1 (build 4486) parcheado. Lo que no a
 - [C12 Arpegiador (desde RC2)](#c12-arpegiador)
 - [C13 Rollers de micropasos de los drums (desde RC2)](#c13-rollers)
 - [C14 Escala propia (desde RC2)](#c14-escala-propia)
-- [C15 Modo muestra de las pistas MIDI (desde RC2)](#c15-modo-muestra)
-- [C16 Matriz de modulación del sinte propio (desde RC2.02)](#c16-matriz-mod)
-- [C17 Master FX desde RC2: gesto mecánico, Glitch, Digitise y guardado por sesión](#c17-master-fx-beta)
+- [C15 Pantalla de acordes (solo Beta 3.22)](#c15-acordes)
+- [C16 Modo muestra de las pistas MIDI (desde RC2)](#c16-modo-muestra)
+- [C17 Matriz de modulación del sinte propio (desde RC2.02)](#c17-matriz-mod)
+- [C18 FM de 4 operadores (solo Beta 3.22)](#c18-fm4)
+- [C19 Master FX desde RC2: gesto mecánico, Glitch, Digitise y guardado por sesión](#c19-master-fx-beta)
 
 **D. DSP**
 
@@ -91,7 +94,7 @@ Circuit Tracks con el firmware oficial 1.2.1 (build 4486) parcheado. Lo que no a
 <a id="a3-vista-fx"></a>
 ### A3. Teclas de la vista FX
 - **Octave ▲ / ▼** = envíos de delay / reverb; **Shift + knob** = parámetros de reverb y delay.
-- **Duplicate** = reset (envíos a 0, filtro master al centro, Master FX apagado); **Shift + Octave ▲ / ▼** = resonancia del filtro master ±16 (solo Beta 3.3; en RC2.02, **1-16 / 17-32**); **Shift + pad 25** = filtro master apagado / encendido (solo Beta 3.3).
+- **Duplicate** = reset (envíos a 0, filtro master al centro, Master FX apagado); **Shift + Octave ▲ / ▼** = resonancia del filtro master ±16 (solo Beta 3.22; en RC2.09, **1-16 / 17-32**); **Shift + pad 25** = filtro master apagado / encendido (solo Beta 3.22).
 
 <a id="a4-clear-knob"></a>
 ### A4. Clear + knob = valor por defecto
@@ -130,32 +133,36 @@ Circuit Tracks con el firmware oficial 1.2.1 (build 4486) parcheado. Lo que no a
 ### A12. Modo cue, mutes al compás y cuantizar (desde RC2)
 - **Desde RC2.** Mixer, página de panorama: **Shift + knob** = modo cue (la salida derecha escucha las pistas que elijas). **Shift + pads 1-8** del Mixer = silenciar / activar al compás siguiente. **Shift + Play** = cuantizar el patrón de la pista elegida.
 
-<a id="a13-teclado-partido"></a>
-### A13. Teclado partido Synth 1 + Synth 2
+<a id="a13-lfo-sync"></a>
+### A13. LFO a tempo (solo Beta 3.22)
+- **Solo Beta 3.22.** Los knobs de velocidad de LFO son bipolares: derecha = LFO libre, izquierda = a tempo con el ciclo en el primer tiempo del compás.
+
+<a id="a14-teclado-partido"></a>
+### A14. Teclado partido Synth 1 + Synth 2
 - **Desde RC2.** Mantén **Synth 1** y pulsa **Synth 2** (o al revés): las dos filas de arriba tocan Synth 1 y las dos de abajo Synth 2.
 
-<a id="a14-colores-patch"></a>
-### A14. Patches de sinte por modo de voz
+<a id="a15-colores-patch"></a>
+### A15. Patches de sinte por modo de voz
 - **Desde RC2.** En la vista Preset de Synth 1 / 2 cada patch se ve según su modo de voz: **mono azul oscuro**, **glide lavanda**, **poly como siempre**.
 
-<a id="a15-patches-midi"></a>
-### A15. Patches del sinte propio (MIDI 1 / 2)
+<a id="a16-patches-midi"></a>
+### A16. Patches del sinte propio (MIDI 1 / 2)
 - **Desde RC2.** En la vista Preset de MIDI 1 / 2 las filas 2 y 3 son 16 huecos de patch del motor de la pista: tocar = cargar (suena la tónica), **Clear + pad** dos veces = guardar, **Duplicate + A + B** = intercambiar; **Octave ▼ / ▲** = 4 páginas (64 huecos por pack).
 
-<a id="a16-guardar-patch"></a>
-### A16. Guardar el patch del sinte en el pack
+<a id="a17-guardar-patch"></a>
+### A17. Guardar el patch del sinte en el pack
 - **Desde RC2.** En la vista Preset de Synth 1 / 2: **Clear + pad** pregunta (parpadea en blanco) y **Clear + el mismo pad otra vez** guarda en ese hueco el patch tal como suena.
 
-<a id="a17-destinos-macro"></a>
-### A17. Destinos de los macro knobs
+<a id="a18-destinos-macro"></a>
+### A18. Destinos de los macro knobs
 - **Desde RC2.** En la vista de la fuente del sinte (A6) el **pad 32** abre el editor: un knob elige su macro, **Octave ▼ / ▲** pasa de campo y los pads dibujan el número.
 
-<a id="a18-copiar-proyectos"></a>
-### A18. Copiar proyectos a otro hueco o a otro pack
+<a id="a19-copiar-proyectos"></a>
+### A19. Copiar proyectos a otro hueco o a otro pack
 - **Desde RC2.** En la vista Projects: **Duplicate + pad A** elige el proyecto (parpadea en amarillo) y **Duplicate + pad B** lo copia a ese hueco, del mismo pack o de otro.
 
-<a id="a19-patches-entre-packs"></a>
-### A19. Patches del sinte propio a otro pack
+<a id="a20-patches-entre-packs"></a>
+### A20. Patches del sinte propio a otro pack
 - **Desde RC2.** En la vista Preset de MIDI 1 / 2: **Duplicate + hueco A**, carga otro pack y **Duplicate + hueco B** copia el patch (motor, parámetros y nombre).
 
 ## B. Controles expuestos
@@ -190,6 +197,7 @@ Circuit Tracks con el firmware oficial 1.2.1 (build 4486) parcheado. Lo que no a
 - **Desde RC2:** MIDI Thru con cuatro modos (Duplicate en Advanced Setup): Thru, Out 2, **Merge** (DIN In + el MIDI del aparato) y **Filter** (DIN In sin los canales en escucha).
 - **Desde RC2:** canales de **Program Change** propios: pad 29 / 30 enseñan y eligen el canal de escucha / salida (16 por defecto); lo recibido se reenvía por el de salida.
 - **Desde RC2:** **metrónomo con cuenta atrás**: Shift + Clear recorre sin metrónomo, metrónomo, solo cuenta atrás y las dos; la cuenta atrás es un compás antes de grabar.
+- **Solo Beta 3.22:** **modo General MIDI de los drums**: en Setup, K4 lo enciende; K5-K8 = la nota GM de Drum 1-4 (35-81), que sale por el canal de drums en lugar de 60 / 62 / 64 / 65.
 
 <a id="b8-patch-flip"></a>
 ### B8. Patch flip en MIDI 1 / 2
@@ -199,6 +207,7 @@ Circuit Tracks con el firmware oficial 1.2.1 (build 4486) parcheado. Lo que no a
 
 <a id="c1-motor-midi"></a>
 ### C1. Motor de las pistas MIDI (pad 27)
+- **Desde RC2.08:** un teclado externo por el canal de MIDI 1 / 2 (USB o DIN) toca su sinte propio; sus notas no se reenvían a la salida MIDI.
 - El pad 27 de la vista Preset de MIDI 1 / 2 elige el motor: apagado → **línea** → **oscilador** → **VA-drum** → **granular** → **muestra** (desde RC2) → **secuenciador de efectos**.
 - Los pads 1-5 eligen la página de knobs; 28 = dos osciladores, 29 = orden de la cadena, 30 = step-drummer, 31 = velocity (VA-drum). **Desde RC2:** Clear + un pad de página = los valores de esa página a los iniciales; las filas 2-3 guardan patches (A14).
 
@@ -259,18 +268,27 @@ Circuit Tracks con el firmware oficial 1.2.1 (build 4486) parcheado. Lo que no a
 ### C14. Escala propia (desde RC2)
 - **Desde RC2.** **Shift + Scales** = editor de una escala propia para las pistas de notas: hasta 7 notas sobre la tónica y un **periodo** cualquiera (hasta 24 semitonos) que es la tónica de la siguiente iteración; cada fila de pads es una iteración (dos con 4 notas o menos). Se guarda con el proyecto.
 
-<a id="c15-modo-muestra"></a>
-### C15. Modo muestra de las pistas MIDI (desde RC2)
+<a id="c15-acordes"></a>
+### C15. Pantalla de acordes (solo Beta 3.22)
+- **Solo Beta 3.22.** En la **Note ampliada** de Synth 1 / 2 y MIDI 1 / 2, **Shift + pad 8** abre la pantalla de acordes: fila 1 el tipo, fila 2 la inversión y los modificadores, filas 3-4 las fundamentales; cada fundamental toca su acorde mientras se mantiene.
+
+<a id="c16-modo-muestra"></a>
+### C16. Modo muestra de las pistas MIDI (desde RC2)
 - **Desde RC2.** Un estado nuevo del pad 27 (cian, tras el granular): la pista MIDI toca **un sample del pack de un golpe**, a la altura de la nota (**C3 = nota 60 = como se grabó**), por el filtro, el efecto y el LFO del motor; el VCA se queda abierto y el sample suena entero.
 - La **vista Note ampliada** (Note dos veces) es el selector: filas 3-4 = 16 samples × 4 páginas (Octave ▼ / ▲: los 64 del pack), filas 1-2 = los pasos; **paso mantenido + sample** = sample flip de ese paso, también en vivo con Record.
 
-<a id="c16-matriz-mod"></a>
-### C16. Matriz de modulación del sinte propio (desde RC2.02)
+<a id="c17-matriz-mod"></a>
+### C17. Matriz de modulación del sinte propio (desde RC2.02)
 - **Desde RC2.02.** Con el motor de MIDI 1 / 2 encendido, el **pad 6** de su vista Preset es una página de knobs nueva: **K1-K8 = ocho fuentes** (velocity, nota, azar por nota, LFO 2, envolvente 2, golpe de un drum, posición del patrón, azar por pasos).
 - La **posición** de cada knob es el **destino** (todos los parámetros de las páginas de knobs, 33, un tramo cada uno, en el color de su página) y, dentro del tramo, la **cantidad**. Knobs lentos: dos clics por paso, 16 pasos por destino.
 
-<a id="c17-master-fx-beta"></a>
-### C17. Master FX desde RC2: gesto mecánico, Glitch, Digitise y guardado por sesión
+<a id="c18-fm4"></a>
+### C18. FM de 4 operadores (solo Beta 3.22)
+- **Solo Beta 3.22.** Una variante del oscilador del sinte propio de MIDI 1 / 2: **pad 24** de la fila de motores (un toque al pad 27), violeta; sus knobs en el **pad 7**.
+- **K1-K4** = ratio de los operadores 1-4, **K5-K8** = su nivel; **Shift + K1-K4** = su ataque, **Shift + K5** = el **algoritmo** (16), **Shift + K6** feedback, **Shift + K7** ruido, **Shift + K8** release (más largo con más velocity).
+
+<a id="c19-master-fx-beta"></a>
+### C19. Master FX desde RC2: gesto mecánico, Glitch, Digitise y guardado por sesión
 - **Desde RC2.** El pad 6 de Master FX es el **Glitch** y el pad 31 un **gesto mecánico** (parada de cinta, scratch…); Digitise gana **K3 = envío momentáneo al delay** y **K4 = envolvente**; los knobs y los huecos de Master FX **se guardan con cada proyecto**.
 
 ## D. DSP
