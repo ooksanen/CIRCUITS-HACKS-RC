@@ -1,10 +1,10 @@
-<!-- translated-from: CLAUDE.md @ ec56599 (summary of the version list) -->
-<!-- translated-from: docs/NOTAS.md @ ec56599 (summary of the version headings) -->
+<!-- translated-from: CLAUDE.md @ c79c1ca (summary of the version list) -->
+<!-- translated-from: docs/NOTAS.md @ c79c1ca (summary of the version headings) -->
 # How the versions stack up
 
 A summary for readers without Spanish, written for this fork. Detail per version: the `### SCnn` sections of
 `docs/NOTAS.md` (Spanish, newest first) and the version list in `git show upstream/main:CLAUDE.md`. What each release
-candidate and beta added or fixed, in English: upstream's `CHANGELOG.md` (bilingual, from RC0.3).
+candidate and beta added or fixed, in English: upstream's `docs/CHANGELOG.md` (bilingual, from RC0.3; at the top level until RC2.08).
 
 The master effects view is called **Master FX** (upstream renamed it on 2026-10-12; the earlier name is a trademark
 and is not used anywhere, which is also why upstream republished its repository without history).
@@ -18,23 +18,33 @@ and is not used anywhere, which is also why upstream republished its repository 
   previous RC plus selected fixes. RC0.2 = SC37.5, RC0.3 = SC38, RC0.4 = RC0.3 + the fixes of SC38.2–SC38.6, RC0.5 =
   RC0.4 + the captured sample in front of the Master FX effects, RC0.6–RC0.9.3 = fixes only ("fixes on the RC, new
   features on the beta"). Then **RC2 = SC44** (Beta 1.30, everything of betas 1.0–1.30), **RC2.01 = SC44.1** and
-  **RC2.02 = SC44.3** (Beta 3.0, published 2026-10-18). From RC0.9.1 the marker is shortened to fit 6 bytes: `R0901`,
-  `R201`, `R202` (`R202S` for the safer one).
+  **RC2.02 = SC44.3** (Beta 3.0, published 2026-10-18). From there each RC is the previous one plus fixes: RC2.03 the
+  count-in's tempo (it read the wrong value, found in emulation), RC2.04 notes held past 16 steps recorded whole and
+  a held sample + step, RC2.05 a hang when changing the custom scale while playing, RC2.06 a stuck note from two pads
+  of one pitch, RC2.07 fixed step length, RC2.08 an external keyboard playing the own synth of MIDI 1 / 2, **RC2.09**
+  the drums' sample start (2026-10-25). From RC0.9.1 the marker is shortened to fit 6 bytes: `R0901`, `R201`, `R202` … `R209` (`R209S`
+  for the safer one).
 - **`BETAn`** — betas: an `SC` build renamed, with features not yet tested on the device, released next to the RCs
   (no `S` variant). BETA0 = SC38.7, BETA1 = SC39, BETA2 = SC39.1, BETA3 = SC39.2, BETA4 = SC39.4, BETA5 = SC39.6.
 - **`Beta n.m`** (marker `Bn.m`, from 2026-10-14) — the same idea, numbered per build: Beta 1.0 = SC40.9, Beta 1.1–1.9
   = SC41.1–SC41.9, Beta 1.10 = SC42, … Beta 1.30 = SC44, Beta 1.31 / 1.32 = SC44.2 / SC44.3 (not published). **Beta 3.0**
-  = SC44.3 (published as RC2.02), Beta 3.1–3.3 = SC44.4–SC44.6 (**Beta 3.3** published 2026-10-19).
+  = SC44.3 (published as RC2.02), Beta 3.1–3.3 = SC44.4–SC44.6 (Beta 3.3 published 2026-10-19), Beta 3.4–3.6 =
+  SC44.7–SC44.9, Beta 3.7–3.16 = SC45–SC45.9, Beta 3.17–3.22 = SC46–SC46.5 (**Beta 3.22** published 2026-10-25).
 
 ## The builder chain
 - Every version has a builder `tools/build_<name>.py`. A builder **imports the previous version's builder**,
   switches on options and adds code. `build_rc0_2.py` reaches the base through ~35 imports
   (`B.B4.B2.B1.B.B.b33 … b18.b6.b5`).
 - Builders change behaviour only through options (`use_…()` functions, module flags), so every old version still
-  rebuilds byte-for-byte: `tools/verify_builds.py` checks all 264 against `firmware/<dir>/manifest.json`.
+  rebuilds byte-for-byte: `tools/verify_builds.py` checks all 316 against `firmware/<dir>/manifest.json`.
 - From SC44.2 a builder can set **`thumb.COMPACT`**: each `movw` + `movt` pair of the mod's ARM code becomes a 2-byte
   `LDR` from a shared literal pool (about 3 KB back; without it SC44.2 would not fit). `tools/compact_check.py BUILDER`
   builds both forms and checks that every constant and branch target matches.
+- From SC44.8 the mod also uses **the free zone** (`tools/hole.py`): stock's own copy of the DSP programs
+  (`0x080101F0–0x0801865A`, 33 KB) is no longer loaded (the load table points at the relocated copies), so ARM code
+  goes there. Only code that never writes the SD card nor saves the settings: `rodisk` and `lazysave` recognise the
+  mod by a return address at or above the stock image's end. SC46.4 leaves 18,670 B of it free; RC2.04 is the first RC
+  to use it.
 - Each builder runs in its own process because builders patch module globals of earlier builders at import time.
 
 ## Eras
@@ -58,6 +68,8 @@ and is not used anywhere, which is also why upstream republished its repository 
 | SC42.2–SC43.3, Beta 1.12–1.23 | **Custom scale** (Shift + Scales); arpeggiator rate and per-press gate; **microstep rollers** on the drums; step-drummer page 2; **drum arpeggiator** (recorded); Pattern Settings on the drums; recorder note-off fixes | `cscale.py`, `stepgate.py`, `rollers.py`, `sdpv.py`, `drumarp.py`, `drumpat.py`, `drumstore.py` |
 | SC43.4–SC44, RC2, Beta 1.24–1.30 | Sidechain triggered by note-track patterns; **Mixer: mute on the next bar** (Shift + pad) and **cue mode**; Clear + track button; drum pitch chromatic on top of stock's continuous one; **Shift + Play = quantize**; own synth: legato, LFO shapes, all of it saved over power cycles, **sample mode** with a sample picker and per-step sample flips; a shorter DSP program (the one-word `x:(Rn+d)` form) | `scpat.py`, `qmute.py`, `cue.py`, `clrtrk.py`, `dpitch.py`, `engsave.py`, `smpick.py`, `vcf21.py`, `dsp56.py` |
 | SC44.1–SC44.6, RC2.01–RC2.02, Beta 3.0–3.3 | The captured sample before the master filter; compacted ARM code; own-synth **mod matrix** (K1–K8 = sources, the knob's position = destination and amount); **split keyboard with any two note tracks**; triangle LFO by default, slewed sample & hold; FX view: master resonance on Shift + Octave, master filter off / on with Shift + pad 25 | `sampler_dsp.py`, `thumb.py`, `modmx.py`, `split4.py`, `vcf21.py`, `fxres.py`, `mfbyp.py` |
+| SC44.7–SC45.5, RC2.03–RC2.04, Beta 3.4–3.12 | **Stereo granular** (mid / side; core 1 shrunk to 1,871 words with one-word moves); **tempo-synced LFOs** (left of centre = 16 divisions, in the own synth, the matrix, the drums and Master FX); the free zone; page 4 destinations of the own synth reassignable (Shift + knob), Record held + step = a snapshot of the changed values; Shift + step in the Velocity view releases a step's automation; an engine row on MIDI pad 27; a muted track is not recorded (a chord bank); the scene repeat that plays lit in the Mixer with Shift; notes held past 16 steps recorded whole, held sample + step; the arpeggiator in pressed order and with random-mutate; **supersaw** and an exponential triangle | `granular_dsp.py`, `lfosync.py`, `hole.py`, `p4dest.py`, `recinst.py`, `autorel.py`, `modesel.py`, `mutebank.py`, `patchain.py`, `recfix.py`, `smhold.py`, `arp.py`, `vcf21_dsp.py` |
+| SC45.6–SC46.5, RC2.05–RC2.09, Beta 3.13–3.22 | **4-operator FM** in the own synth (16 algorithms, drums among them); fixes: a hang with the custom scale, a stuck note from two pads of one pitch, fixed step length, synced sample & hold, the drums' sample start; the own synth's knobs of another track on the split keyboard; page 4 destinations shown on the pads; **the own synth saved with each project**; a **General MIDI drum mode** (Setup, K4–K8); an external keyboard plays the own synth; a **Jankó** layout (a custom-scale case) and a **chord screen** in the expanded Note view; the DIN In merged into the USB output; the drums' LFO scans the sample start | `fmeng.py`, `kbguard.py`, `dupnote.py`, `splitknob.py`, `p4ovl.py`, `projsyn.py`, `stepgate.py`, `gmdrum.py`, `kbin.py`, `janko.py`, `chords.py`, `usbmerge.py`, `persist19.py`, `drums2_dsp.py` |
 
 ## What has been confirmed on the device
 Two upstream sources, which disagree:
@@ -78,10 +90,16 @@ Two upstream sources, which disagree:
   RC0–RC0.5) is recorded as confirmed on the device, although the reports above show the SC37 builds running there.
   The exception: **SC39 / BETA1** (random-mutate per step) is recorded as working (2026-10-12).
 - **After BETA5** the author tried the betas on the device and reported back in the notes rather than in the headings
-  (every heading from SC39.7 to SC44.6, RC2.02 and Beta 3.3 included, still says pending): SC39.7–SC40.8 "all good"
+  (every heading from SC39.7 to SC46.5, RC2.09 and Beta 3.22 included, still says pending): SC39.7–SC40.8 "all good"
   apart from requests (2026-10-14); SC42.4's arpeggiator did not work and its roller was not recorded (2026-10-16), and
   SC42.6's arpeggiator worked (Shift + pad 25). SC402D / SC403D (2026-10-13) showed that the project's last 1000 B are
   saved and loaded.
+- **2026-10-20 to 25** the author and other users reported problems from the device, each fixed in the next RC and
+  beta: the arpeggiator forgetting a chord held past step 16 and sample + step not programming the sample flip
+  (RC2.04), a hang when changing the custom scale while playing (RC2.05), a note stuck after two
+  pads of one pitch (RC2.06), fixed length not updating its LEDs nor reaching every step (RC2.07), an external
+  keyboard recording but not playing the own synth (RC2.08), and the own synth's sample & hold silent at tempo (Beta
+  3.18).
 - **Not yet confirmed:** SC44.2's finding that the RAM above the heap, `0x20044E58–0x2004FDFF` (about 44 KB), is free
   (stock's own memory report and two RAM dumps; upstream stays below `0x2004F000` and signs what it keeps there).
 - Measured on the device with PATCHD: **35 palette codes animate** (pulse or blink) because the RGB table in RAM

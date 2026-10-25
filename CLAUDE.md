@@ -1,8 +1,8 @@
-<!-- translated-from: CLAUDE.md @ ec56599 (adapted for this fork, not a 1:1 translation) -->
+<!-- translated-from: CLAUDE.md @ c79c1ca (adapted for this fork, not a 1:1 translation) -->
 # CTPlay / CIRCUIT-HACKS (ooksanen) — context for Claude Code
 
 Firmware patches for the **Novation Circuit Tracks**, official firmware 1.2.1 build 4486, derived from
-[Ghillermo/CIRCUITS-HACKS-RC](https://github.com/Ghillermo/CIRCUITS-HACKS-RC). Upstream documents in Spanish; code
+[Ghillermo/CIRCUIT-HACKS-RC](https://github.com/Ghillermo/CIRCUIT-HACKS-RC). Upstream documents in Spanish; code
 comments are in English. Upstream's original Spanish `CLAUDE.md`: `git show upstream/main:CLAUDE.md`.
 
 ## Remotes
@@ -10,7 +10,10 @@ comments are in English. Upstream's original Spanish `CLAUDE.md`: `git show upst
   builds are never public.
 - **`fork`** = `ooksanen/CIRCUITS-HACKS-RC`, the public GitHub fork: **`main` only** (upstream + the English additions).
   Never push other branches there.
-- **`upstream`** = `Ghillermo/CIRCUITS-HACKS-RC`, the original.
+- **`upstream`** = `Ghillermo/CIRCUIT-HACKS-RC` (no S), the original. Upstream renamed it on 2026-10-24; the old name
+  `CIRCUITS-HACKS-RC` is now a separate stub repo ("Moved", no shared history): never merge it. The remote points at
+  the new name since 2026-10-25 (`git remote set-url upstream https://github.com/Ghillermo/CIRCUIT-HACKS-RC.git` in
+  another clone); its history continues RC2.06 (`395d9e6`, also pinned as `refs/archive/upstream-main-rc2.06`).
 - Do not push to `origin` or `fork` without the user's approval. Upstream's publishing workflow (private branch,
   `public` remote, `gh-pages`, `commit-tree` onto `public/main`) does **not** apply here.
 
@@ -39,13 +42,16 @@ comments are in English. Upstream's original Spanish `CLAUDE.md`: `git show upst
 - `.venv/bin/python fork/translation_status.py [-d]` — which English translations are behind upstream (`-d` shows diffs).
 
 ## Docs map
-- `docs/VERSIONS.en.md` — **start here**: how the 264 versions stack up and which were confirmed on the device.
+- `docs/VERSIONS.en.md` — **start here**: how the 316 versions stack up and which were confirmed on the device.
 - `docs/RECURSOS.md` (second half English) — resource budget: flash, RAM, saved state, both DSP cores, external memory.
-  The latest builds have almost nothing left: SC44.6 / Beta 3.3 80 B of flash (with `thumb.COMPACT`), DSP core 0 116
-  words (SC44.3), core 1 1 word, heap 4 B. Its English half stops at SC39 / BETA1; the Spanish half has SC43.9–SC44.5.
-- `docs/NOTAS.md` (Spanish, 384 KB, newest first) — technical detail of every patch and every finding. Read the
+  The latest builds are nearly full: SC46.5 / Beta 3.22 2,392 B at the image's end plus 18,670 B in the free zone
+  (stock's unused copy of the DSP programs, `0x080101F0–0x0801865A`, `tools/hole.py`, from SC44.8), DSP core 0 9 words,
+  core 1 177 words (SC44.7), heap 4 B. Its English half stops at SC39 / BETA1; the Spanish half has SC43.9–SC46.5.
+- `docs/NOTAS.md` (Spanish, 750 KB, newest first) — technical detail of every patch and every finding. Read the
   section for the feature at hand rather than the whole file.
-- `CHANGELOG.md` — upstream's per-release changes, Spanish and English (RC0 → RC2.02 / RC2.02S = SC44.3, BETA0 → BETA5 and Beta 1.0 → Beta 3.3 = SC44.6, 2026-10-19).
+- `docs/CHANGELOG.md` (at the top level until RC2.08) — upstream's per-release changes, Spanish and English (RC0 → RC2.09 / RC2.09S,
+  BETA0 → BETA5 and Beta 1.0 → Beta 3.22 = SC46.5, 2026-10-25). The feature list: `docs/FEATURES.md` (English) /
+  `docs/CARACTERISTICAS.md`, out of `README.md` since RC2.08.
 - `docs/CHECKLIST.en.md` — upstream's on-device test checklist. `firmware/<dir>/PRUEBA.md` — per-build test plan (Spanish).
 - `LEEME.md`, `docs/DEPENDENCIAS.md`, `docs/LOCAL.en.md`, `docs/MANUAL.en.md` — already bilingual / English.
 - `fork/ct_uploader.en.html` — the firmware uploader with an English interface (slim's uploader is generated from it).
@@ -72,7 +78,7 @@ comments are in English. Upstream's original Spanish `CLAUDE.md`: `git show upst
 
 ## Platform summary
 - **ARM:** STM32F745 (Cortex-M7). App at `0x08010000` (max 0x70000 B; stock image ends at `0x0805CDDC`, code caves
-  from `0x0805CDE0`). SP `0x20050000`.
+  from `0x0805CDE0`; upstream also fills the free zone `0x080101F0–0x0801865A` from SC44.8, see Docs map). SP `0x20050000`.
   - Block heap: limit `[0x20002B44]` = `0x20044E58`, current `[0x20002B48]` (`0x20044D68` on the device, 240 B free).
     The allocator `0x0801D7D8` hits `bkpt` when exhausted and never frees. Above the heap, `0x20044E58–0x2004FDFF` (≈ 44 KB) is free according to upstream SC44.2 (stock's own memory report
     `0x0801D426` counts it as remaining with a 512 B stack above; two RAM dumps show it never written), **not yet
